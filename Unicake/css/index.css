@@ -1,8 +1,15 @@
 body{
 
-    background: linear-gradient(to bottom right, #FADDBF, #FFCF9F);
- background-repeat: no-repeat;
- background-size: cover;
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    #D2B08C 33%,  
+    #8B4F3D 33%,   
+    #8B4F3D 66%,  
+    #D2B08C 66%    
+  );
+  
 }
 
 
@@ -13,4 +20,26 @@ h1{
     margin-top: 20px;
 }
 
+header {
+  
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    list-style: none;
+}
+
+ul {
+    list-style:none;
+    display:flex;
+    justify-content: end;
+    gap: 12px;
+   
+
+}
+
+li{  
+
+    color: #7B3F2F;
+
+}
 
