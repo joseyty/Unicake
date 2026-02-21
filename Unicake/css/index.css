@@ -2,5 +2,15 @@ body{
 
     background: linear-gradient(to bottom right, #FADDBF, #FFCF9F);
  background-repeat: no-repeat;
-
+ background-size: cover;
 }
+
+
+h1{
+    color: #8B4513;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    margin-top: 20px;
+}
+
+
