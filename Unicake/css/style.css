@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #d7c2ad;
+    color: #5a3e2b;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-style: italic;
+    color: #5a3e2b;
+}
+
+.search input {
+    padding: 10px 20px;
+    width: 280px;
+    border-radius: 30px;
+    border: none;
+    background: #e6d5c4;
+    outline: none;
+}
+
+.menu a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #5a3e2b;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-outline {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #5a3e2b;
+    background: transparent;
+    color: #5a3e2b;
+    cursor: pointer;
+}
+
+.btn-solid {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #5a3e2b;
+    color: white;
+    cursor: pointer;
+}
+
+.cart {
+    background: #5a3e2b;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* HERO */
+.hero {
+    position: relative;
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cake-container img {
+    width: 450px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Texto grande ao fundo */
+.watermark {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 180px;
+    font-style: italic;
+    color: rgba(90, 62, 43, 0.25);
+    z-index: 1;
+    white-space: nowrap;
+}
+
+/* CATEGORIAS */
+.categories {
+    background: #8b5e3c;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    border-radius: 12px;
+    width: 95%;
+    margin: 0 auto 40px auto;
+}
+
+.categories a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
