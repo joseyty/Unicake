@@ -23,8 +23,6 @@ body {
     font-size: 28px;
     font-style: italic;
     color: #5a3e2b;
-    width: 20%;
-    height: 50%;
 }
 
 .search input {
@@ -116,5 +114,5 @@ body {
 .categories a {
     color: white;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 18px;
 }
