@@ -116,3 +116,27 @@ body {
     text-decoration: none;
     font-size: 14px;
 }
+
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+    }
+
+.card {
+    width: 600px;
+    height: 250px;
+    background-color: #8B5A3CCC;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+@media screen and (max-width: 600px) {
+    .hero { 
+        flex-direction: column;
+        height: auto;
+    }
+}
