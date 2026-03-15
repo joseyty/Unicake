@@ -4,66 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniCake</title>
-    <link rel="stylesheet" href="../css/PaginaInicial.css">
+    <link rel="stylesheet" href="/css/PaginaInicial.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header class="header">
-        <div class="logo"><img src="" alt="UniCake"></div>
+<header class="header" id="mainHeader">
+    <a class="logo" href="#">UniCake</a>
 
-        <div class="search">
-            <input type="text" placeholder="Busque por item ou loja">
-        </div>
-
-        <nav class="menu">
-            <a href="#">Sobre</a>
-            <a href="#">Para você</a>
-            <a href="#">Para empresas</a>
-            <a href="#">Lojas Cadastradas</a>
-        </nav>
-
-        <div class="actions">
-           <a href="Entrar.html"> <button class="btn-outline">Entrar</button></a>
-           <a href="Cadastro.html"> <button class="btn-solid">Cadastrar</button></a>
-            <div class="cart">🛒 0</div>
-        </div>
-    </header>
-
-    <!-- HERO -->
-    <section class="hero">
-
-        <h1 class="watermark">UniCake</h1>
-
-        <div class="cake-container">
-            <img src="../img/fatia-bolo-png-removebg-preview.png" alt="Bolo de Chocolate">
-        </div>
-
-    </section>
-
-    <!-- CATEGORIAS -->
-    <section class="categories">
-        <a href="#">Categorias ▾</a>
-        <a href="#">Bolos ▾</a>
-        <a href="#">Cupcakes ▾</a>
-        <a href="#">Tortas ▾</a>
-        <a href="#">Doces Gourmet ▾</a>
-        <a href="#">Cookies & Brownies ▾</a>
-        <a href="#">Kits Festa ▾</a>
-        <a href="#">Bolos Personalizados ▾</a>
-    </section>
-
-
-    <div class="container">
-        <div class="card">
-        
-         
-
-        </div>
-            
+    <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Busque por item ou loja">
     </div>
+
+    <nav class="menu">
+        <a href="#">Sobre</a>
+        <a href="#">Para você</a>
+        <a href="#">Para empresas</a>
+        <a href="#">Lojas Cadastradas</a>
+    </nav>
+
+    <div class="actions">
+        <div class="btn-group">
+            <div class="btn-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="btn-stack">
+                <a href="Entrar.html">Entrar</a>
+                <span>ou</span>
+                <a href="Cadastro.html">Cadastrar</a>
+            </div>
+        </div>
+
+        <button class="cart-btn" id="cartBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
+    </div>
+</header>
+
+<section class="hero">
+    <h1 class="watermark">UniCake</h1>
+    <div class="cake-container">
+        <img src="../img/fatia-bolo-png-removebg-preview.png" alt="Bolo de Chocolate">
+    </div>
+</section>
+
+<nav class="categories">
+    <a href="#">Categorias &#9660;</a>
+    <a href="#">Bolos &#9660;</a>
+    <a href="#">Cupcakes &#9660;</a>
+    <a href="#">Tortas &#9660;</a>
+    <a href="#">Doces Gourmet &#9660;</a>
+    <a href="#">Cookies &amp; Brownies &#9660;</a>
+    <a href="#">Kits Festa &#9660;</a>
+    <a href="#">Bolos Personalizados &#9660;</a>
+</nav>
+
+<div class="container">
+    <div class="card"></div>
+</div>
+
+
 </body>
 </html>
