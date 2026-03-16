@@ -156,11 +156,11 @@
         .watermark {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(88px, 15vw, 200px);
+            font-family: "Rouge Script", cursive;
+            font-size: clamp(88px, 15vw, 500px);
             font-style: italic; font-weight: 600;
             color: transparent;
-            background: linear-gradient(130deg, rgba(120,70,35,.35) 0%, rgba(170,120,75,.52) 45%, rgba(110,60,25,.28) 100%);
+            background: linear-gradient(180deg, #6B3E26 0%, #BA9A97 61.64%, #FFEBD8 100%);
             -webkit-background-clip: text; background-clip: text;
             letter-spacing: -2px;
             pointer-events: none; user-select: none;
@@ -226,3 +226,29 @@
 
         .container { padding: 20px 32px; }
         .card { background: transparent; }
+
+        .rouge-script-regular {
+        font-family: "Rouge Script", cursive;
+        font-weight: 400;
+        font-style: normal;
+}
+.container{
+    max-width: 1200%;
+    margin: auto;
+    background-color: #8B5A3C;
+    height: 500px;
+    width: 500%;
+    margin-top: 20px;
+}
+.card{
+    border-radius: 5px;
+    }
+    .container2{
+   
+    border-radius: 20px;
+    background-color: #adadad;
+    height: 30%;
+    width: 30%;
+    margin-top: 20px;
+
+    }
