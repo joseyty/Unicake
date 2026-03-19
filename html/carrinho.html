@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Loja de Bolos</title>
+  <link rel="stylesheet" href="../css/carrinho.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ESQUERDA -->
+  <div class="box">
+    <img src="../img/degrade-removebg-preview.png" class="bg-chocolate" alt="">
+
+    <h1>Seu Pedido 🎂</h1>
+
+    <div id="cakes"></div>
+
+    <h2>Carrinho 🛒</h2>
+    <div id="cart"></div>
+
+    <div class="total">
+      <span>Total:</span>
+      <strong id="total">R$ 0</strong>
+    </div>
+  </div>
+
+  <!-- DIREITA -->
+  <div class="box">
+    <img src="../img/degrade-removebg-preview.png" class="bg-chocolate" alt="">
+
+    <h2>Forma de Pagamento 💳</h2>
+
+    <div class="payments">
+      <button onclick="setPayment('pix')">PIX</button>
+      <button onclick="setPayment('card')">Cartão</button>
+      <button onclick="setPayment('cash')">Dinheiro</button>
+    </div>
+
+    <p id="selected"></p>
+
+    <button class="finish">Finalizar Pedido</button>
+
+    <br>
+    <h3>Formas de pagamento</h3>
+    <ul>
+      <li><strong>PIX:</strong> Rápido e seguro, usando QR Code ou chave PIX.</li>
+      <li><strong>Cartão:</strong> Aceitamos Visa, MasterCard e Elo.</li>
+      <li><strong>Dinheiro:</strong> Pagamento no ato da entrega.</li>
+      <li><strong>Boleto:</strong> Pagamento via boleto bancário.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script src="../js/carrinho.js"></script>
+
+</body>
+</html>
