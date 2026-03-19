@@ -13,7 +13,7 @@ body {
 
 h1, h2 {
   margin-bottom: 10px;
-  color: #4b2e2b;
+  color: #E2D6C9;
 }
 
 .box {
@@ -33,7 +33,7 @@ h1, h2 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.2;
+  opacity: 1.1;
   z-index: 0;
   pointer-events: none;
 }
