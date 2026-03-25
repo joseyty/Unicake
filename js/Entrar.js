@@ -1,4 +1,7 @@
 
+// ─────────────────────────────────────────
+//  !!!!!!!!!!!!!!!!!!!!!!FAZER A SEGURANÇA POR UM MEIO SEGURO MAIS!!!!!!!!!!!!!!!!!!!!!!!!!
+// ─
 
     const ICON_EYE_OPEN = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -20,7 +23,7 @@
     const senhaInput  = document.getElementById('input-senha');
     const toggleBtn   = document.getElementById('toggle-senha');
 
-    // Ícone inicial
+    
     toggleBtn.innerHTML = ICON_EYE_OPEN;
 
     toggleBtn.addEventListener('click', () => {
