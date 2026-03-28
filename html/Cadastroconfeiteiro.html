@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniCake – Cadastro de Restaurante</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/Cadastroconfeiteiro.css">
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <hr>
+    <div class="header-title">
+      <img class="bolo-header" src="../img/WhatsApp_Image_2026-03-28_at_17.17.48-removebg-preview.png" alt="Bolo">
+      <h1>UniCake</h1>
+    </div>
+    <hr class="bottom">
+  </div>
+
+  <form id="mainForm" novalidate>
+    <div class="form-grid">
+
+      <!-- ── COLUNA ESQUERDA: Dados do restaurante ── -->
+      <div class="col-esquerda">
+        <div class="section-title"><span class="icon">🎂</span> Dados do restaurante</div>
+        <div class="field-group">
+
+          <div class="field">
+            <label>Nome do restaurante <span class="required-star">*</span></label>
+            <input type="text" id="nome" placeholder="Nome do seu restaurante">
+            <span class="error-msg" id="err-nome"></span>
+          </div>
+
+          <div class="field">
+            <label>Telefone <span class="required-star">*</span></label>
+            <input type="tel" id="telefone" placeholder="Telefone do seu Restaurante (apenas números)" inputmode="numeric">
+            <span class="error-msg" id="err-telefone"></span>
+          </div>
+
+          <div class="field">
+            <label>CNPJ <span class="required-star">*</span></label>
+            <input type="text" id="cnpj" placeholder="CNPJ do seu Restaurante (apenas números)" inputmode="numeric" maxlength="14">
+            <span class="error-msg" id="err-cnpj"></span>
+          </div>
+
+          <div class="field">
+            <label>Tipo de Cozinha <span class="required-star">*</span></label>
+            <select id="cozinha">
+              <option value="">Tipo de Cozinha</option>
+              <option>Confeitaria</option>
+              <option>Padaria</option>
+              <option>Doces &amp; Sobremesas</option>
+              <option>Café &amp; Bistrô</option>
+              <option>Fast Food</option>
+              <option>Pizzaria</option>
+              <option>Japonesa</option>
+              <option>Brasileira</option>
+              <option>Italiana</option>
+              <option>Outra</option>
+            </select>
+            <span class="error-msg" id="err-cozinha"></span>
+          </div>
+        </div>
+
+
+      </div>
+
+      <!-- ── COLUNA DIREITA: Endereço + Contato ── -->
+      <div>
+        <div class="section-title"><span class="icon">📍</span> Endereço do restaurante</div>
+        <div class="field-group">
+
+          <div class="row">
+            <div class="field">
+              <label>CEP <span class="required-star">*</span></label>
+              <input type="text" id="cep" placeholder="CEP (apenas números)" inputmode="numeric" maxlength="8">
+            </div>
+            <div class="field">
+              <label>Estado <span class="required-star">*</span></label>
+              <select id="estado">
+                <option value="">Estado</option>
+                <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+                <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+                <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                <option>SP</option><option>SE</option><option>TO</option>
+              </select>
+            </div>
+          </div>
+          <span class="error-msg" id="err-cep-estado"></span>
+
+          <div class="row">
+            <div class="field">
+              <label>Cidade <span class="required-star">*</span></label>
+              <input type="text" id="cidade" placeholder="Cidade">
+            </div>
+            <div class="field">
+              <label>Bairro <span class="required-star">*</span></label>
+              <input type="text" id="bairro" placeholder="Bairro">
+            </div>
+          </div>
+          <span class="error-msg" id="err-cidade-bairro"></span>
+
+          <div class="row">
+            <div class="field">
+              <label>Endereço <span class="required-star">*</span></label>
+              <input type="text" id="endereco" placeholder="Endereço do seu restaurante">
+            </div>
+            <div class="field small">
+              <label>Número <span class="required-star">*</span></label>
+              <input type="text" id="numero" placeholder="Nº">
+            </div>
+          </div>
+          <span class="error-msg" id="err-end-num"></span>
+
+          <div class="field">
+            <label>Complemento</label>
+            <input type="text" id="complemento" placeholder="Complemento">
+          </div>
+        </div>
+
+        <!-- Contato do representante -->
+        <div class="section-title" style="margin-top:22px;">Contato do representante legal</div>
+        <div class="field-group">
+
+          <div class="field">
+            <label>Nome Completo <span class="required-star">*</span></label>
+            <input type="text" id="rep-nome" placeholder="Nome Completo">
+            <span class="error-msg" id="err-rep-nome"></span>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>E-mail profissional <span class="required-star">*</span></label>
+              <input type="email" id="rep-email" placeholder="E-mail profissional">
+            </div>
+            <div class="field">
+              <label>Telefone <span class="required-star">*</span></label>
+              <input type="tel" id="rep-tel" placeholder="Telefone" inputmode="numeric">
+            </div>
+          </div>
+          <span class="error-msg" id="err-rep-contact"></span>
+
+          <div class="field">
+            <label>Como conheceu nossa plataforma?</label>
+            <select id="como-conheceu">
+              <option value="">Como conheceu nossa plataforma?</option>
+              <option>Redes Sociais</option>
+              <option>Indicação</option>
+              <option>Google</option>
+              <option>Anúncio</option>
+              <option>Outro</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-grid -->
+
+    <div class="submit-wrap">
+      <button type="submit">Enviar dados</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../js/Cadastroconfeiteiro.js"></script>
+</body>
+</html>
