@@ -7,12 +7,13 @@ body {
 
 /* HEADER */
 header {
-  background-color: #ff7f50;
+  background-color: #522514;
   color: white;
   padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* tudo na esquerda */
   align-items: center;
+  gap: 15px; /* espaço entre nome e barra */
 }
 
 .logo {
@@ -63,7 +64,7 @@ header {
 
 .card h3 {
   margin: 0;
-  color: #d2691e;
+  color: #aa744e;
 }
 
 .card p {
@@ -75,8 +76,14 @@ header {
   display: inline-block;
   margin-top: 10px;
   padding: 8px 12px;
-  background-color: #ff7f50;
+  background-color: #bfa08a;
   color: white;
   border-radius: 8px;
   text-decoration: none;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
