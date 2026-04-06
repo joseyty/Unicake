@@ -1,5 +1,4 @@
-
-  const PRICES = {
+const PRICES = {
     monthly: {
       pro:  { int:'49', period:'/mês · cobrado mensalmente', old:'' },
       prem: { int:'99', period:'/mês · cobrado mensalmente', old:'' },
@@ -11,6 +10,7 @@
   };
 
   let billing = 'monthly';
+  let selectedPlanKey = ''; // Armazenar qual plano foi selecionado
 
 
   function setBilling(type) {
@@ -57,6 +57,7 @@
   
 
   function selectPlan(planKey) {
+    selectedPlanKey = planKey; // Armazenar o plano selecionado
     const plan = PLANS[planKey];
 
     document.getElementById('ov-icon').textContent  = plan.icon;
@@ -79,7 +80,23 @@
   }
 
   function closeOverlay() {
-    document.getElementById('overlay').classList.remove('show');
+    const overlay = document.getElementById('overlay');
+    
+    
+    if (selectedPlanKey && selectedPlanKey !== 'gratuito') {
+      overlay.classList.remove('show');
+      
+      localStorage.setItem('selectedPlan', selectedPlanKey);
+      window.location.href = '../html/Pagamento.html?plan=' + selectedPlanKey;
+    } else if (selectedPlanKey === 'gratuito') {
+      
+      alert('🎉 Bem-vindo ao UniCake! Sua conta será criada sem necessidade de pagamento.');
+      overlay.classList.remove('show');
+      selectedPlanKey = '';
+    } else {
+      
+      overlay.classList.remove('show');
+    }
   }
 
   

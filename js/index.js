@@ -25,6 +25,12 @@ const CAKES = [
     { id:4, name:'Bolo Red Velvet',   img:'', price:45 },
     { id:5, name:'Bolo de Limão',     img:'', price:28 },
     { id:6, name:'Bolo de Coco',      img:'', price:32 },
+    { id:7, name:'Surpresa de Uva',  img:'', price:2 },
+    { id:8, name:'Bolo de Abacaxi',   img:'', price:27 },
+    { id:9, name:'Olho de sogra',     img:'', price:3 },
+    { id:10,name:'Beijinho',  img:'', price:2.5 },
+    { id:11,name:'Brigadeiro',     img:'', price: 2 },
+    
 ];
     const COUPONS = {
         BOLO10:{ type:'percent',  value:10, label:'10% de desconto' },
@@ -154,6 +160,73 @@ const CAKES = [
     
     cRenderCakes();
     cRenderCart();
+
+     
+    const searchInput = document.getElementById('searchInput');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            
+            if (query.length === 0) {
+                searchSuggestions.classList.remove('show');
+                searchSuggestions.innerHTML = '';
+                return;
+            }
+            
+            
+            const results = CAKES.filter(cake => 
+                cake.name.toLowerCase().includes(query)
+            ).slice(0, 8); 
+            
+            if (results.length === 0) {
+                searchSuggestions.innerHTML = `
+                    <div class="suggestion-item" style="cursor: default; color: #a0785a;">
+                        <span class="suggestion-icon">🔍</span>
+                        <span class="suggestion-text">Nenhum produto encontrado</span>
+                    </div>`;
+                searchSuggestions.classList.add('show');
+                return;
+            }
+            
+            searchSuggestions.innerHTML = results.map(cake => {
+                const nameUpper = cake.name.toUpperCase();
+                const queryUpper = query.toUpperCase();
+                const parts = nameUpper.split(new RegExp(`(${queryUpper})`, 'g'));
+                
+                const highlightedName = parts.map(part => 
+                    part.toUpperCase() === queryUpper 
+                        ? `<span class="suggestion-highlight">${part}</span>`
+                        : part
+                ).join('');
+                
+                return `
+                    <div class="suggestion-item" onclick="selectSuggestion('${cake.name}', ${cake.id})">
+                        <span class="suggestion-icon">${cake.icon}</span>
+                        <span class="suggestion-text">${highlightedName}</span>
+                        <span style="font-size: 0.8rem; color: #c9a882; margin-left: auto;">R$ ${cake.price.toFixed(2).replace('.', ',')}</span>
+                    </div>`;
+            }).join('');
+            
+            searchSuggestions.classList.add('show');
+        });
+        
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#searchContainer')) {
+                searchSuggestions.classList.remove('show');
+            }
+        });
+    }
+    
+    function selectSuggestion(name, id) {
+        searchInput.value = name;
+        searchSuggestions.classList.remove('show');
+        cAdd(id);
+        cToast(`${name} adicionado ao carrinho! 🎂`);
+    }
+
 
 (function(){
     const items = document.querySelectorAll('[data-reveal]');

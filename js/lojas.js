@@ -1,47 +1,90 @@
 const lojas = [
-  { nome: "Doce Sabor", descricao: "Especialistas em bolos de chocolate", imagem: "https://images.unsplash.com/photo-1605478371310-a9f1e96b4ff4", link: "#" },
-  { nome: "Bolos da Vovó", descricao: "Receitas caseiras tradicionais", imagem: "https://images.unsplash.com/photo-1578985545062-69928b1d9587", link: "#" },
-  { nome: "Cake & Arte", descricao: "Bolos personalizados e gourmet", imagem: "https://images.unsplash.com/photo-1541783245831-57d6fb0926d3", link: "#" },
-  { nome: "Delícias do Forno", descricao: "Bolos fresquinhos todos os dias", imagem: "https://images.unsplash.com/photo-1505253210343-dc3f4b3f8f9d", link: "#" },
-  { nome: "Reino dos Bolos", descricao: "Variedade de sabores incríveis", imagem: "https://images.unsplash.com/photo-1551024601-bec78aea704b", link: "#" },
-  { nome: "Bolo Mania", descricao: "Bolos criativos e diferentes", imagem: "https://images.unsplash.com/photo-1464349153735-7db50ed83c84", link: "#" },
-  { nome: "Casa do Bolo", descricao: "Clássicos que nunca saem de moda", imagem: "https://images.unsplash.com/photo-1603532648955-039310d9ed75", link: "#" },
-  { nome: "Top Cakes", descricao: "Alta confeitaria", imagem: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c", link: "#" },
-  { nome: "Doceria Encanto", descricao: "Sabores que conquistam", imagem: "https://images.unsplash.com/photo-1488477181946-6428a0291777", link: "#" }
+  {
+    nome: "Doce Encanto",
+    desc: "Bolos artesanais e doces finos para festas e eventos.",
+    endereco: "Rua das Flores, 123 — Centro",
+    avaliacao: 4.8,
+    entrega: "30-45min",
+    img: ""
+  },
+  {
+    nome: "Cake & Love",
+    desc: "Cupcakes, brownies e bolos decorados sob encomenda.",
+    endereco: "Av. Brasil, 456 — Boa Vista",
+    avaliacao: 4.9,
+    entrega: "25-40min",
+    img: ""
+  },
+  {
+    nome: "Confeitaria Bella",
+    desc: "Tradição em bolos caseiros há mais de 15 anos.",
+    endereco: "Rua do Comércio, 78 — Centro",
+    avaliacao: 4.7,
+    entrega: "35-50min",
+    img: ""
+  },
+  {
+    nome: "Sweet Dreams",
+    desc: "Especialista em bolos temáticos e personalizados.",
+    endereco: "Rua Nova, 210 — Jardim América",
+    avaliacao: 5.0,
+    entrega: "40-55min",
+    img: ""
+  },
+  {
+    nome: "Padaria Central",
+    desc: "Pães, bolos e salgados fresquinhos todo dia.",
+    endereco: "Praça da Matriz, 15 — Centro",
+    avaliacao: 4.5,
+    entrega: "20-30min",
+    img: ""
+  },
+  {
+    nome: "Ateliê do Bolo",
+    desc: "Bolos esculpidos e cake design para ocasiões especiais.",
+    endereco: "Rua São José, 332 — Alto da Sé",
+    avaliacao: 4.9,
+    entrega: "45-60min",
+    img: ""
+  },
 ];
 
-const container = document.getElementById('lojasContainer');
+
+const container = document.getElementById("lojasContainer");
 
 function renderLojas(lista) {
-  container.innerHTML = "";
-
-  lista.forEach(loja => {
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-      <img src="${loja.imagem}" alt="${loja.nome}">
-      <div class="card-content">
-        <h3>${loja.nome}</h3>
-        <p>${loja.descricao}</p>
-        <a href="${loja.link}" class="btn">Ver loja</a>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
+  container.innerHTML = lista.length === 0
+    ? '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9e7a62;font-family:Baloo 2,cursive;font-size:1.1rem;">Nenhuma loja encontrada 😕</div>'
+    : lista.map((l, i) => `
+      <div class="card" style="animation-delay:${i * .07}s">
+        <div style="width:100%;height:160px;background:linear-gradient(135deg,#f4d1dc,#e8d5c0);display:flex;align-items:center;justify-content:center;font-size:3rem;">🍰</div>
+        <div class="card-content">
+          <h3>${l.nome}</h3>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.78rem;color:#f5b731;">★ ${l.avaliacao.toFixed(1)}</span>
+            <span style="font-size:.72rem;color:#9e7a62;background:rgba(196,168,130,.2);padding:2px 8px;border-radius:20px;">${l.entrega}</span>
+          </div>
+          <p>${l.desc}</p>
+          <p style="font-size:.75rem;color:#9e7a62;margin:0 0 12px;">📍 ${l.endereco}</p>
+          <a href="#" class="btn">Ver cardápio</a>
+        </div>
+      </div>`).join('');
 }
 
 renderLojas(lojas);
 
-// PESQUISA
-document.getElementById("searchInput").addEventListener("keyup", function () {
-  const filtro = this.value.toLowerCase();
 
-  const filtradas = lojas.filter(loja =>
-    loja.nome.toLowerCase().includes(filtro) ||
-    loja.descricao.toLowerCase().includes(filtro)
+document.getElementById("searchInput").addEventListener("input", function () {
+  const q = this.value.toLowerCase().trim();
+  if (!q) {
+    renderLojas(lojas);
+    return;
+  }
+  const filtradas = lojas.filter(l =>
+    l.nome.toLowerCase().includes(q) ||
+    l.desc.toLowerCase().includes(q) ||
+    l.endereco.toLowerCase().includes(q)
   );
-
+  
   renderLojas(filtradas);
 });

@@ -80,6 +80,70 @@ body {
             color: var(--brown); width: 100%;
         }
         .search input::placeholder { color: var(--pale); }
+
+        .search {
+            position: relative;
+            z-index: 600;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #e0d5c7;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            box-shadow: 0 8px 16px rgba(62, 32, 16, 0.1);
+            z-index: 9999;
+        }
+
+        .search-suggestions.show {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0e8dc;
+            font-size: 0.85rem;
+            color: var(--brown);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(224, 123, 154, 0.08);
+        }
+
+        .suggestion-item.highlighted {
+            background: rgba(224, 123, 154, 0.15);
+            border-left: 3px solid var(--pink);
+        }
+
+        .suggestion-icon {
+            font-size: 1rem;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .suggestion-highlight {
+            color: var(--pink);
+            font-weight: 600;
+        }
    nav.menu {
             display: flex;
             gap: 26px;
@@ -210,7 +274,7 @@ body {
       padding: 0 24px; position: relative; z-index: 400;
       border-radius: 12px;
       margin: 16px auto;
-      max-width: 58%;
+      max-width: 95%;
     }
     .cat-item { position: relative; }
     .cat-item > a {

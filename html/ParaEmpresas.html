@@ -3,12 +3,43 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planos & Assinatura — Loja de Bolos</title>
+  <title>Para Empresas — UniCake</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="/css/ParaEmpresas.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/ParaEmpresas.css"/>
 </head>
 <body>
- 
+
+
+<header class="header" id="mainHeader">
+    <a class="logo" href="../html/PaginaInicial.html">UniCake</a>
+    <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Busque por item ou loja">
+    </div>
+    <nav class="menu">
+        <a href="../html/Sobre.html">Sobre</a>
+        <a href="#">Para você</a>
+        <a href="/html/ParaEmpresas.html" class="menu-active">Para empresas</a>
+        <a href="../html/paginalojas.html">Lojas Cadastradas</a>
+    </nav>
+    <div class="actions">
+        <div class="btn-group">
+            <div class="btn-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="btn-stack">
+                <a href="Entrar.html">Entrar</a><span>ou</span><a href="Cadastro.html">Cadastrar</a>
+            </div>
+        </div>
+    </div>
+</header>
+
 
 <span class="deco deco-1" aria-hidden="true">🍩</span>
 <span class="deco deco-2" aria-hidden="true">☕</span>
@@ -16,14 +47,10 @@
 <span class="deco deco-4" aria-hidden="true">🍪</span>
 <span class="deco deco-5" aria-hidden="true">🍫</span>
 <span class="deco deco-6" aria-hidden="true">🥐</span>
-<span class="star star-1" aria-hidden="true">✦</span>
-<span class="star star-2" aria-hidden="true">✦</span>
-<span class="star star-3" aria-hidden="true">✦</span>
-<span class="star star-4" aria-hidden="true">✦</span>
-<span class="star star-5" aria-hidden="true">✦</span>
+
 
 <section class="hero wrap">
-  <div class="hero__tag">👥 Para Colaboradores</div>
+  <div class="hero__tag">👥 Para Empresas</div>
   <h1 class="hero__title">
     Gerencie sua loja com<br><span>inteligência e praticidade</span> 🎂
   </h1>
@@ -31,7 +58,6 @@
     Acesso completo ao painel de gestão, relatórios, metas e muito mais.<br>
     Cancele quando quiser — sem burocracia, sem pegadinhas.
   </p>
-
   <div class="billing-toggle">
     <span class="billing-toggle__opt active" id="toggle-monthly" onclick="setBilling('monthly')">Mensal</span>
     <span class="billing-toggle__opt" id="toggle-annual" onclick="setBilling('annual')">
@@ -44,18 +70,13 @@
 <div class="wrap">
   <div class="plans-grid">
 
-   
     <div class="plan-card">
       <div class="plan-card__icon">👨🏼‍💻</div>
       <div class="plan-card__name">Gratuito</div>
       <div class="plan-card__desc">Análise básica do expediente diário</div>
-      <div class="plan-card__price">
-        <span class="price-currency">R$</span>
-        <span class="price-int">0</span>
-      </div>
+      <div class="plan-card__price"><span class="price-currency">R$</span><span class="price-int">0</span></div>
       <div class="plan-card__period">/mês · para sempre</div>
       <div class="plan-card__old"></div>
-      
       <div class="plan-card__divider"></div>
       <ul class="plan-card__features">
         <li class="fi"><span class="fi-icon fi-icon--y">✓</span>Análise crítica diária</li>
@@ -72,20 +93,14 @@
       <button class="btn-plan btn-plan--default" onclick="selectPlan('gratuito')">Começar Grátis</button>
     </div>
 
-   
     <div class="plan-card plan-card--featured">
       <div class="plan-card__badge">⭐ Mais Popular</div>
       <div class="plan-card__icon">👑</div>
       <div class="plan-card__name">Profissional</div>
       <div class="plan-card__desc">Controle completo mensal com metas</div>
-      <div class="plan-card__price">
-        <span class="price-currency">R$</span>
-        <span class="price-int" id="pro-int">49</span>
-        <span class="price-dec">,90</span>
-      </div>
+      <div class="plan-card__price"><span class="price-currency">R$</span><span class="price-int" id="pro-int">49</span><span class="price-dec">,90</span></div>
       <div class="plan-card__period" id="pro-period">/mês · cobrado mensalmente</div>
       <div class="plan-card__old" id="pro-old"></div>
-     
       <div class="plan-card__divider"></div>
       <ul class="plan-card__features">
         <li class="fi"><span class="fi-icon fi-icon--y">✓</span>Análise crítica diária</li>
@@ -102,16 +117,11 @@
       <button class="btn-plan btn-plan--featured" onclick="selectPlan('profissional')">Assinar Agora 🚀</button>
     </div>
 
-   
     <div class="plan-card">
       <div class="plan-card__icon">💎</div>
       <div class="plan-card__name">Premium</div>
       <div class="plan-card__desc">Inteligência completa para maximizar lucros</div>
-      <div class="plan-card__price">
-        <span class="price-currency">R$</span>
-        <span class="price-int" id="prem-int">99</span>
-        <span class="price-dec">,90</span>
-      </div>
+      <div class="plan-card__price"><span class="price-currency">R$</span><span class="price-int" id="prem-int">99</span><span class="price-dec">,90</span></div>
       <div class="plan-card__period" id="prem-period">/mês · cobrado mensalmente</div>
       <div class="plan-card__old" id="prem-old"></div>
       <div class="plan-card__divider"></div>
@@ -132,66 +142,33 @@
 
   </div>
 
-  
+ 
   <section class="testimonials-section">
     <h2 class="section-title">💬 O que dizem nossos colaboradores</h2>
     <div class="testimonials-grid">
-
       <div class="testimonial-card">
         <div class="testimonial-card__stars">⭐⭐⭐⭐⭐</div>
-        <div class="testimonial-card__text">
-          Desde que assinei o plano Profissional, consigo acompanhar as metas de vendas em tempo real. Aumentei meu faturamento em 30% no primeiro mês!
-        </div>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">A</div>
-          <div>
-            <div class="testimonial-card__name">Ana Souza</div>
-            <div class="testimonial-card__role">Proprietária · São Paulo</div>
-            <span class="testimonial-card__badge">👑 Profissional</span>
-          </div>
-        </div>
+        <div class="testimonial-card__text">Desde que assinei o plano Profissional, consigo acompanhar as metas de vendas em tempo real. Aumentei meu faturamento em 30% no primeiro mês!</div>
+        <div class="testimonial-card__author"><div class="testimonial-card__avatar">A</div><div><div class="testimonial-card__name">Ana Souza</div><div class="testimonial-card__role">Proprietária · São Paulo</div><span class="testimonial-card__badge">👑 Profissional</span></div></div>
       </div>
-
       <div class="testimonial-card">
         <div class="testimonial-card__stars">⭐⭐⭐⭐⭐</div>
-        <div class="testimonial-card__text">
-          O Premium valeu cada centavo. As dicas de lucro por produto me ajudaram a reformular o cardápio e reduzir desperdício de forma impressionante.
-        </div>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">C</div>
-          <div>
-            <div class="testimonial-card__name">Carlos Mendes</div>
-            <div class="testimonial-card__role">Chef & Empresário · Rio de Janeiro</div>
-            <span class="testimonial-card__badge">💎 Premium</span>
-          </div>
-        </div>
+        <div class="testimonial-card__text">O Premium valeu cada centavo. As dicas de lucro por produto me ajudaram a reformular o cardápio e reduzir desperdício de forma impressionante.</div>
+        <div class="testimonial-card__author"><div class="testimonial-card__avatar">C</div><div><div class="testimonial-card__name">Carlos Mendes</div><div class="testimonial-card__role">Chef & Empresário · Rio de Janeiro</div><span class="testimonial-card__badge">💎 Premium</span></div></div>
       </div>
-
       <div class="testimonial-card">
         <div class="testimonial-card__stars">⭐⭐⭐⭐⭐</div>
-        <div class="testimonial-card__text">
-          Comecei pelo Gratuito e migrei para o Profissional em menos de um mês. A análise mensal mudou minha visão sobre o negócio completamente.
-        </div>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">M</div>
-          <div>
-            <div class="testimonial-card__name">Maria Lima</div>
-            <div class="testimonial-card__role">Confeiteira autônoma · Belo Horizonte</div>
-            <span class="testimonial-card__badge">👑 Profissional</span>
-          </div>
-        </div>
+        <div class="testimonial-card__text">Comecei pelo Gratuito e migrei para o Profissional em menos de um mês. A análise mensal mudou minha visão sobre o negócio completamente.</div>
+        <div class="testimonial-card__author"><div class="testimonial-card__avatar">M</div><div><div class="testimonial-card__name">Maria Lima</div><div class="testimonial-card__role">Confeiteira autônoma · Belo Horizonte</div><span class="testimonial-card__badge">👑 Profissional</span></div></div>
       </div>
-
     </div>
   </section>
 
- 
+  
   <div class="guarantee">
     <div class="guarantee__left">
       <div class="guarantee__title">🛡️ Garantia de 7 dias</div>
-      <div class="guarantee__text">
-        Não ficou satisfeito? Devolvemos 100% do valor pago<br>sem perguntas, sem burocracia.
-      </div>
+      <div class="guarantee__text">Não ficou satisfeito? Devolvemos 100% do valor pago<br>sem perguntas, sem burocracia.</div>
     </div>
     <div class="guarantee__badges">
       <div class="g-badge">🔒 Pagamento seguro</div>
@@ -201,68 +178,44 @@
     </div>
   </div>
 
-  
+ 
   <section class="faq-section">
     <h2 class="section-title">🤔 Dúvidas Frequentes</h2>
     <div class="faq-grid">
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Posso cancelar a qualquer momento?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Sim! Cancele quando quiser, sem multa ou taxa. O acesso permanece ativo até o fim do período já pago.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Como funciona o plano anual?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Você paga de uma vez e economiza 20% em relação ao mensal. O acesso é liberado imediatamente por 12 meses completos.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Posso mudar de plano depois?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Sim! Upgrade ou downgrade a qualquer momento. O valor é ajustado proporcionalmente ao período restante — sem cobranças extras.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Quantos colaboradores podem usar?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Gratuito: 1 usuário. Profissional: até 3 colaboradores. Premium: usuários ilimitados na mesma conta empresarial.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Preciso de cartão para o plano gratuito?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Não! O plano Gratuito não exige nenhum dado de pagamento. Basta criar sua conta e começar a usar imediatamente.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Quais formas de pagamento são aceitas?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Aceitamos PIX, cartão de crédito (Visa, Mastercard, Elo) em até 3x sem juros, e boleto bancário para o plano anual.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Os dados da minha loja ficam seguros?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Sim! Utilizamos criptografia de ponta a ponta e seus dados nunca são compartilhados com terceiros. Conformidade total com a LGPD.</div>
-      </div>
-
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-item__q">Existe suporte para configuração inicial?<span class="faq-item__arrow">▼</span></div>
-        <div class="faq-item__a">Todos os planos pagos incluem onboarding guiado. O Premium conta com suporte prioritário 24h via chat e e-mail dedicado.</div>
-      </div>
-
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Posso cancelar a qualquer momento?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Sim! Cancele quando quiser, sem multa ou taxa. O acesso permanece ativo até o fim do período já pago.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Como funciona o plano anual?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Você paga de uma vez e economiza 20% em relação ao mensal. O acesso é liberado imediatamente por 12 meses completos.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Posso mudar de plano depois?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Sim! Upgrade ou downgrade a qualquer momento. O valor é ajustado proporcionalmente ao período restante.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Quantos colaboradores podem usar?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Gratuito: 1 usuário. Profissional: até 3 colaboradores. Premium: usuários ilimitados na mesma conta empresarial.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Preciso de cartão para o plano gratuito?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Não! O plano Gratuito não exige nenhum dado de pagamento. Basta criar sua conta e começar a usar imediatamente.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Quais formas de pagamento são aceitas?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Aceitamos PIX, cartão de crédito (Visa, Mastercard, Elo) em até 3x sem juros, e boleto bancário para o plano anual.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Os dados da minha loja ficam seguros?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Sim! Utilizamos criptografia de ponta a ponta e seus dados nunca são compartilhados com terceiros. Conformidade total com a LGPD.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-item__q">Existe suporte para configuração inicial?<span class="faq-item__arrow">▼</span></div><div class="faq-item__a">Todos os planos pagos incluem onboarding guiado. O Premium conta com suporte prioritário 24h via chat e e-mail dedicado.</div></div>
     </div>
   </section>
 
- 
+  <!-- CTA FINAL -->
   <div class="cta-final">
     <div class="cta-final__title">Pronto para crescer? 🚀</div>
-    <div class="cta-final__sub">
-      Junte-se a mais de 1.200 colaboradores que já usam<br>
-      nossa plataforma para vender mais e com mais controle.
-    </div>
+    <div class="cta-final__sub">Junte-se a mais de 1.200 colaboradores que já usam<br>nossa plataforma para vender mais e com mais controle.</div>
     <div class="cta-final__btns">
       <button class="btn-cta-gold" onclick="selectPlan('profissional')">👑 Assinar Profissional</button>
       <button class="btn-cta-ghost" onclick="selectPlan('gratuito')">Começar Grátis</button>
     </div>
   </div>
-
 </div>
+
+
+<footer class="site-footer">
+    <div class="footer-scallop"><svg width="100%" height="20" viewBox="0 0 1200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 Q30 0 60 20 Q90 0 120 20 Q150 0 180 20 Q210 0 240 20 Q270 0 300 20 Q330 0 360 20 Q390 0 420 20 Q450 0 480 20 Q510 0 540 20 Q570 0 600 20 Q630 0 660 20 Q690 0 720 20 Q750 0 780 20 Q810 0 840 20 Q870 0 900 20 Q930 0 960 20 Q990 0 1020 20 Q1050 0 1080 20 Q1110 0 1140 20 Q1170 0 1200 20" fill="#6b4332"/></svg></div>
+    <div class="footer-inner">
+        <div class="footer-col footer-brand"><a class="footer-logo" href="#">UniCake</a><nav class="footer-nav"><a href="../html/Sobre.html">Sobre</a><a href="#">Para você</a><a href="/html/ParaEmpresas.html">Para empresas</a><a href="../html/paginalojas.html">Lojas Cadastradas</a></nav></div>
+        <div class="footer-col"><h4>Categorias</h4><ul><li><a href="#">Bolos</a></li><li><a href="#">Cupcakes</a></li><li><a href="#">Tortas</a></li><li><a href="#">Doces Gourmet</a></li><li><a href="#">Cookies &amp; Brownies</a></li><li><a href="#">Kits Festa</a></li></ul></div>
+        <div class="footer-col"><h4>Atendimento</h4><ul><li><a href="#">Ajuda</a></li><li><a href="#">Suporte</a></li><li><a href="#">Central de Ajuda</a></li><li><a href="#">Política de Privacidade</a></li><li><a href="#">Termos de Uso</a></li></ul></div>
+        <div class="footer-col footer-mascot-col"><div class="footer-mascot"><svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg"><path d="M30 85 L35 125 L85 125 L90 85 Z" fill="#e07b9a"/><line x1="40" y1="87" x2="42" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="55" y1="86" x2="55" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="70" y1="86" x2="68" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="82" y1="87" x2="80" y2="123" stroke="#c96685" stroke-width="1.2"/><path d="M25 85 Q35 60 45 78 Q52 62 60 73 Q68 58 75 75 Q83 60 95 85 Z" fill="#f5d6de"/><circle cx="48" cy="77" r="2.5" fill="#4b2e2b"/><circle cx="68" cy="77" r="2.5" fill="#4b2e2b"/><path d="M53 82 Q58 88 63 82" fill="none" stroke="#4b2e2b" stroke-width="1.8" stroke-linecap="round"/><circle cx="42" cy="80" r="4" fill="#f0a0b0" opacity=".4"/><circle cx="74" cy="80" r="4" fill="#f0a0b0" opacity=".4"/><circle cx="58" cy="58" r="7" fill="#e85880"/><path d="M58 51 Q56 42 62 38" fill="none" stroke="#4a7c3f" stroke-width="2"/><ellipse cx="64" cy="38" rx="5" ry="3" fill="#6aad4f"/></svg></div></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 UniCake — Todos os direitos reservados.</p></div>
+</footer>
+
 
 <div class="overlay" id="overlay">
   <div class="overlay-box">
@@ -275,8 +228,6 @@
     <span class="overlay-box__back" onclick="closeOverlay()">Voltar aos planos</span>
   </div>
 </div>
-
-
 <div class="toast" id="toast"></div>
 
 <script src="/js/ParaEmpresas.js"></script>

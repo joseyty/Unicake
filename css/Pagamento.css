@@ -1,0 +1,452 @@
+ :root {
+      --brown: #3e2010;
+      --brown2: #5c3518;
+      --beige: #f5ead8;
+      --pale: #a0785a;
+      --pink: #e07b9a;
+      --sand: #c9a882;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #f5ead8 0%, #e8d5b8 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .checkout-container {
+      max-width: 900px;
+      margin: 60px auto 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    
+    .order-summary {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 32px rgba(62, 32, 16, 0.12);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .summary-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--brown);
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .plan-info {
+      background: linear-gradient(135deg, #fef9f3 0%, #f5ead8 100%);
+      border: 2px solid #e8d5b8;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .plan-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .plan-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+
+    .plan-desc {
+      font-size: 0.9rem;
+      color: var(--pale);
+      margin-bottom: 16px;
+    }
+
+    .plan-features {
+      font-size: 0.85rem;
+      color: var(--brown);
+      line-height: 1.6;
+      list-style: none;
+    }
+
+    .plan-features li {
+      margin-bottom: 8px;
+    }
+
+    .plan-features li::before {
+      content: "✓ ";
+      color: #2ecc71;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .summary-divider {
+      border-top: 1.5px dashed #e0d5c7;
+      margin: 20px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--brown);
+    }
+
+    .summary-value {
+      color: var(--brown);
+      font-weight: 600;
+    }
+
+    .summary-row.discount .summary-value {
+      color: #2ecc71;
+    }
+
+   
+    .payment-form {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 32px rgba(62, 32, 16, 0.12);
+    }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--brown);
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .form-section {
+      margin-bottom: 28px;
+    }
+
+    .section-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--brown);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0d5c7;
+      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      color: var(--brown);
+      transition: all 0.2s;
+    }
+
+    .form-group input::placeholder {
+      color: #c9a882;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--pink);
+      background: rgba(224, 123, 154, 0.05);
+      box-shadow: 0 0 0 3px rgba(224, 123, 154, 0.1);
+    }
+
+    .form-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+   
+    .payment-methods {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .payment-method {
+      position: relative;
+    }
+
+    .payment-method input[type="radio"] {
+      display: none;
+    }
+
+    .payment-method-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 12px;
+      border: 2px solid #e0d5c7;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .payment-method input[type="radio"]:checked + .payment-method-label {
+      border-color: var(--pink);
+      background: rgba(224, 123, 154, 0.08);
+    }
+
+    .payment-method-label:hover {
+      border-color: var(--pink);
+    }
+
+    .payment-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .payment-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brown);
+      text-align: center;
+    }
+
+    
+    .card-details {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1.5px dashed #e0d5c7;
+    }
+
+    .card-details.active {
+      display: block;
+    }
+
+    .card-preview {
+      background: linear-gradient(135deg, var(--brown2) 0%, var(--brown) 100%);
+      border-radius: 12px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 20px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-logo {
+      width: 50px;
+      text-align: right;
+      font-size: 1.2rem;
+    }
+
+    .card-number {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 12px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-holder {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+
+    .card-holder-name {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-expiry {
+      text-align: right;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    
+    .terms-box {
+      display: flex;
+      gap: 12px;
+      margin: 24px 0;
+      background: rgba(224, 123, 154, 0.08);
+      padding: 14px;
+      border-radius: 8px;
+      border-left: 4px solid var(--pink);
+    }
+
+    .terms-box input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--pink);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .terms-text {
+      font-size: 0.85rem;
+      color: var(--brown);
+      line-height: 1.5;
+    }
+
+    .terms-text a {
+      color: var(--pink);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .terms-text a:hover {
+      text-decoration: underline;
+    }
+
+   
+    .btn-checkout {
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--pink) 0%, #d46a8a 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 24px;
+      box-shadow: 0 4px 16px rgba(224, 123, 154, 0.3);
+    }
+
+    .btn-checkout:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(224, 123, 154, 0.4);
+    }
+
+    .btn-checkout:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-checkout:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--brown);
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 20px;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover {
+      color: var(--pink);
+    }
+
+    
+    @media (max-width: 768px) {
+      .checkout-container {
+        grid-template-columns: 1fr;
+      }
+
+      .order-summary {
+        position: static;
+      }
+
+      .payment-methods {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      display: hidden;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      color: #2ecc71;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
