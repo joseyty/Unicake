@@ -1,67 +1,23 @@
-.btn-novo {
-  position: relative;
+.btn-empresas {
   display: inline-block;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  padding: 10px 20px;
+  background: #FFD84D; /* amarelo suave */
+  color: #000;
+  font-weight: 600;
   border-radius: 8px;
   text-decoration: none;
-  overflow: hidden;
-  transition: 0.3s;
-}
-
-/* brilho passando */
-.btn-novo::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.7), transparent);
-  transform: skewX(-20deg);
-  animation: brilho 2.5s infinite;
-}
-
-/* borda animada */
-.btn-novo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(90deg, transparent, white, transparent) border-box;
-  animation: borda 2s linear infinite;
-}
-
-/* selo NOVO */
-.btn-novo span {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #fff;
-  color: #c0392b;
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 5px;
-  font-weight: bold;
-}
-
-/* animações */
-@keyframes brilho {
-  0% { left: -100%; }
-  100% { left: 150%; }
-}
-
-@keyframes borda {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
+  font-family: sans-serif;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
 }
 
 /* hover */
-.btn-novo:hover {
-  transform: scale(1.05);
+.btn-empresas:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+/* clique */
+.btn-empresas:active {
+  transform: scale(0.98);
 }
