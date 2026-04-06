@@ -144,28 +144,7 @@ body {
             color: var(--pink);
             font-weight: 600;
         }
-   nav.menu {
-            display: flex;
-            gap: 26px;
-            margin-left: auto;
-        }
-        nav.menu a {
-            text-decoration: none;
-            font-size: .84rem;
-            color: #3e2010;
-            position: relative;
-            transition: color .2s;
-        }
-        nav.menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px; left: 0;
-            width: 0; height: 1.5px;
-            background: var(--brown);
-            transition: width .25s;
-        }
-        nav.menu a:hover { color: var(--brown); }
-        nav.menu a:hover::after { width: 100%; }
+
 
         .actions { display: flex; align-items: center; gap: 8px; }
 
