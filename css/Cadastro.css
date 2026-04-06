@@ -316,7 +316,7 @@
       font-weight: 600 !important;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(80, 40, 10, 0.3) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
       transition: all 0.3s ease !important;
       display: inline-flex;
       align-items: center;
@@ -338,7 +338,7 @@
 
     .btn-empresas-small:hover {
       transform: translateY(-3px) !important;
-      box-shadow: 0 8px 20px rgba(255, 199, 0, 0.5) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
       color: #1a0f0a !important;
     }
 
