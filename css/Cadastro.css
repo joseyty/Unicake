@@ -309,14 +309,14 @@
     }
 
     .btn-empresas-small {
-      background: linear-gradient(135deg, #FFD700 0%, #d4a070 50%, #c08050 100%) !important;
+      background: linear-gradient(135deg, #d4a070 0%, #c08050 100%) !important;
       color: #2c1810 !important;
       padding: 6px 12px !important;
       border-radius: 20px !important;
       font-weight: 600 !important;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(255, 199, 0, 0.3) !important;
+      box-shadow: 0 4px 12px rgba(80, 40, 10, 0.3) !important;
       transition: all 0.3s ease !important;
       display: inline-flex;
       align-items: center;
