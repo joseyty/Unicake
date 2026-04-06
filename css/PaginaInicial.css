@@ -174,15 +174,18 @@ body {
 
         /* Botão Para Empresas Especial */
         .btn-empresas {
-            .btn-destaque {
-             background-color: #FFC107;
-             color: #000;
-             padding: 12px 25px;
-             border-radius: 12px;
-             text-decoration: none;
-             font-weight: 600;
-             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%) !important;
+            color: #2c1810 !important;
+            padding: 9px 10px !important;
+            border-radius: 20px !important;
+            font-weight: 600 !important;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(255, 199, 0, 0.3) !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-empresas::before {
