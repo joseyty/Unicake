@@ -1,11 +1,15 @@
-.btn-shimmer {
-  position: relative;
-  overflow: hidden;
-  padding: 10px 20px;
-  background: #c0392b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsla(0, 0%, 100%, 0.4), transparent);
+  animation: shimmer 2.5s ease-in-out infinite;
 }
