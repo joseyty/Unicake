@@ -146,20 +146,22 @@ body {
         }
    nav.menu {
             display: flex;
-            gap: 26px;
+            gap: 16px;
             margin-left: auto;
             align-items: center;
             height: 100%;
         }
         nav.menu a {
             text-decoration: none;
-            font-size: .84rem;
+            font-size: .78rem;
             color: #3e2010;
             position: relative;
             transition: color .2s;
             display: flex;
             align-items: center;
-            height: 100%;
+            height: 32px;
+            padding: 0 8px;
+            border-radius: 12px;
         }
         nav.menu a::after {
             content: '';
@@ -176,12 +178,14 @@ body {
         .btn-empresas {
             background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%) !important;
             color: #2c1810 !important;
-            padding: 9px 18px !important;
-            border-radius: 20px !important;
-            font-weight: 600 !important;
+            padding: 1px 8px !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            font-size: 0.82rem !important;
+            min-height: 28px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(255, 199, 0, 0.3) !important;
+            box-shadow: 0 2px 8px rgba(255, 199, 0, 0.18) !important;
             transition: all 0.3s ease !important;
             display: inline-flex;
             align-items: center;

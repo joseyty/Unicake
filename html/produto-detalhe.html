@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Produto — UniCake</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/produto-detalhe.css">
+</head>
+<body>
+
+<header class="header" id="mainHeader">
+  <a class="logo" href="../html/index.html">UniCake</a>
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Busque por item ou loja" />
+  </div>
+  <nav class="menu">
+    <a href="../html/Sobre.html">Sobre</a>
+    <a href="#">Para você</a>
+    <a href="../html/ParaEmpresas.html" class="btn-empresas">Para empresas</a>
+    <a href="../html/paginalojas.html">Lojas Cadastradas</a>
+  </nav>
+  <div class="actions">
+    <div class="header-right">
+      <div class="btn-group">
+        <div class="btn-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="btn-stack">
+          <a href="Entrar.html">Entrar</a>
+        </div>
+      </div>
+    </div>
+    <button class="cart-btn" id="cartBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<main class="produto-page">
+  <div class="breadcrumb">
+    <a href="../html/index.html">Home</a>
+    <span>/</span>
+    <a href="#" id="lojaLink">Loja</a>
+    <span>/</span>
+    <span id="produtoMiga">Produto</span>
+  </div>
+
+  <div class="container-produto">
+    <section class="produto-gallery">
+      <div class="gallery-main">
+        <div class="produto-img-grande" id="produtoImgGrande">🍰</div>
+      </div>
+    </section>
+
+    <section class="produto-info">
+      <div class="product-header">
+        <h1 id="produtoNome">Carregando...</h1>
+        <div class="product-rating">
+          <span id="produtoRating">★★★★★</span>
+          <span id="produtoScore">(4.8)</span>
+        </div>
+      </div>
+
+      <div class="product-price-section">
+        <div class="price-display">
+          <span class="preco-atual" id="precoAtual">R$ 0.00</span>
+          <span class="tempo-entrega">⏱️ Tempo médio: <span id="tempoEntrega">30-45min</span></span>
+        </div>
+      </div>
+
+      <div class="product-description">
+        <p id="produtoDesc">Descrição do produto...</p>
+      </div>
+
+      <div class="opcoes-container">
+        <!-- Opções dinâmicas -->
+        <div id="opcoesContainer"></div>
+      </div>
+
+      <div class="quantidade-section">
+        <label>Quantidade</label>
+        <div class="qtd-controls">
+          <button class="qtd-btn" id="decremento">−</button>
+          <input type="number" id="quantidade" value="1" min="1">
+          <button class="qtd-btn" id="incremento">+</button>
+        </div>
+      </div>
+
+      <div class="resumo-pedido">
+        <div class="resumo-item">
+          <span>Subtotal:</span>
+          <span id="subtotal">R$ 0.00</span>
+        </div>
+        <div class="resumo-item">
+          <span>Taxa Entrega:</span>
+          <span id="taxaEntrega">R$ 5.00</span>
+        </div>
+        <div class="resumo-item total">
+          <span>Total:</span>
+          <span id="totalPrice">R$ 0.00</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-add-cart" id="addCartBtn">Adicionar ao Carrinho</button>
+        <button class="btn-buy-now">Comprar Agora</button>
+      </div>
+
+      <div class="loja-info-card">
+        <h3>Vendido por</h3>
+        <p id="vendidoPor" class="loja-nome">Carregando...</p>
+        <p id="lojaDescurto" class="loja-desc">Descrição da loja</p>
+        <a href="#" id="irLojaBtn" class="btn-ir-loja">Ir para Loja</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-scallop"><svg width="100%" height="20" viewBox="0 0 1200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 Q30 0 60 20 Q90 0 120 20 Q150 0 180 20 Q210 0 240 20 Q270 0 300 20 Q330 0 360 20 Q390 0 420 20 Q450 0 480 20 Q510 0 540 20 Q570 0 600 20 Q630 0 660 20 Q690 0 720 20 Q750 0 780 20 Q810 0 840 20 Q870 0 900 20 Q930 0 960 20 Q990 0 1020 20 Q1050 0 1080 20 Q1110 0 1140 20 Q1170 0 1200 20" fill="#6b4332"/></svg></div>
+    <div class="footer-inner">
+        <div class="footer-col footer-brand"><a class="footer-logo" href="#">UniCake</a><nav class="footer-nav"><a href="../html/Sobre.html">Sobre</a><a href="#">Para você</a><a href="/html/ParaEmpresas.html">Para empresas</a><a href="../html/paginalojas.html">Lojas Cadastradas</a></nav></div>
+        <div class="footer-col"><h4>Categorias</h4><ul><li><a href="#">Bolos</a></li><li><a href="#">Cupcakes</a></li><li><a href="#">Tortas</a></li><li><a href="#">Doces Gourmet</a></li><li><a href="#">Cookies & Brownies</a></li><li><a href="#">Kits Festa</a></li></ul></div>
+        <div class="footer-col"><h4>Atendimento</h4><ul><li><a href="#">Ajuda</a></li><li><a href="#">Suporte</a></li><li><a href="#">Central de Ajuda</a></li><li><a href="#">Política de Privacidade</a></li><li><a href="#">Termos de Uso</a></li></ul></div>
+        <div class="footer-col footer-mascot-col"><div class="footer-mascot"><svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg"><path d="M30 85 L35 125 L85 125 L90 85 Z" fill="#e07b9a"/><line x1="40" y1="87" x2="42" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="55" y1="86" x2="55" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="70" y1="86" x2="68" y2="123" stroke="#c96685" stroke-width="1.2"/><line x1="82" y1="87" x2="80" y2="123" stroke="#c96685" stroke-width="1.2"/><path d="M25 85 Q35 60 45 78 Q52 62 60 73 Q68 58 75 75 Q83 60 95 85 Z" fill="#f5d6de"/><circle cx="48" cy="77" r="2.5" fill="#4b2e2b"/><circle cx="68" cy="77" r="2.5" fill="#4b2e2b"/><path d="M53 82 Q58 88 63 82" fill="none" stroke="#4b2e2b" stroke-width="1.8" stroke-linecap="round"/><circle cx="42" cy="80" r="4" fill="#f0a0b0" opacity=".4"/><circle cx="74" cy="80" r="4" fill="#f0a0b0" opacity=".4"/><circle cx="58" cy="58" r="7" fill="#e85880"/><path d="M58 51 Q56 42 62 38" fill="none" stroke="#4a7c3f" stroke-width="2"/><ellipse cx="64" cy="38" rx="5" ry="3" fill="#6aad4f"/></svg></div></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 UniCake — Todos os direitos reservados.</p></div>
+</footer>
+
+<script src="../js/produto-detalhe.js"></script>
+</body>
+</html>

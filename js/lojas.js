@@ -66,7 +66,7 @@ function renderLojas(lista) {
           </div>
           <p>${l.desc}</p>
           <p style="font-size:.75rem;color:#9e7a62;margin:0 0 12px;">📍 ${l.endereco}</p>
-          <a href="#" class="btn">Ver cardápio</a>
+          <a href="loja-detalhe.html?id=${i+1}" class="btn">Ver cardápio</a>
         </div>
       </div>`).join('');
 }
