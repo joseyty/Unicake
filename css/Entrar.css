@@ -254,6 +254,9 @@
 
   
     .btn-primary {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
       width: 100%;
       padding: 13px;
       border: none;
@@ -264,11 +267,16 @@
       font-weight: 800;
       color: var(--color-white);
       cursor: pointer;
+      text-decoration: none;
       letter-spacing: 0.3px;
       box-shadow:
         0 4px 14px rgba(160, 80, 20, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
       transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .seller-login {
+      margin: 16px 0 10px;
     }
 
     .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(160, 80, 20, 0.5); }
