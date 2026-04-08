@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Vendedor</title>
+  <link rel="stylesheet" href="../css/PainelVendedor.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="left-panel">
+      <div class="brand-panel">
+        <p class="brand-label">UniCake</p>
+        <h1 class="brand-title">Painel do Vendedor</h1>
+        <p class="brand-copy">Espaço exclusivo para confeiteiros cadastrados exibirem e gerenciarem seus produtos.</p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-card">
+          <span>🍰</span>
+          <span>🧁</span>
+          <span>☕</span>
+        </div>
+      </div>
+
+      <div class="brand-footer">
+        <p>Somente vendedores cadastrados podem acessar este painel. Faça login e adicione seus produtos com segurança.</p>
+      </div>
+    </div>
+
+    <main class="right-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Acesso Restrito</p>
+          <h2>Olá, vendedor!</h2>
+          <p class="subtitle">Use o formulário abaixo para cadastrar produtos que aparecerão para seus clientes.</p>
+        </div>
+        <button id="logoutBtn" class="btn-secondary">Sair</button>
+      </div>
+
+      <section class="card section-products">
+        <div class="section-header">
+          <h3>Meus produtos</h3>
+          <span class="badge" id="productCount">0</span>
+        </div>
+        <div class="products-grid" id="productGrid"></div>
+      </section>
+
+      <section class="card section-form">
+        <div class="section-header">
+          <h3>Cadastrar novo produto</h3>
+        </div>
+        <form id="productForm" autocomplete="off">
+          <div class="field-row">
+            <label for="nomeProduto">Nome do produto</label>
+            <input id="nomeProduto" name="nomeProduto" type="text" placeholder="Bolo de chocolate" required />
+          </div>
+
+          <div class="field-row">
+            <label for="categoriaProduto">Categoria</label>
+            <select id="categoriaProduto" name="categoriaProduto" required>
+              <option value="">Selecione</option>
+              <option value="Bolos">Bolos</option>
+              <option value="Doces">Doces</option>
+              <option value="Cupcakes">Cupcakes</option>
+              <option value="Salgados">Salgados</option>
+              <option value="Bebidas">Bebidas</option>
+            </select>
+          </div>
+
+          <div class="field-row field-group">
+            <div>
+              <label for="precoProduto">Preço</label>
+              <input id="precoProduto" name="precoProduto" type="number" min="0" step="0.01" placeholder="120.00" required />
+            </div>
+            <div>
+              <label for="imagemProduto">Imagem (URL)</label>
+              <input id="imagemProduto" name="imagemProduto" type="url" placeholder="https://..." />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label for="descricaoProduto">Descrição</label>
+            <textarea id="descricaoProduto" name="descricaoProduto" rows="3" placeholder="Um doce irresistível..." required></textarea>
+          </div>
+
+          <button class="btn-primary" type="submit">Adicionar produto</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="../js/PainelVendedor.js"></script>
+</body>
+</html>

@@ -94,9 +94,13 @@ btnEntrar.addEventListener('click', async () => {
 
   // Verifica credenciais
   if (ev === MOCK_EMAIL && sv === MOCK_SENHA) {
+    localStorage.setItem('unicakeSellerAuth', JSON.stringify({ logged: true, email: ev }));
     showToast('✓ Login realizado com sucesso!', 'success');
     emailInput.value = '';
     senhaInput.value = '';
+    setTimeout(() => {
+      window.location.href = 'PainelVendedor.html';
+    }, 900);
   } else {
     showToast('✗ E-mail ou senha incorretos.', 'error');
     setField(fieldEmail, false);
