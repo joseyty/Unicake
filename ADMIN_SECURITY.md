@@ -16,8 +16,8 @@
 
 1. Acesse `html/AdminLogin.html`
 2. Use as credenciais:
-   - Email: `admin@unicake.com`
-   - Senha: `admin123`
+   - Email: `Adsensemir4#@autonance.com`
+   - Senha: `#!@nsugettademo4`
 3. Digite o código 2FA (verifique o console do navegador para o código demo)
 
 ## Funcionalidades

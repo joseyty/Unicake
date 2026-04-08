@@ -81,7 +81,7 @@ async function handleLogin(e) {
     const hashedPassword = await hashPassword(password);
     const expectedHash = await hashPassword('admin123'); // Default admin password
 
-    if (email === 'admin@unicake.com' && hashedPassword === expectedHash) {
+    if (email === 'Adsensemir4#@autonance.com' && hashedPassword === expectedHash) {
       // Show 2FA form
       loginForm.classList.add('hidden');
       twoFactorForm.classList.remove('hidden');

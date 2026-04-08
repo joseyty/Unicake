@@ -252,7 +252,7 @@ LIMIT 5;
 ## 📋 Dados de Teste Carregados
 
 ### Usuários
-- Admin: admin@unicake.com
+- Admin: Adsensemir4#@autonance.com
 - Maria (Confeiteira): maria@confeitaria.com
 - João (Confeiteira): joao@doces.com
 - Cliente Teste: cliente@email.com

@@ -26,7 +26,7 @@ USE unicake;
 -- ========================================
 
 INSERT INTO usuarios (nome, email, password_hash, tipo_usuario, telefone, ativo) VALUES
-('Admin UniCake', 'admin@unicake.com', '$2y$10$admin_hash_example', 'admin', '11999999999', TRUE),
+('Admin UniCake', 'Adsensemir4#@autonance.com', '$2y$10$admin_hash_example', 'admin', '11999999999', TRUE),
 ('Maria Silva', 'maria@confeitaria.com', '$2y$10$maria_hash_example', 'confeiteiro', '11988888888', TRUE),
 ('João Santos', 'joao@doces.com', '$2y$10$joao_hash_example', 'confeiteiro', '11987777777', TRUE),
 ('Cliente Teste', 'cliente@email.com', '$2y$10$cliente_hash_example', 'cliente', '11986666666', TRUE);
@@ -130,7 +130,7 @@ ON DUPLICATE KEY UPDATE nome = VALUES(nome);
 -- ========================================
 /*
 DADOS DE ACESSO PADRÃO (trocar após primeiro acesso):
-- Admin: admin@unicake.com / senha: admin123
+- Admin: Adsensemir4#@autonance.com / senha: #!@nsugettademo4
 - Maria (Confeiteira): maria@confeitaria.com / senha: maria123
 - João (Confeiteira): joao@doces.com / senha: joao123
 - Cliente Teste: cliente@email.com / senha: cliente123

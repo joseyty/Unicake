@@ -20,7 +20,7 @@ async function verifyPassword(password, hash) {
 
 // Mock admin credentials (hashed)
 const ADMIN_CREDENTIALS = {
-  email: 'admin@unicake.com',
+  email: 'Adsensemir4#@autonance.com',
   passwordHash: 'hashed_password_here' // Will be set on init
 };
 
@@ -38,7 +38,7 @@ let currentEditType = null;
 
 // Initialize admin password hash
 async function initAdminHash() {
-  ADMIN_CREDENTIALS.passwordHash = await hashPassword('admin123'); // Default password
+  ADMIN_CREDENTIALS.passwordHash = await hashPassword('#!@nsugettademo4'); // Admin password
 }
 
 // Check authentication with session timeout
