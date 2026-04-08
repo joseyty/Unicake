@@ -7,19 +7,19 @@
    
     :root {
     
-      --color-bg:           #b5845a;
-      --color-card:         #c9906a;
-      --color-field-bg:     #e8c9a8;
-      --color-field-border: #d4a97a;
+      --color-bg:           #c8a882;
+      --color-card:         #d4a96a;
+      --color-field-bg:     #f5ede0;
+      --color-field-border: #c4a07a;
 
      
-      --color-text-dark:    #4a2e1a;
-      --color-text-label:   #5c3820;
-      --color-text-hint:    #9e6c44;
+      --color-text-dark:    #4a2c0a;
+      --color-text-label:   #6b3d12;
+      --color-text-hint:    #b8956a;
 
       
-      --color-btn-from:     #d4894a;
-      --color-btn-to:       #b8622a;
+      --color-btn-from:     #7a4f2e;
+      --color-btn-to:       #5c3518;
 
       
       --color-icon:         #8b5a35;
