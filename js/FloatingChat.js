@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     sendMessageFromInput();
   });
 
+  // Enviar mensagem ao pressionar Enter
+  chatInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      sendMessageFromInput();
+    }
+  });
+
   // Posição inicial
   loadChatState();
 });
@@ -100,8 +107,23 @@ function sendMessage(message) {
   // Scroll para a última mensagem
   chatMessages.scrollTop = chatMessages.scrollHeight;
   
-  // Simular resposta do bot após 1 segundo
-  setTimeout(() => {
+  // Tentar enviar para o backend
+  sendToBackend(message).then(response => {
+    // Resposta do backend
+    const botMessageDiv = document.createElement('div');
+    botMessageDiv.className = 'chat-message bot-message';
+    botMessageDiv.innerHTML = `
+      <p>${response}</p>
+      <span class="message-time">${getCurrentTime()}</span>
+    `;
+    chatMessages.appendChild(botMessageDiv);
+    
+    // Scroll para a última mensagem
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }).catch(error => {
+    console.error('Erro ao enviar para backend:', error);
+    
+    // Fallback para resposta automática local
     const botResponse = getBotResponse(message);
     const botMessageDiv = document.createElement('div');
     botMessageDiv.className = 'chat-message bot-message';
@@ -113,7 +135,33 @@ function sendMessage(message) {
     
     // Scroll para a última mensagem
     chatMessages.scrollTop = chatMessages.scrollHeight;
-  }, 1000);
+  });
+}
+
+// Enviar mensagem para o backend
+async function sendToBackend(message) {
+  try {
+    const response = await fetch('http://localhost:3001/api/chat/send-message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: message,
+        user_name: getUserName(),
+        user_email: getUserEmail()
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro na resposta do servidor');
+    }
+
+    const data = await response.json();
+    return data.response;
+  } catch (error) {
+    throw error;
+  }
 }
 
 // Funções utilitárias
