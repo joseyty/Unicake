@@ -212,6 +212,34 @@ button, input, select, textarea {
   gap: 12px;
 }
 
+.product-card {
+  grid-template-columns: 100px 1fr;
+  align-items: start;
+}
+
+.product-image {
+  width: 100%;
+  min-width: 100px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f7f1ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-content {
+  display: grid;
+  gap: 10px;
+}
+
 .product-card strong {
   display: block;
   font-size: 0.98rem;
@@ -231,6 +259,16 @@ button, input, select, textarea {
   margin: 0;
   line-height: 1.6;
   color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 .field-row {

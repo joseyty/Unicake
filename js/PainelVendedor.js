@@ -13,7 +13,8 @@ const starterProducts = [
     nome: 'Bolo de Chocolate Belga',
     categoria: 'Bolos',
     preco: 145.9,
-    descricao: 'Bolo recheado com ganache e toques de caramelo.'
+    descricao: 'Bolo recheado com ganache e toques de caramelo.',
+    imagem: ''
   },
   {
     id: 2,
@@ -77,16 +78,27 @@ function renderProducts(products) {
     return;
   }
 
-  productGrid.innerHTML = products.map(product => `
-    <article class="product-card">
-      <strong>${product.nome}</strong>
-      <div class="meta">
-        <span>${product.categoria}</span>
-        <span>${formatPrice(product.preco)}</span>
-      </div>
-      <p>${product.descricao}</p>
-    </article>
-  `).join('');
+  productGrid.innerHTML = products.map(product => {
+    const imageUrl = product.imagem && product.imagem.trim() !== ''
+      ? product.imagem
+      : '../img/fatia-bolo-png-removebg-preview.png';
+
+    return `
+      <article class="product-card">
+        <div class="product-image">
+          <img src="${imageUrl}" alt="${product.nome}" onerror="this.src='../img/fatia-bolo-png-removebg-preview.png'" />
+        </div>
+        <div class="product-content">
+          <strong>${product.nome}</strong>
+          <div class="meta">
+            <span>${product.categoria}</span>
+            <span>${formatPrice(product.preco)}</span>
+          </div>
+          <p>${product.descricao}</p>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
 
 function handleSubmit(event) {
@@ -95,6 +107,7 @@ function handleSubmit(event) {
   const nome = document.getElementById('nomeProduto').value.trim();
   const categoria = document.getElementById('categoriaProduto').value;
   const preco = Number(document.getElementById('precoProduto').value);
+  const imagem = document.getElementById('imagemProduto').value.trim();
   const descricao = document.getElementById('descricaoProduto').value.trim();
 
   if (!nome || !categoria || !preco || preco <= 0 || !descricao) {
@@ -108,6 +121,7 @@ function handleSubmit(event) {
     nome,
     categoria,
     preco,
+    imagem,
     descricao
   };
 
