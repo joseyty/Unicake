@@ -270,10 +270,38 @@
   </div>
 
   <script>
+    const ADMIN_AUTH_KEY = 'unicakeAdminAuth';
     let currentTab = 'pending';
+
+    function isAdminAuthenticated() {
+      try {
+        const auth = localStorage.getItem(ADMIN_AUTH_KEY);
+        if (!auth) return false;
+        const authData = JSON.parse(auth);
+        const now = Date.now();
+        const sessionDuration = 2 * 60 * 60 * 1000; // 2 horas
+        if (authData.logged && (now - authData.loginTime) < sessionDuration) {
+          return true;
+        }
+        localStorage.removeItem(ADMIN_AUTH_KEY);
+        return false;
+      } catch {
+        return false;
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = 'html/AdminLogin.html';
+    }
 
     // Carregar mensagens ao iniciar
     document.addEventListener('DOMContentLoaded', function() {
+      if (!isAdminAuthenticated()) {
+        alert('Acesso restrito: faça login como administrador.');
+        redirectToLogin();
+        return;
+      }
+
       loadMessages();
       loadStats();
 

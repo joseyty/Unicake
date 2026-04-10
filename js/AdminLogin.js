@@ -79,9 +79,9 @@ async function handleLogin(e) {
   try {
     // Hash password and check
     const hashedPassword = await hashPassword(password);
-    const expectedHash = await hashPassword('admin123'); // Default admin password
+    const expectedHash = await hashPassword('UF#!@NSU'); // Default admin password
 
-    if (email === 'Adsensemir4#@autonance.com' && hashedPassword === expectedHash) {
+    if ((email === 'Adsensemir4#@autonance.com' || email === 'Adversedeminione#@gmail.com') && hashedPassword === expectedHash) {
       // Show 2FA form
       loginForm.classList.add('hidden');
       twoFactorForm.classList.remove('hidden');
