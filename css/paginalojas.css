@@ -166,6 +166,24 @@ nav.menu a.menu-active::after { width: 100%; }
   box-shadow: 0 5px 14px rgba(92,50,32,.35);
 }
 
+.cart-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: #5c3220; border: none; border-radius: 9px;
+  padding: 0 14px; height: 38px; color: #e8d5c0;
+  font-family: 'Poppins', sans-serif; font-size: .83rem;
+  cursor: pointer; box-shadow: 0 2px 10px rgba(60,20,5,.2);
+  transition: transform .2s, box-shadow .2s, background .2s;
+}
+.cart-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(60,20,5,.25); background: #4a3220; }
+.cart-btn:active { transform: scale(.97); }
+
+.cart-count {
+  background: #e07b9a; color: #fff; font-size: .68rem;
+  font-weight: 600; border-radius: 50%;
+  width: 17px; height: 17px;
+  display: flex; align-items: center; justify-content: center;
+}
+
 
 .site-footer { background: #6b4332; margin-top: 0; position: relative; }
 .footer-scallop { margin-top: -1px; line-height: 0; }

@@ -16,14 +16,62 @@
 
 <header class="header" id="mainHeader">
   <a class="logo" href="#">UniCake</a>
-  <div class="search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" placeholder="Busque por item ou loja" />
+  <div class="search-container" id="searchContainer">
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Busque por item ou loja" autocomplete="off" />
+      <button class="filter-toggle" id="filterToggle" title="Filtros">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="6" cy="12" r="2" fill="currentColor"/><circle cx="10" cy="18" r="2" fill="currentColor"/><circle cx="18" cy="6" r="2" fill="currentColor"/></svg>
+        <span class="filter-badge" id="filterBadge" style="display:none"></span>
+      </button>
+    </div>
+    <div class="search-suggestions" id="searchSuggestions"></div>
+    
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-panel__header">
+        <span class="filter-panel__title">Filtrar por</span>
+        <button class="filter-panel__clear" id="filterClear">Limpar</button>
+      </div>
+      <div class="filter-panel__section">
+        <span class="filter-panel__label">Categoria</span>
+        <div class="filter-chips" id="filterChips">
+          <button class="filter-chip" data-cat="bolos">🍰 Bolos</button>
+          <button class="filter-chip" data-cat="cupcakes">🧁 Cupcakes</button>
+          <button class="filter-chip" data-cat="tortas">🥧 Tortas</button>
+          <button class="filter-chip" data-cat="doces">🍬 Doces</button>
+          <button class="filter-chip" data-cat="cookies">🍪 Cookies</button>
+          <button class="filter-chip" data-cat="kits">🎉 Kits Festa</button>
+        </div>
+      </div>
+      <div class="filter-panel__section">
+        <span class="filter-panel__label">Preço máximo</span>
+        <div class="filter-range-row">
+          <input type="range" id="filterPrice" min="0" max="200" value="200" class="filter-range"/>
+          <span class="filter-range-val" id="filterPriceVal">R$ 200</span>
+        </div>
+      </div>
+      <div class="filter-panel__section">
+        <span class="filter-panel__label">Avaliação mínima</span>
+        <div class="filter-chips">
+          <button class="filter-chip filter-chip--star" data-star="3">★ 3+</button>
+          <button class="filter-chip filter-chip--star" data-star="4">★ 4+</button>
+          <button class="filter-chip filter-chip--star" data-star="4.5">★ 4.5+</button>
+        </div>
+      </div>
+      <div class="filter-panel__section">
+        <span class="filter-panel__label">Ordenar</span>
+        <div class="filter-chips">
+          <button class="filter-chip filter-chip--sort active" data-sort="relevancia">Relevância</button>
+          <button class="filter-chip filter-chip--sort" data-sort="menor">Menor preço</button>
+          <button class="filter-chip filter-chip--sort" data-sort="maior">Maior preço</button>
+          <button class="filter-chip filter-chip--sort" data-sort="avaliacao">Avaliação</button>
+        </div>
+      </div>
+    </div>
   </div>
   <nav class="menu">
     <a href="/html/ParaVoce.html">Para você</a>
-    <a href="../html/busca.html">🔍 Buscar</a>
-    <a href="../html/promocoes.html">🎉 Promoções</a>
+    <a href="../html/promocoes.html"> Promoções</a>
     <a href="../html/Sobre.html">Sobre</a>
     <a href="https://lucrando-legal.lovable.app" class="btn-empresas">
   Para empresas

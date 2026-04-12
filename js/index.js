@@ -161,71 +161,292 @@ const CAKES = [
     cRenderCakes();
     cRenderCart();
 
-     
-    const searchInput = document.getElementById('searchInput');
-    const searchSuggestions = document.getElementById('searchSuggestions');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const query = this.value.trim().toLowerCase();
-            
-            if (query.length === 0) {
-                searchSuggestions.classList.remove('show');
-                searchSuggestions.innerHTML = '';
-                return;
-            }
-            
-            
-            const results = CAKES.filter(cake => 
-                cake.name.toLowerCase().includes(query)
-            ).slice(0, 8); 
-            
-            if (results.length === 0) {
-                searchSuggestions.innerHTML = `
-                    <div class="suggestion-item" style="cursor: default; color: #a0785a;">
-                        <span class="suggestion-icon">🔍</span>
-                        <span class="suggestion-text">Nenhum produto encontrado</span>
-                    </div>`;
-                searchSuggestions.classList.add('show');
-                return;
-            }
-            
-            searchSuggestions.innerHTML = results.map(cake => {
-                const nameUpper = cake.name.toUpperCase();
-                const queryUpper = query.toUpperCase();
-                const parts = nameUpper.split(new RegExp(`(${queryUpper})`, 'g'));
-                
-                const highlightedName = parts.map(part => 
-                    part.toUpperCase() === queryUpper 
-                        ? `<span class="suggestion-highlight">${part}</span>`
-                        : part
-                ).join('');
-                
-                return `
-                    <div class="suggestion-item" onclick="selectSuggestion('${cake.name}', ${cake.id})">
-                        <span class="suggestion-icon">${cake.icon}</span>
-                        <span class="suggestion-text">${highlightedName}</span>
-                        <span style="font-size: 0.8rem; color: #c9a882; margin-left: auto;">R$ ${cake.price.toFixed(2).replace('.', ',')}</span>
-                    </div>`;
-            }).join('');
-            
+/* ═══ PRODUTOS (catálogo completo para busca) ═══ */
+const PRODUTOS = [
+  { id:101, nome:'Bolo de Chocolate',          cat:'bolos',    preco:45, av:4.8, loja:'Doce Encanto',       emoji:'🍰' },
+  { id:102, nome:'Bolo de Morango',             cat:'bolos',    preco:48, av:4.9, loja:'Cake & Love',        emoji:'🍰' },
+  { id:103, nome:'Bolo de Cenoura',             cat:'bolos',    preco:40, av:4.7, loja:'Confeitaria Bella',  emoji:'🍰' },
+  { id:104, nome:'Bolo Red Velvet',             cat:'bolos',    preco:52, av:5.0, loja:'Sweet Dreams',       emoji:'🍰' },
+  { id:105, nome:'Bolo de Limão',               cat:'bolos',    preco:42, av:4.6, loja:'Padaria Central',    emoji:'🍰' },
+  { id:106, nome:'Bolo de Coco',                cat:'bolos',    preco:46, av:4.8, loja:'Ateliê do Bolo',     emoji:'🍰' },
+  { id:107, nome:'Bolo Floresta Negra',         cat:'bolos',    preco:55, av:4.9, loja:'Confeitaria da Maria',emoji:'🍰' },
+  { id:108, nome:'Bolo de Abacaxi',             cat:'bolos',    preco:38, av:4.5, loja:'Padaria Central',    emoji:'🍰' },
+  { id:109, nome:'Cheesecake de Frutas',        cat:'tortas',   preco:60, av:5.0, loja:'Sweet Bakery',       emoji:'🥧' },
+  { id:110, nome:'Cupcake de Chocolate',        cat:'cupcakes', preco:8,  av:4.7, loja:'Cake & Love',        emoji:'🧁' },
+  { id:111, nome:'Cupcake de Baunilha',         cat:'cupcakes', preco:7.5,av:4.6, loja:'Doce Encanto',       emoji:'🧁' },
+  { id:112, nome:'Cupcake de Morango',          cat:'cupcakes', preco:8.5,av:4.9, loja:'Sweet Dreams',       emoji:'🧁' },
+  { id:113, nome:'Cupcake Red Velvet',          cat:'cupcakes', preco:9,  av:5.0, loja:'Confeitaria Bella',  emoji:'🧁' },
+  { id:114, nome:'Torta de Maçã',              cat:'tortas',   preco:55, av:4.8, loja:'Padaria Central',    emoji:'🥧' },
+  { id:115, nome:'Torta de Limão',             cat:'tortas',   preco:50, av:4.7, loja:'Ateliê do Bolo',     emoji:'🥧' },
+  { id:116, nome:'Torta Chocolate e Banana',   cat:'tortas',   preco:60, av:4.9, loja:'Doce Encanto',       emoji:'🥧' },
+  { id:117, nome:'Brigadeiro Gourmet',          cat:'doces',    preco:3.5,av:4.8, loja:'Confeitaria da Maria',emoji:'🍫' },
+  { id:118, nome:'Beijinho de Coco',            cat:'doces',    preco:2.5,av:4.6, loja:'Confeitaria Bella',  emoji:'🍬' },
+  { id:119, nome:'Olho de Sogra',               cat:'doces',    preco:4,  av:4.9, loja:'Doce Encanto',       emoji:'🍬' },
+  { id:120, nome:'Trufa de Chocolate',          cat:'doces',    preco:5.5,av:5.0, loja:'Sweet Dreams',       emoji:'🍫' },
+  { id:121, nome:'Surpresa de Uva',             cat:'doces',    preco:3,  av:4.5, loja:'Confeitaria da Maria',emoji:'🍇' },
+  { id:122, nome:'Cookie de Chocolate',         cat:'cookies',  preco:6,  av:4.7, loja:'Cake & Love',        emoji:'🍪' },
+  { id:123, nome:'Brownie',                     cat:'cookies',  preco:7.5,av:4.8, loja:'Ateliê do Bolo',     emoji:'🍫' },
+  { id:124, nome:'Cookie de Aveia',             cat:'cookies',  preco:5.5,av:4.6, loja:'Padaria Central',    emoji:'🍪' },
+  { id:125, nome:'Cookies Amanteigados',        cat:'cookies',  preco:25, av:4.9, loja:'Casa dos Cookies',   emoji:'🍪' },
+  { id:126, nome:'Kit Festa Infantil',          cat:'kits',     preco:85, av:4.9, loja:'Sweet Dreams',       emoji:'🎉' },
+  { id:127, nome:'Kit Festa (20 cookies)',      cat:'kits',     preco:95, av:4.8, loja:'Doce Encanto',       emoji:'🎉' },
+  { id:128, nome:'Kit Festa Completo',          cat:'kits',     preco:120,av:5.0, loja:'Confeitaria Bella',  emoji:'🎉' },
+  { id:129, nome:'Kit Casamento',               cat:'kits',     preco:199,av:5.0, loja:'Ateliê do Bolo',     emoji:'💒' },
+  { id:130, nome:'Macarons Coloridos',          cat:'doces',    preco:28, av:5.0, loja:'Doce Atelier',       emoji:'🍬' },
+  { id:131, nome:'Pão de Mel Recheado',         cat:'doces',    preco:18, av:4.7, loja:'Delícias da Vó',     emoji:'🍯' },
+];
+
+/* ═══ BARRA DE BUSCA COM SUGESTÕES ═══ */
+const searchInput = document.getElementById('searchInput');
+const searchSuggestions = document.getElementById('searchSuggestions');
+
+if (searchInput && searchSuggestions) {
+
+    searchInput.addEventListener('input', function() {
+        const q = this.value.trim().toLowerCase();
+        filterPanel.classList.remove('show');
+        filterToggle.classList.remove('active');
+
+        const hasFilters = activeFilters.cats.length > 0 || activeFilters.starMin > 0 || activeFilters.priceMax < 200;
+
+        if (q.length === 0 && !hasFilters) {
+            searchSuggestions.classList.remove('show');
+            searchSuggestions.innerHTML = '';
+            return;
+        }
+
+        /* Filtrar produtos */
+        let results;
+        if (q.length === 0) {
+            results = [...PRODUTOS];
+        } else {
+            results = PRODUTOS.filter(p =>
+                p.nome.toLowerCase().includes(q) ||
+                p.loja.toLowerCase().includes(q) ||
+                p.cat.toLowerCase().includes(q)
+            );
+        }
+
+        /* Aplicar filtros ativos */
+        const allFiltered = applyFilters([...results]);
+        const shown = allFiltered.slice(0, 8);
+
+        if (shown.length === 0) {
+            searchSuggestions.innerHTML = `
+                <div class="suggestion-item suggestion-item--empty">
+                    <span class="suggestion-emoji">🔍</span>
+                    <span class="suggestion-info"><span class="suggestion-name">Nenhum produto encontrado</span></span>
+                </div>`;
             searchSuggestions.classList.add('show');
-        });
-        
-        
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#searchContainer')) {
-                searchSuggestions.classList.remove('show');
-            }
-        });
+            return;
+        }
+
+        let html = '';
+
+        /* Resultados do catálogo */
+        if (shown.length > 0) {
+            html += '<div class="suggestion-header">Produtos</div>';
+            html += shown.map(p => {
+                const highlighted = q.length > 0 ? highlightMatch(p.nome, q) : p.nome;
+                return `
+                <div class="suggestion-item" onclick="addFromSearch(${p.id})">
+                    <span class="suggestion-emoji">${p.emoji}</span>
+                    <div class="suggestion-info">
+                        <span class="suggestion-name">${highlighted}</span>
+                        <span class="suggestion-loja">${p.loja} · ★ ${p.av.toFixed(1)}</span>
+                    </div>
+                    <span class="suggestion-price">R$ ${p.preco.toFixed(2).replace('.',',')}</span>
+                </div>`;
+            }).join('');
+        }
+
+        if (allFiltered.length > 8) {
+            html += `
+                <div class="suggestion-footer" onclick="searchInput.focus()">
+                    📋 Mostrando 8 de ${allFiltered.length} resultados
+                </div>`;
+        }
+
+        searchSuggestions.innerHTML = html;
+        searchSuggestions.classList.add('show');
+    });
+
+    /* Fechar ao clicar fora */
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#searchContainer')) {
+            searchSuggestions.classList.remove('show');
+        }
+    });
+
+    /* Fechar com Escape */
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchSuggestions.classList.remove('show');
+            this.blur();
+        }
+        /* Enter = ir para busca */
+        if (e.key === 'Enter' && this.value.trim()) {
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+
+    /* Focus mostra sugestões se já tem texto */
+    searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length > 0) {
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+/* Highlight do texto que bate */
+function highlightMatch(text, query) {
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return text.replace(regex, '<span class="suggestion-highlight">$1</span>');
+}
+
+/* Adicionar produto do catálogo ao carrinho */
+function addFromSearch(prodId) {
+    const prod = PRODUTOS.find(p => p.id === prodId);
+    if (!prod) return;
+
+    /* Procurar se já existe nos CAKES pelo nome */
+    const cakeMatch = CAKES.find(c => c.name.toLowerCase() === prod.nome.toLowerCase());
+
+    if (cakeMatch) {
+        cAdd(cakeMatch.id);
+    } else {
+        /* Adicionar dinamicamente ao CAKES */
+        const newId = CAKES.length > 0 ? Math.max(...CAKES.map(c => c.id)) + 1 : 1;
+        CAKES.push({ id: newId, name: prod.nome, img: '', price: prod.preco });
+        cAdd(newId);
+        cRenderCakes();
     }
-    
-    function selectSuggestion(name, id) {
-        searchInput.value = name;
+
+    searchInput.value = '';
+    searchSuggestions.classList.remove('show');
+    cOpen();
+}
+
+/* ═══ FILTER PANEL ═══ */
+const filterToggle = document.getElementById('filterToggle');
+const filterPanel = document.getElementById('filterPanel');
+const filterBadge = document.getElementById('filterBadge');
+const filterPrice = document.getElementById('filterPrice');
+const filterPriceVal = document.getElementById('filterPriceVal');
+const filterClear = document.getElementById('filterClear');
+
+let activeFilters = { cats: [], priceMax: 200, starMin: 0, sort: 'relevancia' };
+
+if (filterToggle) {
+    filterToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
         searchSuggestions.classList.remove('show');
-        cAdd(id);
-        cToast(`${name} adicionado ao carrinho! 🎂`);
+        filterPanel.classList.toggle('show');
+        filterToggle.classList.toggle('active', filterPanel.classList.contains('show'));
+    });
+
+    /* Fechar painel ao clicar fora */
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#searchContainer')) {
+            filterPanel.classList.remove('show');
+            filterToggle.classList.remove('active');
+        }
+    });
+
+    /* Chips de categoria */
+    document.querySelectorAll('.filter-chip[data-cat]').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+            activeFilters.cats = Array.from(document.querySelectorAll('.filter-chip[data-cat].active')).map(c => c.dataset.cat);
+            updateFilterBadge();
+            triggerSearch();
+        });
+    });
+
+    /* Chips de avaliação */
+    document.querySelectorAll('.filter-chip--star').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const wasActive = this.classList.contains('active');
+            document.querySelectorAll('.filter-chip--star').forEach(c => c.classList.remove('active'));
+            if (!wasActive) { this.classList.add('active'); activeFilters.starMin = parseFloat(this.dataset.star); }
+            else { activeFilters.starMin = 0; }
+            updateFilterBadge();
+            triggerSearch();
+        });
+    });
+
+    /* Chips de ordenação */
+    document.querySelectorAll('.filter-chip--sort').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.querySelectorAll('.filter-chip--sort').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            activeFilters.sort = this.dataset.sort;
+            triggerSearch();
+        });
+    });
+
+    /* Range de preço */
+    filterPrice.addEventListener('input', function() {
+        activeFilters.priceMax = parseInt(this.value);
+        filterPriceVal.textContent = `R$ ${this.value}`;
+        updateFilterBadge();
+        triggerSearch();
+    });
+
+    /* Limpar filtros */
+    filterClear.addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
+        document.querySelector('.filter-chip--sort[data-sort="relevancia"]').classList.add('active');
+        filterPrice.value = 200;
+        filterPriceVal.textContent = 'R$ 200';
+        activeFilters = { cats: [], priceMax: 200, starMin: 0, sort: 'relevancia' };
+        updateFilterBadge();
+        triggerSearch();
+        cToast('Filtros limpos ✨');
+    });
+}
+
+function updateFilterBadge() {
+    let count = activeFilters.cats.length;
+    if (activeFilters.starMin > 0) count++;
+    if (activeFilters.priceMax < 200) count++;
+    if (count > 0) {
+        filterBadge.textContent = count;
+        filterBadge.style.display = 'flex';
+    } else {
+        filterBadge.style.display = 'none';
     }
+}
+
+function triggerSearch() {
+    searchInput.dispatchEvent(new Event('input'));
+}
+
+/* Aplicar filtros nos resultados da busca */
+function applyFilters(results) {
+    let filtered = results;
+
+    if (activeFilters.cats.length > 0) {
+        filtered = filtered.filter(p => activeFilters.cats.includes(p.cat));
+    }
+    if (activeFilters.priceMax < 200) {
+        filtered = filtered.filter(p => p.preco <= activeFilters.priceMax);
+    }
+    if (activeFilters.starMin > 0) {
+        filtered = filtered.filter(p => p.av >= activeFilters.starMin);
+    }
+
+    /* Ordenação */
+    if (activeFilters.sort === 'menor') filtered.sort((a, b) => a.preco - b.preco);
+    else if (activeFilters.sort === 'maior') filtered.sort((a, b) => b.preco - a.preco);
+    else if (activeFilters.sort === 'avaliacao') filtered.sort((a, b) => b.av - a.av);
+
+    return filtered;
+}
 
 
 (function(){
