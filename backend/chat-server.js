@@ -125,6 +125,14 @@ app.get('/api/admin/users', (req, res) => {
   res.json(users);
 });
 
+// Rota para excluir usuário (para admin)
+app.delete('/api/admin/users/:id', (req, res) => {
+  const { id } = req.params;
+  // Simulação de exclusão
+  console.log(`Usuário ${id} excluído`);
+  res.json({ message: 'Usuário excluído com sucesso' });
+});
+
 // Criar tabela de chat se não existir
 db.query(`
   CREATE TABLE IF NOT EXISTS chat_messages (

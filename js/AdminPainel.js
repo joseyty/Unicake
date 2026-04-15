@@ -361,13 +361,23 @@ async function handleFormSubmit(e) {
 }
 
 // Delete functions
-function deleteUser(id) {
+async function deleteUser(id) {
   if (confirm('Tem certeza que deseja excluir este usuário?')) {
-    const users = getUsers().filter(u => u.id !== id);
-    saveData(USERS_KEY, users);
-    renderUsers();
-    updateStats();
-    showToast('Usuário excluído com sucesso!');
+    try {
+      const response = await fetch(`http://localhost:3001/api/admin/users/${id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        await renderUsers();
+        updateStats();
+        showToast('Usuário excluído com sucesso!');
+      } else {
+        showToast('Erro ao excluir usuário');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      showToast('Erro de conexão');
+    }
   }
 }
 
