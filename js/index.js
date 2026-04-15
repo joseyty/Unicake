@@ -599,6 +599,38 @@ function addFromSearch(prodId) {
     cOpen();
 }
 
+// Verificar se usuário está logado e atualizar UI
+function checkLoginStatus() {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    const btnStack = document.querySelector('.btn-stack');
+    if (!btnStack) return;
+
+    if (token && user) {
+        try {
+            const userData = JSON.parse(user);
+            btnStack.innerHTML = `
+                <span>Olá, ${userData.nome || 'Usuário'}</span>
+                <button onclick="logout()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 0.9em;">Sair</button>
+            `;
+        } catch (e) {
+            console.error('Erro ao parsear dados do usuário:', e);
+        }
+    } else {
+        btnStack.innerHTML = '<a href="Entrar.html">Entrar</a>';
+    }
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    checkLoginStatus();
+}
+
+// Chamar ao carregar a página
+checkLoginStatus();
+
 
 const filterToggle   = document.getElementById('filterToggle');
 const filterPanel    = document.getElementById('filterPanel');

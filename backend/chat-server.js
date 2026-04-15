@@ -25,12 +25,32 @@ const db = mysql.createConnection({
 });
 
 // Conectar ao banco
+let dbConnected = false;
 db.connect((err) => {
   if (err) {
     console.error('Erro ao conectar ao banco:', err);
+    console.log('Continuando sem banco de dados (usando dados simulados)');
     return;
   }
   console.log('Conectado ao banco de dados MySQL');
+  dbConnected = true;
+
+  // Criar tabela apenas se conectado
+  db.query(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id VARCHAR(255) DEFAULT NULL,
+      user_name VARCHAR(255) DEFAULT 'Visitante',
+      user_email VARCHAR(255) DEFAULT NULL,
+      message TEXT NOT NULL,
+      response TEXT NULL,
+      status ENUM('pendente', 'respondido') DEFAULT 'pendente',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      responded_at TIMESTAMP NULL
+    )
+  `, (err) => {
+    if (err) console.error('Erro ao criar tabela:', err);
+  });
 });
 
 // Configurar Nodemailer
@@ -153,23 +173,6 @@ app.delete('/api/admin/users/:id', (req, res) => {
   }
 });
 
-// Criar tabela de chat se não existir
-db.query(`
-  CREATE TABLE IF NOT EXISTS chat_messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(255) DEFAULT NULL,
-    user_name VARCHAR(255) DEFAULT 'Visitante',
-    user_email VARCHAR(255) DEFAULT NULL,
-    message TEXT NOT NULL,
-    response TEXT NULL,
-    status ENUM('pendente', 'respondido') DEFAULT 'pendente',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    responded_at TIMESTAMP NULL
-  )
-`, (err) => {
-  if (err) console.error('Erro ao criar tabela:', err);
-});
-
 // Rota para receber mensagens do chat
 app.post('/api/chat/send-message', (req, res) => {
   const { message, user_name, user_email } = req.body;
@@ -273,7 +276,7 @@ function getAutoResponse(message) {
   }
 }
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5550;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor de chat rodando na porta ${PORT}`);
 });
