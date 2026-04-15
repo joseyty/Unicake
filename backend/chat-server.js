@@ -87,9 +87,15 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ error: 'Email e senha são obrigatórios' });
   }
 
-  // Simulação sem banco - sempre sucesso
+  // Buscar usuário na lista mockUsers
+  const user = mockUsers.find(u => u.email === email && u.senha === password);
+
+  if (!user) {
+    return res.status(401).json({ error: 'Email ou senha incorretos' });
+  }
+
   const token = jwt.sign(
-    { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' },
+    { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario },
     process.env.JWT_SECRET || 'secret',
     { expiresIn: '24h' }
   );
@@ -97,7 +103,7 @@ app.post('/api/auth/login', (req, res) => {
   res.json({
     message: 'Login realizado com sucesso',
     token,
-    user: { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' }
+    user: { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario }
   });
 });
 
