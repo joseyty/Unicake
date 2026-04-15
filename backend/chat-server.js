@@ -71,22 +71,18 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ error: 'Email e senha são obrigatórios' });
   }
 
-  // Simulação sem banco
-  if (password === '123456') { // senha mock
-    const token = jwt.sign(
-      { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '24h' }
-    );
+  // Simulação sem banco - sempre sucesso
+  const token = jwt.sign(
+    { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' },
+    process.env.JWT_SECRET || 'secret',
+    { expiresIn: '24h' }
+  );
 
-    res.json({
-      message: 'Login realizado com sucesso',
-      token,
-      user: { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' }
-    });
-  } else {
-    return res.status(401).json({ error: 'Email ou senha incorretos' });
-  }
+  res.json({
+    message: 'Login realizado com sucesso',
+    token,
+    user: { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' }
+  });
 });
 
 // Rota para verificar código 2FA (para admin)
