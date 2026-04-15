@@ -141,7 +141,7 @@ function sendMessage(message) {
 // Enviar mensagem para o backend
 async function sendToBackend(message) {
   try {
-    const response = await fetch('http://localhost:3001/api/chat/send-message', {
+    const response = await fetch('http://localhost:5550/api/chat/send-message', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

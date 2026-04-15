@@ -93,7 +93,7 @@ function saveData(key, data) {
 // CRUD operations
 async function getUsers() {
   try {
-    const response = await fetch('http://localhost:3001/api/admin/users');
+    const response = await fetch('http://localhost:5550/api/admin/users');
     if (response.ok) {
       return await response.json();
     } else {
