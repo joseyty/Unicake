@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +25,15 @@ db.connect((err) => {
     return;
   }
   console.log('Conectado ao banco de dados MySQL');
+});
+
+// Configurar Nodemailer
+const transporter = nodemailer.createTransporter({
+  service: 'gmail', // ou outro serviço
+  auth: {
+    user: process.env.EMAIL_USER || 'your-email@gmail.com',
+    pass: process.env.EMAIL_PASS || 'your-app-password'
+  }
 });
 
 // Middleware para verificar JWT
@@ -105,9 +115,33 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// Rota para verificar token (opcional)
-app.get('/api/auth/me', authenticateToken, (req, res) => {
-  res.json({ user: req.user });
+// Rota para verificar código 2FA (para admin)
+app.post('/api/admin/verify-2fa', (req, res) => {
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    return res.status(400).json({ error: 'Email e código são obrigatórios' });
+  }
+
+  const pending = pending2FA.get(email);
+  if (!pending) {
+    return res.status(400).json({ error: 'Código expirado ou não solicitado' });
+  }
+
+  // Verificar se não expirou (5 minutos)
+  if (Date.now() - pending.timestamp > 5 * 60 * 1000) {
+    pending2FA.delete(email);
+    return res.status(400).json({ error: 'Código expirado' });
+  }
+
+  if (pending.code !== code) {
+    return res.status(401).json({ error: 'Código incorreto' });
+  }
+
+  // Limpar código
+  pending2FA.delete(email);
+
+  res.json({ message: 'Código verificado com sucesso' });
 });
 
 // Criar tabela de chat se não existir

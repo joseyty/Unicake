@@ -81,15 +81,16 @@ async function handleLogin(e) {
     const hashedPassword = await hashPassword(password);
     const expectedHash = await hashPassword('UF#!@NSU'); // Default admin password
 
-    if ((email === 'Adsensemir4#@autonance.com' || email === 'Adversedeminione#@gmail.com') && hashedPassword === expectedHash) {
-      // Show 2FA form
-      loginForm.classList.add('hidden');
-      twoFactorForm.classList.remove('hidden');
-      showToast('Código 2FA enviado. Verifique seu aplicativo autenticador.', 'success');
+    if ((email === 'Adsensemir4#@autonance.com' || email === 'umescritorsolo@gmail.com') && hashedPassword === expectedHash) {
+      // Set authentication directly
+      localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify({
+        logged: true,
+        email: email,
+        loginTime: Date.now()
+      }));
 
-      // Generate and log 2FA code for demo (in production, this would be sent via app)
-      const code = await generateTOTP(TWO_FA_SECRET);
-      console.log('Demo 2FA Code:', code); // Remove in production
+      showToast('Login realizado com sucesso!', 'success');
+      setTimeout(redirectToPanel, 1000);
     } else {
       showToast('Email ou senha incorretos.');
     }
@@ -106,6 +107,7 @@ async function handleTwoFactor(e) {
   e.preventDefault();
 
   const code = twoFactorCodeInput.value.trim();
+  const email = emailInput.value;
 
   if (!code || code.length !== 6) {
     showToast('Digite um código válido de 6 dígitos.');
@@ -116,23 +118,28 @@ async function handleTwoFactor(e) {
   verifyBtn.textContent = 'Verificando...';
 
   try {
-    const isValid = await verifyTOTP(code, TWO_FA_SECRET);
+    const response = await fetch('http://localhost:3001/api/admin/verify-2fa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code })
+    });
+    const data = await response.json();
 
-    if (isValid) {
+    if (response.ok) {
       // Set authentication
       localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify({
         logged: true,
-        email: emailInput.value,
+        email: email,
         loginTime: Date.now()
       }));
 
       showToast('Login realizado com sucesso!', 'success');
       setTimeout(redirectToPanel, 1000);
     } else {
-      showToast('Código 2FA inválido.');
+      showToast(data.error || 'Código inválido');
     }
   } catch (error) {
-    showToast('Erro ao verificar código. Tente novamente.');
+    showToast('Erro de conexão');
   } finally {
     verifyBtn.disabled = false;
     verifyBtn.textContent = 'Verificar';
