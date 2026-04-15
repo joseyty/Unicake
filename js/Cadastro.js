@@ -79,8 +79,6 @@ function showSuccessFeedback() {
   setTimeout(() => {
     overlay.classList.add('success-overlay--hide');
     overlay.addEventListener('transitionend', () => overlay.remove());
-    // Redirect to login page after success
-    setTimeout(() => window.location.href = 'Entrar.html', 400);
   }, 3000);
 }
 

@@ -159,30 +159,7 @@ document.getElementById('mainForm').addEventListener('submit', function (e) {
     return;
   }
 
-  // Enviar para backend
-  const nome = v('nome');
-  const email = v('rep-email');
-  const password = 'senha123'; // Placeholder, em produção pedir senha
-
-  try {
-    const response = await fetch('http://localhost:3000/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, password, tipo_usuario: 'confeiteiro' })
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      showToast('✅ Dados enviados com sucesso!', 'success');
-      // Redirect to seller login page after success
-      setTimeout(() => window.location.href = 'Loginconfeiteiro.html', 3200);
-    } else {
-      showToast(data.error || 'Erro ao cadastrar', 'error');
-    }
-  } catch (error) {
-    console.error('Erro:', error);
-    showToast('Erro de conexão', 'error');
-  }
+  showToast('✅ Dados enviados com sucesso!', 'success');
   // Redirect to seller login page after success
   setTimeout(() => window.location.href = 'Loginconfeiteiro.html', 3200);
 });
