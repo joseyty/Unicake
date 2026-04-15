@@ -278,8 +278,14 @@ function getAutoResponse(message) {
 
 const PORT = process.env.PORT || 5550;
 
-// Servir arquivos estáticos da pasta html
+// Servir arquivos estáticos
 app.use('/html', express.static('../html'));
+app.use('/css', express.static('../css'));
+app.use('/js', express.static('../js'));
+app.use('/img', express.static('../img'));
+
+// Redirecionar / para a página inicial
+app.get('/', (req, res) => res.redirect('/html/index.html'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor de chat rodando na porta ${PORT}`);
