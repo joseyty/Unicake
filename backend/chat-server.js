@@ -114,6 +114,17 @@ app.post('/api/admin/verify-2fa', (req, res) => {
   res.json({ message: 'Código verificado com sucesso' });
 });
 
+// Rota para obter usuários (para admin)
+app.get('/api/admin/users', (req, res) => {
+  // Simulação de usuários
+  const users = [
+    { id: 1, nome: 'João Silva', cpf: '123.456.789-00', email: 'joao@email.com', senha: 'senha123', tipo_usuario: 'cliente', status: 'Ativo' },
+    { id: 2, nome: 'Maria Oliveira', cpf: '987.654.321-00', email: 'maria@email.com', senha: 'senha456', tipo_usuario: 'confeiteiro', status: 'Ativo' },
+    // Adicione mais conforme necessário
+  ];
+  res.json(users);
+});
+
 // Criar tabela de chat se não existir
 db.query(`
   CREATE TABLE IF NOT EXISTS chat_messages (

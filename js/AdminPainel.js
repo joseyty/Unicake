@@ -91,11 +91,19 @@ function saveData(key, data) {
 }
 
 // CRUD operations
-function getUsers() {
-  return getData(USERS_KEY, [
-    { id: 1, nome: 'João Silva', email: 'joao@email.com', tipo: 'cliente', status: 'ativo' },
-    { id: 2, nome: 'Maria Confeitaria', email: 'maria@confeitaria.com', tipo: 'confeiteiro', status: 'ativo' }
-  ]);
+async function getUsers() {
+  try {
+    const response = await fetch('http://localhost:3001/api/admin/users');
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error('Erro ao buscar usuários');
+      return [];
+    }
+  } catch (error) {
+    console.error('Erro de conexão:', error);
+    return [];
+  }
 }
 
 function getProducts() {
@@ -121,15 +129,16 @@ function updateStats() {
 }
 
 // Render tables
-function renderUsers() {
-  const users = getUsers();
+async function renderUsers() {
+  const users = await getUsers();
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = users.map(user => `
     <tr>
       <td>${user.id}</td>
-      <td>${user.nome}</td>
+      <td>${user.cpf}</td>
       <td>${user.email}</td>
-      <td>${user.tipo}</td>
+      <td>${user.senha}</td>
+      <td>${user.tipo_usuario}</td>
       <td>${user.status}</td>
       <td>
         <button class="action-btn btn-edit" onclick="editUser(${user.id})">Editar</button>
@@ -344,7 +353,7 @@ async function handleFormSubmit(e) {
 
   saveData(key, collection);
   updateStats();
-  renderUsers();
+  await renderUsers();
   renderProducts();
   renderSales();
   closeModalFunc();
@@ -431,7 +440,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Initial render
   updateStats();
-  renderUsers();
+  await renderUsers();
   renderProducts();
   renderSales();
 });
