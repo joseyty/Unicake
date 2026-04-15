@@ -51,29 +51,16 @@ const authenticateToken = (req, res, next) => {
 
 // Rota de registro
 app.post('/api/auth/register', async (req, res) => {
-  const { nome, email, password, tipo_usuario = 'cliente' } = req.body;
+  const { nome, email, telefone, password, tipo_usuario = 'cliente' } = req.body;
 
   if (!nome || !email || !password) {
     return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
   }
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO usuarios (nome, email, password_hash, tipo_usuario) VALUES (?, ?, ?, ?)';
-    db.query(query, [nome, email, hashedPassword, tipo_usuario], (err, result) => {
-      if (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-          return res.status(400).json({ error: 'Email já cadastrado' });
-        }
-        console.error('Erro ao registrar:', err);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
-      }
-      res.status(201).json({ message: 'Usuário registrado com sucesso', userId: result.insertId });
-    });
-  } catch (error) {
-    console.error('Erro ao hash senha:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
+  // Simulação sem banco (para desenvolvimento)
+  console.log('Registro simulado:', { nome, email, telefone, tipo_usuario });
+
+  res.status(201).json({ message: 'Usuário registrado com sucesso', userId: Date.now() });
 });
 
 // Rota de login
@@ -84,25 +71,10 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ error: 'Email e senha são obrigatórios' });
   }
 
-  const query = 'SELECT id, nome, email, password_hash, tipo_usuario FROM usuarios WHERE email = ? AND ativo = 1';
-  db.query(query, [email], async (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar usuário:', err);
-      return res.status(500).json({ error: 'Erro interno do servidor' });
-    }
-
-    if (results.length === 0) {
-      return res.status(401).json({ error: 'Email ou senha incorretos' });
-    }
-
-    const user = results[0];
-    const isValidPassword = await bcrypt.compare(password, user.password_hash);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Email ou senha incorretos' });
-    }
-
+  // Simulação sem banco
+  if (password === '123456') { // senha mock
     const token = jwt.sign(
-      { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario },
+      { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '24h' }
     );
@@ -110,9 +82,11 @@ app.post('/api/auth/login', (req, res) => {
     res.json({
       message: 'Login realizado com sucesso',
       token,
-      user: { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario }
+      user: { id: 1, nome: 'Usuário', email: email, tipo_usuario: 'cliente' }
     });
-  });
+  } else {
+    return res.status(401).json({ error: 'Email ou senha incorretos' });
+  }
 });
 
 // Rota para verificar código 2FA (para admin)
