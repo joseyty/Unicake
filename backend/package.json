@@ -1,21 +1,9 @@
 {
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
-    "express-rate-limit": "^7.1.5",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.20.0",
-    "nodemailer": "^8.0.5",
-    "validator": "^13.11.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  },
-  "scripts": {
-    "start": "node chat-server.js",
-    "dev": "nodemon chat-server.js"
+    "mysql2": "^3.20.0"
   }
+}
 }
