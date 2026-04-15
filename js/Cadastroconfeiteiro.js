@@ -160,6 +160,8 @@ document.getElementById('mainForm').addEventListener('submit', function (e) {
   }
 
   showToast('✅ Dados enviados com sucesso!', 'success');
+  // Redirect to seller login page after success
+  setTimeout(() => window.location.href = 'Loginconfeiteiro.html', 3200);
 });
 
 // ── Forçar apenas dígitos em campos numéricos ─────────────────────────────────
