@@ -24,7 +24,7 @@ NODE_ENV=production
 FRONTEND_URL=http://localhost:3000
 
 # Porta
-PORT=3001
+PORT=5550
 ```
 
 ## 3. Principais Melhorias Implementadas
