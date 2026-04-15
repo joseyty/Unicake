@@ -277,6 +277,10 @@ function getAutoResponse(message) {
 }
 
 const PORT = process.env.PORT || 5550;
+
+// Servir arquivos estáticos da pasta html
+app.use(express.static('../html'));
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor de chat rodando na porta ${PORT}`);
 });
