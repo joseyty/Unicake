@@ -357,7 +357,7 @@ app.use((err, req, res, next) => {
 // 11. INICIAR SERVIDOR
 // ============================================
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5550;
 
 app.listen(PORT, () => {
   console.log(`🔒 Servidor seguro rodando na porta ${PORT}`);
