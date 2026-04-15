@@ -59,6 +59,9 @@
       const email = document.getElementById('input-email').value.trim();
       const senha = document.getElementById('input-senha').value;
 
+      // Hide error message
+      document.getElementById('error-message').style.display = 'none';
+
       if (!email || !senha) {
         alert('Preencha email e senha');
         return;
@@ -80,7 +83,9 @@
           // Redirect to home page after success
           setTimeout(() => window.location.href = 'index.html', 3000);
         } else {
-          alert(data.error || 'Erro ao fazer login');
+          const errorMsg = document.getElementById('error-message');
+          errorMsg.textContent = data.error || 'Erro ao fazer login';
+          errorMsg.style.display = 'block';
         }
       } catch (error) {
         console.error('Erro:', error);
