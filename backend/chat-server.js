@@ -28,7 +28,7 @@ db.connect((err) => {
 });
 
 // Configurar Nodemailer
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   service: 'gmail', // ou outro serviço
   auth: {
     user: process.env.EMAIL_USER || 'your-email@gmail.com',
