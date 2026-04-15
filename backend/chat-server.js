@@ -10,6 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Usuários simulados
+let mockUsers = [
+  { id: 1, nome: 'João Silva', cpf: '123.456.789-00', email: 'joao@email.com', senha: 'senha123', tipo_usuario: 'cliente', status: 'Ativo' },
+  { id: 2, nome: 'Maria Oliveira', cpf: '987.654.321-00', email: 'maria@email.com', senha: 'senha456', tipo_usuario: 'confeiteiro', status: 'Ativo' },
+];
+
 // Configuração do banco de dados
 const db = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
@@ -57,10 +63,20 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
   }
 
-  // Simulação sem banco (para desenvolvimento)
-  console.log('Registro simulado:', { nome, email, telefone, tipo_usuario });
+  // Simulação sem banco - adicionar à lista
+  const newId = mockUsers.length ? Math.max(...mockUsers.map(u => u.id)) + 1 : 1;
+  const newUser = {
+    id: newId,
+    nome,
+    cpf: '000.000.000-00', // Placeholder
+    email,
+    senha: password, // Em produção, hash
+    tipo_usuario,
+    status: 'Ativo'
+  };
+  mockUsers.push(newUser);
 
-  res.status(201).json({ message: 'Usuário registrado com sucesso', userId: Date.now() });
+  res.status(201).json({ message: 'Usuário registrado com sucesso', userId: newId });
 });
 
 // Rota de login
@@ -116,21 +132,19 @@ app.post('/api/admin/verify-2fa', (req, res) => {
 
 // Rota para obter usuários (para admin)
 app.get('/api/admin/users', (req, res) => {
-  // Simulação de usuários
-  const users = [
-    { id: 1, nome: 'João Silva', cpf: '123.456.789-00', email: 'joao@email.com', senha: 'senha123', tipo_usuario: 'cliente', status: 'Ativo' },
-    { id: 2, nome: 'Maria Oliveira', cpf: '987.654.321-00', email: 'maria@email.com', senha: 'senha456', tipo_usuario: 'confeiteiro', status: 'Ativo' },
-    // Adicione mais conforme necessário
-  ];
-  res.json(users);
+  res.json(mockUsers);
 });
 
 // Rota para excluir usuário (para admin)
 app.delete('/api/admin/users/:id', (req, res) => {
   const { id } = req.params;
-  // Simulação de exclusão
-  console.log(`Usuário ${id} excluído`);
-  res.json({ message: 'Usuário excluído com sucesso' });
+  const index = mockUsers.findIndex(u => u.id == id);
+  if (index !== -1) {
+    mockUsers.splice(index, 1);
+    res.json({ message: 'Usuário excluído com sucesso' });
+  } else {
+    res.status(404).json({ error: 'Usuário não encontrado' });
+  }
 });
 
 // Criar tabela de chat se não existir
