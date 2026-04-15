@@ -89,22 +89,35 @@ btnEntrar.addEventListener('click', async () => {
 
   // Animação de loading no botão
   btnEntrar.classList.add('loading');
-  await new Promise(r => setTimeout(r, 1600)); // simula requisição
-  btnEntrar.classList.remove('loading');
 
-  // Verifica credenciais
-  if (ev === MOCK_EMAIL && sv === MOCK_SENHA) {
-    localStorage.setItem('unicakeSellerAuth', JSON.stringify({ logged: true, email: ev }));
-    showToast('✓ Login realizado com sucesso!', 'success');
-    emailInput.value = '';
-    senhaInput.value = '';
-    setTimeout(() => {
-      window.location.href = 'PainelVendedor.html';
-    }, 900);
-  } else {
-    showToast('✗ E-mail ou senha incorretos.', 'error');
-    setField(fieldEmail, false);
-    setField(fieldSenha, false);
+  try {
+    const response = await fetch('http://localhost:3001/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ev, password: sv })
+    });
+
+    const data = await response.json();
+    btnEntrar.classList.remove('loading');
+
+    if (response.ok && data.user.tipo_usuario === 'confeiteiro') {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      showToast('✓ Login realizado com sucesso!', 'success');
+      emailInput.value = '';
+      senhaInput.value = '';
+      setTimeout(() => {
+        window.location.href = 'PainelVendedor.html';
+      }, 900);
+    } else {
+      showToast('✗ E-mail ou senha incorretos.', 'error');
+      setField(fieldEmail, false);
+      setField(fieldSenha, false);
+    }
+  } catch (error) {
+    btnEntrar.classList.remove('loading');
+    console.error('Erro:', error);
+    showToast('Erro de conexão', 'error');
   }
 });
 

@@ -85,7 +85,44 @@ function showSuccessFeedback() {
 }
 
 
-document.querySelector('.btn-primary').addEventListener('click', showSuccessFeedback);
+document.querySelector('.btn-primary').addEventListener('click', async () => {
+  const nome = document.getElementById('input-nome').value.trim();
+  const email = document.getElementById('input-email').value.trim();
+  const senha = document.getElementById('input-senha').value;
+  const confirmar = document.getElementById('input-confirmar').value;
+
+  // Validação básica
+  if (!nome || !email || !senha || !confirmar) {
+    alert('Preencha todos os campos');
+    return;
+  }
+  if (senha !== confirmar) {
+    alert('As senhas não coincidem');
+    return;
+  }
+  if (senha.length < 6) {
+    alert('A senha deve ter pelo menos 6 caracteres');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3001/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, password: senha, tipo_usuario: 'cliente' })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showSuccessFeedback();
+    } else {
+      alert(data.error || 'Erro ao cadastrar');
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro de conexão');
+  }
+});
 
 
 

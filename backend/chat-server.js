@@ -1,6 +1,8 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -22,6 +24,90 @@ db.connect((err) => {
     return;
   }
   console.log('Conectado ao banco de dados MySQL');
+});
+
+// Middleware para verificar JWT
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token não fornecido' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido' });
+    req.user = user;
+    next();
+  });
+};
+
+// Rota de registro
+app.post('/api/auth/register', async (req, res) => {
+  const { nome, email, password, tipo_usuario = 'cliente' } = req.body;
+
+  if (!nome || !email || !password) {
+    return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const query = 'INSERT INTO usuarios (nome, email, password_hash, tipo_usuario) VALUES (?, ?, ?, ?)';
+    db.query(query, [nome, email, hashedPassword, tipo_usuario], (err, result) => {
+      if (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(400).json({ error: 'Email já cadastrado' });
+        }
+        console.error('Erro ao registrar:', err);
+        return res.status(500).json({ error: 'Erro interno do servidor' });
+      }
+      res.status(201).json({ message: 'Usuário registrado com sucesso', userId: result.insertId });
+    });
+  } catch (error) {
+    console.error('Erro ao hash senha:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Rota de login
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  }
+
+  const query = 'SELECT id, nome, email, password_hash, tipo_usuario FROM usuarios WHERE email = ? AND ativo = 1';
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar usuário:', err);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Email ou senha incorretos' });
+    }
+
+    const user = results[0];
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Email ou senha incorretos' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'Login realizado com sucesso',
+      token,
+      user: { id: user.id, nome: user.nome, email: user.email, tipo_usuario: user.tipo_usuario }
+    });
+  });
+});
+
+// Rota para verificar token (opcional)
+app.get('/api/auth/me', authenticateToken, (req, res) => {
+  res.json({ user: req.user });
 });
 
 // Criar tabela de chat se não existir
