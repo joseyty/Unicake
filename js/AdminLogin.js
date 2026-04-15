@@ -118,7 +118,7 @@ async function handleTwoFactor(e) {
   verifyBtn.textContent = 'Verificando...';
 
   try {
-    const response = await fetch('http://localhost:3001/api/admin/verify-2fa', {
+    const response = await fetch('http://localhost:5550/api/admin/verify-2fa', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, code })
