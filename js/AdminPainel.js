@@ -364,7 +364,7 @@ async function handleFormSubmit(e) {
 async function deleteUser(id) {
   if (confirm('Tem certeza que deseja excluir este usuário?')) {
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/users/${id}`, {
+      const response = await fetch(`http://localhost:5550/api/admin/users/${id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
