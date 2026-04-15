@@ -314,7 +314,7 @@
 
     // Carregar estatísticas
     function loadStats() {
-      fetch('http://localhost:5550/api/chat/conversations')
+      fetch('http://localhost:3001/api/chat/conversations')
         .then(response => response.json())
         .then(messages => {
           const total = messages.length;
