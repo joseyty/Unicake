@@ -453,6 +453,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderUsers();
   renderProducts();
   renderSales();
+
+  // ✅ AUTO-REFRESH: Atualizar lista de usuários a cada 5 segundos
+  setInterval(async () => {
+    if (currentSection === 'users') {
+      console.log('🔄 Atualizando lista de usuários...');
+      await renderUsers();
+    }
+  }, 5000);
+
+  // ✅ AUTO-REFRESH: Atualizar quando a aba ganha foco
+  window.addEventListener('focus', async () => {
+    if (currentSection === 'users') {
+      console.log('🔄 Aba em foco - atualizando usuários...');
+      await renderUsers();
+    }
+  });
 });
 
 // Close modal on outside click

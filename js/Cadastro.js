@@ -156,15 +156,56 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
     if (response.ok) {
       console.log('✅ Cadastro realizado com sucesso!');
       showSuccessFeedback();
+      
+      // ✅ AUTO-LOGIN APÓS CADASTRO
+      console.log('🔐 Iniciando login automático...');
+      try {
+        const loginResponse = await fetch('http://localhost:5550/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: email, 
+            password_hash: senha
+          })
+        });
+
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json();
+          console.log('✅ Login automático realizado!');
+          
+          // Armazenar dados do usuário logado
+          localStorage.setItem('token', loginData.token || 'auto-generated-' + loginData.id);
+          localStorage.setItem('user', JSON.stringify({
+            id: loginData.id,
+            nome: loginData.nome,
+            email: loginData.email,
+            tipo_usuario: loginData.tipo_usuario
+          }));
+          
+          console.log('💾 Dados salvos em localStorage');
+          
+          // Redirecionar para página inicial (com o usuário logado)
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          console.error('⚠️ Erro no login automático, redirecionando para login manual');
+          setTimeout(() => {
+            window.location.href = 'Entrar.html';
+          }, 2000);
+        }
+      } catch (loginError) {
+        console.error('❌ Erro ao fazer login automático:', loginError);
+        setTimeout(() => {
+          window.location.href = 'Entrar.html';
+        }, 2000);
+      }
+      
       // Limpar formulário
       document.getElementById('input-nome').value = '';
       document.getElementById('input-email').value = '';
       document.getElementById('input-senha').value = '';
       document.getElementById('input-confirmar').value = '';
-      // Redirecionar após sucesso
-      setTimeout(() => {
-        window.location.href = 'Entrar.html';
-      }, 2000);
     } else {
       console.error('❌ Erro do servidor:', data);
       alert(data.erro || 'Erro ao cadastrar: ' + (data.message || 'Erro desconhecido'));
