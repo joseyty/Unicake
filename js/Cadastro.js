@@ -88,37 +88,94 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
   const email = document.getElementById('input-email').value.trim();
   const senha = document.getElementById('input-senha').value;
   const confirmar = document.getElementById('input-confirmar').value;
+  const botao = document.querySelector('.btn-primary');
+
+  // Desabilitar botão enquanto processa
+  botao.disabled = true;
+  botao.textContent = '⏳ Cadastrando...';
 
   // Validação básica
   if (!nome || !email || !senha || !confirmar) {
     alert('Preencha todos os campos');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
     return;
   }
+
+  // Validação de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Email inválido');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
+    return;
+  }
+
   if (senha !== confirmar) {
     alert('As senhas não coincidem');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
     return;
   }
+
   if (senha.length < 6) {
     alert('A senha deve ter pelo menos 6 caracteres');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
+    return;
+  }
+
+  if (nome.length < 3) {
+    alert('Nome deve ter pelo menos 3 caracteres');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
     return;
   }
 
   try {
-    const response = await fetch('http://localhost:3000/api/auth/register', {
+    console.log('📤 Enviando cadastro para:', 'http://localhost:5550/api/auth/register');
+    console.log('📋 Dados:', { nome, email, tipo_usuario: 'cliente' });
+
+    const response = await fetch('http://localhost:5550/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, password: senha, tipo_usuario: 'cliente' })
+      body: JSON.stringify({ 
+        nome, 
+        email, 
+        password_hash: senha, 
+        tipo_usuario: 'cliente' 
+      })
     });
 
+    console.log('📥 Status da resposta:', response.status);
+    console.log('📥 Tipo de conteúdo:', response.headers.get('content-type'));
+
     const data = await response.json();
+    console.log('📥 Dados recebidos:', data);
+
     if (response.ok) {
+      console.log('✅ Cadastro realizado com sucesso!');
       showSuccessFeedback();
+      // Limpar formulário
+      document.getElementById('input-nome').value = '';
+      document.getElementById('input-email').value = '';
+      document.getElementById('input-senha').value = '';
+      document.getElementById('input-confirmar').value = '';
+      // Redirecionar após sucesso
+      setTimeout(() => {
+        window.location.href = 'Entrar.html';
+      }, 2000);
     } else {
-      alert(data.error || 'Erro ao cadastrar');
+      console.error('❌ Erro do servidor:', data);
+      alert(data.erro || 'Erro ao cadastrar: ' + (data.message || 'Erro desconhecido'));
+      botao.disabled = false;
+      botao.textContent = 'Cadastrar';
     }
   } catch (error) {
-    console.error('Erro:', error);
-    alert('Erro de conexão');
+    console.error('❌ Erro de requisição:', error);
+    alert('Erro de conexão: ' + error.message + '\n\nVerifique se o servidor está rodando em http://localhost:5550');
+    botao.disabled = false;
+    botao.textContent = 'Cadastrar';
   }
 });
 

@@ -93,7 +93,7 @@ function saveData(key, data) {
 // CRUD operations
 async function getUsers() {
   try {
-    const response = await fetch('http://localhost:3000/api/admin/users');
+    const response = await fetch('http://localhost:5550/api/admin/users');
     if (response.ok) {
       return await response.json();
     } else {
@@ -364,7 +364,7 @@ async function handleFormSubmit(e) {
 async function deleteUser(id) {
   if (confirm('Tem certeza que deseja excluir este usuário?')) {
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/users/${id}`, {
+      const response = await fetch(`http://localhost:5550/api/admin/users/${id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
