@@ -201,9 +201,9 @@
 }
 
 .quick-option:hover {
-  background: #FF6B9D;
+  background: #9e7a62;
   color: white;
-  border-color: #FF6B9D;
+  border-color:#9e7a62;
   transform: translateY(-2px);
 }
 
@@ -228,7 +228,7 @@
 }
 
 .chat-input:focus {
-  border-color: #FF6B9D;
+  border-color:#7a4a30;
 }
 
 .chat-send-btn {
@@ -265,7 +265,7 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #FF6B9D;
+  background: #6f4e37;
   border-radius: 10px;
 }
 
