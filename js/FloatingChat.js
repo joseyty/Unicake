@@ -138,32 +138,6 @@ function sendMessage(message) {
   });
 }
 
-// Enviar mensagem para o backend
-async function sendToBackend(message) {
-  try {
-    const response = await fetch('http://:5550/api/chat/send-message', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: message,
-        user_name: getUserName(),
-        user_email: getUserEmail()
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro na resposta do servidor');
-    }
-
-    const data = await response.json();
-    return data.response;
-  } catch (error) {
-    throw error;
-  }
-}
-
 // Funções utilitárias
 
 // Obter resposta do bot baseado na mensagem

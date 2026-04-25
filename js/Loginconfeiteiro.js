@@ -90,15 +90,7 @@ btnEntrar.addEventListener('click', async () => {
   // Animação de loading no botão
   btnEntrar.classList.add('loading');
 
-  try {
-    const response = await fetch('http://:5550/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: ev, password: sv })
-    });
 
-    const data = await response.json();
-    btnEntrar.classList.remove('loading');
 
     if (response.ok && data.user.tipo_usuario === 'confeiteiro') {
       localStorage.setItem('token', data.token);
@@ -114,16 +106,15 @@ btnEntrar.addEventListener('click', async () => {
       setField(fieldEmail, false);
       setField(fieldSenha, false);
     }
-  } catch (error) {
     btnEntrar.classList.remove('loading');
     console.error('Erro:', error);
     showToast('Erro de conexão', 'error');
-  }
-});
 
 // ── Tecla Enter nos campos ─────────────────────────────────
 [emailInput, senhaInput].forEach(el =>
   el.addEventListener('keydown', e => {
     if (e.key === 'Enter') btnEntrar.click();
   })
+);
+  }
 );

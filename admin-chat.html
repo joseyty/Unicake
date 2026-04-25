@@ -341,8 +341,8 @@
     // Carregar mensagens
     function loadMessages() {
       const endpoint = currentTab === 'pending'
-        ? '://:5550/api/chat/messages'
-        : '://:5550/api/chat/conversations';
+        ? '://:/api/chat/messages'
+        : '://:/api/chat/conversations';
 
       fetch(endpoint)
         .then(response => response.json())
@@ -435,7 +435,7 @@
         return;
       }
 
-      fetch('://:5550/api/chat/respond', {
+      fetch('://:/api/chat/respond', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
