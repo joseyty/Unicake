@@ -321,7 +321,8 @@ body {
             background: linear-gradient(180deg, #6B3E26 0%, #BA9A97 61.64%, #FFEBD8 100%);
             -webkit-background-clip: text; background-clip: text;
             letter-spacing: -2px;
-            pointer-events: none; user-select: none;
+            pointer-events: none; 
+            webkit-user-select: none;
             animation: fadeIn 1.1s ease forwards; opacity: 0;
         }
 
