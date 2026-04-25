@@ -138,12 +138,12 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
 
     const response = await fetch('http://localhost:4000/api/auth/register', {
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        nome, 
-        email, 
-        password_hash: senha, 
-        tipo_usuario: 'cliente' 
-      })
+     body: JSON.stringify({ 
+      nome, 
+      email, 
+      senha, 
+      tipo_usuario: 'cliente' 
+})
     });
 
     console.log('📥 Status da resposta:', response.status);

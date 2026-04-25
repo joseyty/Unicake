@@ -1,3 +1,7 @@
+app.use(express.json());
+const cors = require('cors');
+app.use(cors());
+
 require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
@@ -383,3 +387,5 @@ app.listen(PORT, () => {
 ╚════════════════════════════════════════╝
   `);
 });
+
+
