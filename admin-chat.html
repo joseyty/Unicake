@@ -314,7 +314,7 @@
 
     // Carregar estatísticas
     function loadStats() {
-      fetch('http://:3001/api/chat/conversations')
+      fetch('://:/api/chat/conversations')
         .then(response => response.json())
         .then(messages => {
           const total = messages.length;
@@ -341,8 +341,8 @@
     // Carregar mensagens
     function loadMessages() {
       const endpoint = currentTab === 'pending'
-        ? 'http://:5550/api/chat/messages'
-        : 'http://:5550/api/chat/conversations';
+        ? '://:5550/api/chat/messages'
+        : '://:5550/api/chat/conversations';
 
       fetch(endpoint)
         .then(response => response.json())
@@ -435,7 +435,7 @@
         return;
       }
 
-      fetch('http://:5550/api/chat/respond', {
+      fetch('://:5550/api/chat/respond', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
