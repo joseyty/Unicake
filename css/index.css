@@ -1173,7 +1173,9 @@ body {
     z-index: 200;
     padding: 6px;
    /* Firefox */
-scrollbar-color: #ccc transparent;
+::-webkit-scrollbar {
+  width: 6px;
+}
 
 /* Chrome, Edge, Safari */
 ::-webkit-scrollbar {
@@ -1188,7 +1190,9 @@ scrollbar-color: #ccc transparent;
   background-color: #ccc;
   border-radius: 10px;
 }
-    scrollbar-color: #d6bfae transparent;
+::-webkit-scrollbar {
+  width: 6px;
+}
 }
 .search-suggestions.show { display: block; }
 .search-suggestions::-webkit-scrollbar { width: 4px; }
