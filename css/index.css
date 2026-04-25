@@ -1527,24 +1527,3 @@ a {
 .card button:hover {
   background: #7a5233;
 }
-#btnTop {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: #a06e46;
-  color: white;
-  border: none;
-  padding: 12px 15px;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,.2);
-  display: none;
-  z-index: 999;
-  transition: all .3s;
-}
-
-#btnTop:hover {
-  background: #7a5233;
-  transform: scale(1.1);
-}
