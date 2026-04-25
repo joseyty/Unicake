@@ -189,8 +189,8 @@ body {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255,255,255,.5);
-            border: 1.5px solid rgba(160,120,80,.2);
+            background: var(--card-bg);
+            border: 1.5px solid rgba(107,76,56,.32);
             border-radius: 30px;
             padding: 0 14px;
             height: 36px;
@@ -198,10 +198,10 @@ body {
             transition: border-color .2s, box-shadow .2s;
         }
         .search:focus-within {
-            border-color: var(--pink);
-            box-shadow: 0 0 0 3px rgba(224,123,154,.12);
+            border-color: var(--nav-bg);
+            box-shadow: 0 0 0 3px rgba(107,76,56,.14);
         }
-        .search svg { color: var(--pink); flex-shrink: 0; }
+        .search svg { color: var(--brown-mid); flex-shrink: 0; }
         .search input {
             border: none; background: transparent; outline: none;
             font-family: 'Poppins', sans-serif; font-size: .83rem;
@@ -998,15 +998,15 @@ body {
     display: flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; border: none; border-radius: 50%;
     background: transparent; cursor: pointer; flex-shrink: 0;
-    color: #9e7a62; position: relative;
+    color: var(--brown-mid); position: relative;
     transition: background .2s, color .2s;
 }
-.filter-toggle:hover { background: rgba(224,123,154,.12); color: #e07b9a; }
-.filter-toggle.active { background: #e07b9a; color: #fff; }
+.filter-toggle:hover { background: rgba(107,76,56,.12); color: var(--nav-bg); }
+.filter-toggle.active { background: var(--nav-bg); color: var(--card-bg); }
 .filter-badge {
     position: absolute; top: -2px; right: -2px;
     width: 14px; height: 14px; border-radius: 50%;
-    background: #c0392b; color: #fff;
+    background: var(--brown2); color: var(--card-bg);
     font-size: .6rem; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
 }
