@@ -1,3 +1,20 @@
+const mysql = require('mysql2');
+
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'unicake'
+});
+
+db.connect((err) => {
+    if (err) {
+        console.log('❌ Erro ao conectar no banco:', err);
+    } else {
+        console.log('✅ Conectado ao MySQL');
+    }
+});
+
 app.use(express.json());
 const cors = require('cors');
 app.use(cors());
