@@ -168,13 +168,12 @@ body {
             padding: 0 32px;
             height: 62px;
             background: rgba(232,213,192,.75);
-           background: rgba(113, 81, 61)
-
-            -webkit-backdrop-filter: blur(4px);
-            backdrop-filter: blur(4px);
-            border-bottom: 1px solid rgba(160,110,70,.15);
-            transition: background .3s;
-        }
+           background: rgba(113, 81, 61);
+           -webkit-backdrop-filter: blur(4px);
+           backdrop-filter: blur(4px);
+           border-bottom: 1px solid rgba(160,110,70,.15);
+           transition: background .3s;
+           }
 
         .logo {
             font-family: 'Playfair Display', serif;
@@ -1155,7 +1154,7 @@ a {
     height: auto;
     padding-bottom: 2px;
     overflow-x: auto;
-    scrollbar-width: none;
+   scroll-behavior: smooth;
   }
 
   nav.menu::-webkit-scrollbar {
