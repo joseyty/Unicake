@@ -22,8 +22,8 @@
       <input type="text" id="searchInput" placeholder="Busque por item ou loja" autocomplete="off" />
       <button class="filter-toggle" id="filterToggle" title="Filtros">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="6" cy="12" r="2" fill="currentColor"/><circle cx="10" cy="18" r="2" fill="currentColor"/><circle cx="18" cy="6" r="2" fill="currentColor"/></svg>
-        <span class="filter-badge" id="filterBadge" style="display:none"></span>
-      </button>
+<span class="filter-badge hidden" id="filterBadge"></span>
+</button>
     </div>
     <div class="search-suggestions" id="searchSuggestions"></div>
     
@@ -118,7 +118,7 @@
       alt="Fatia de bolo de chocolate"
       onerror="this.style.display='none';document.getElementById('cake-fallback').style.display='flex';"
     />
-    <div class="cake-fallback" id="cake-fallback" style="display:none;">
+   <div class="cake-fallback hidden" id="cake-fallback">
       <svg width="90" height="80" viewBox="0 0 90 80" fill="none">
         <rect x="5" y="50" width="80" height="26" rx="8" fill="#c9a882" opacity=".5"/>
         <rect x="15" y="34" width="60" height="20" rx="6" fill="#a0785a" opacity=".5"/>
@@ -411,7 +411,7 @@
   </div>
 </section>
 
-<section class="section-block" style="margin-bottom:40px;">
+<section class="section-block section-block--spaced">
   <div class="section-header">
     <div class="section-title">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#c0392b"><path d="M12 2C12 2 5 8.5 5 14a7 7 0 0 0 14 0C19 8.5 12 2 12 2z"/></svg>
@@ -576,7 +576,7 @@
         
         <div class="c-summary">
             <div class="c-row"><span>Subtotal</span><span id="cSubtotal">R$ 0,00</span></div>
-            <div class="c-row c-row--disc" id="cDiscRow" style="display:none">
+            <div class="c-row c-row--disc hidden" id="cDiscRow">
                 <span id="cDiscLabel">Desconto</span><span id="cDiscVal">- R$ 0,00</span>
             </div>
             <div class="c-row"><span>Entrega</span><span id="cDelivery">R$ 5,00</span></div>
@@ -586,7 +586,7 @@
     </div>
  
     <div class="c-foot">
-        <p class="c-label" style="margin-bottom:8px">💳 Forma de Pagamento</p>
+        <p class="c-label c-label--mb">💳 Forma de Pagamento</p>
  
         <div class="c-pay-grid">
             <button class="c-pay-btn" id="pay-pix" onclick="cSetPay('pix')">
