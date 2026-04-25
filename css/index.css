@@ -35,7 +35,7 @@
 body {
   font-family: 'Poppins', sans-serif;
   background: var(--cream);
-  color: #be6008;
+  color: #c45f00;
   overflow-x: hidden;
 }
  
@@ -44,7 +44,7 @@ body {
       display: flex; align-items: center; gap: 20px;
       padding: 12px 32px;
       background: #fff;
-      box-shadow: 0 2px 12px rgba(197, 120, 4, 0.712);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       position: sticky; top: 0; z-index: 500;
     }
      .logo {
