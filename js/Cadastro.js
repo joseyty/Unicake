@@ -136,8 +136,7 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
     console.log('📤 Enviando cadastro para:', 'http://localhost:5550/api/auth/register');
     console.log('📋 Dados:', { nome, email, tipo_usuario: 'cliente' });
 
-    const response = await fetch('http://localhost:5550/api/auth/register', {
-      method: 'POST',
+    const response = await fetch('http://localhost:4000/api/auth/register', {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         nome, 
