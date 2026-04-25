@@ -38,6 +38,10 @@ body {
   color: #c45f00;
   overflow-x: hidden;
 }
+
+.hidden {
+  display: none;
+}
  
     
     .header {
