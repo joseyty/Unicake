@@ -66,29 +66,5 @@
         alert('Preencha email e senha');
         return;
       }
-
-      try {
-        const response = await fetch('http://localhost:4000/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: senha })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          // Salvar token e user no localStorage
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          showSuccessFeedback();
-          // Redirect to home page after success
-          setTimeout(() => window.location.href = 'index.html', 3000);
-        } else {
-          const errorMsg = document.getElementById('error-message');
-          errorMsg.textContent = data.error || 'Erro ao fazer login';
-          errorMsg.style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro de conexão');
-      }
-    });
+    }
+    );

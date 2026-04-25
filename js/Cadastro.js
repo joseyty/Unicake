@@ -132,19 +132,9 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
     return;
   }
 
-  try {
-    console.log('📤 Enviando cadastro para:', 'http://localhost:5550/api/auth/register');
-    console.log('📋 Dados:', { nome, email, tipo_usuario: 'cliente' });
+ 
 
-    const response = await fetch('http://localhost:4000/api/auth/register', {
-      headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ 
-      nome, 
-      email, 
-      senha, 
-      tipo_usuario: 'cliente' 
 })
-    });
 
     console.log('📥 Status da resposta:', response.status);
     console.log('📥 Tipo de conteúdo:', response.headers.get('content-type'));
@@ -159,7 +149,7 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
       // ✅ AUTO-LOGIN APÓS CADASTRO
       console.log('🔐 Iniciando login automático...');
       try {
-        const loginResponse = await fetch('http://localhost:5550/api/auth/login', {
+        const loginResponse = await fetch('http://:5550/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -211,13 +201,6 @@ document.querySelector('.btn-primary').addEventListener('click', async () => {
       botao.disabled = false;
       botao.textContent = 'Cadastrar';
     }
-  } catch (error) {
-    console.error('❌ Erro de requisição:', error);
-    alert('Erro de conexão: ' + error.message + '\n\nVerifique se o servidor está rodando em http://localhost:5550');
-    botao.disabled = false;
-    botao.textContent = 'Cadastrar';
-  }
-});
 
 
 

@@ -91,7 +91,7 @@ btnEntrar.addEventListener('click', async () => {
   btnEntrar.classList.add('loading');
 
   try {
-    const response = await fetch('http://localhost:5550/api/auth/login', {
+    const response = await fetch('http://:5550/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: ev, password: sv })
