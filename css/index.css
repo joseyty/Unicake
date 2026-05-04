@@ -171,7 +171,7 @@ body {
            background: rgba(113, 81, 61);
            -webkit-backdrop-filter: blur(4px);
            backdrop-filter: blur(4px);
-           border-bottom: 1px solid rgba(160,110,70,.15);
+           border-bottom: 1px solid rgb(255, 218, 188); 
            transition: background .3s;
            }
 
