@@ -1,0 +1,121 @@
+﻿*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --cream: #f7efe5;
+  --cream-strong: #fffaf5;
+  --beige: #e8d5c0;
+  --sand: #c9a882;
+  --rose: #e07b9a;
+  --rose-dark: #b35a6e;
+  --gold: #d4ac00;
+  --brown: #5c3220;
+  --brown-soft: #7a5540;
+  --brown-dark: #3b2318;
+  --ink: #2f1b13;
+  --muted: #8a6a55;
+  --line: rgba(92, 50, 32, 0.16);
+  --shadow: 0 18px 48px rgba(72, 38, 24, 0.14);
+  --soft-shadow: 0 8px 24px rgba(72, 38, 24, 0.1);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --content: 1160px;
+  --font-body: "Poppins", "Nunito", Arial, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-round: "Baloo 2", "Nunito", Arial, sans-serif;
+  --font-script: "Rouge Script", cursive;
+  font-size: 16px;
+}
+
+html[data-font-scale="1"] {
+  font-size: 18px;
+}
+
+html[data-font-scale="2"] {
+  font-size: 20px;
+}
+
+html[data-font-scale="-1"] {
+  font-size: 14px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 8%, rgba(224, 123, 154, 0.16), transparent 26rem),
+    radial-gradient(circle at 86% 20%, rgba(212, 172, 0, 0.13), transparent 22rem),
+    var(--beige);
+  overflow-x: hidden;
+}
+
+body.cart-open,
+body.support-open,
+body.access-open {
+  overflow: hidden;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+svg {
+  width: 1.1em;
+  height: 1.1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: 2000;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--brown-dark);
+  color: #fff;
+  transform: translateY(-140%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+

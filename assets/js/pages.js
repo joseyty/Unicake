@@ -1,56 +1,23 @@
 (function () {
-  const data = window.UniCakeData || {};
-  const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-
-  function ready(callback) {
-    if (document.readyState !== "loading") {
-      callback();
-      return;
-    }
-    document.addEventListener("DOMContentLoaded", callback);
-  }
-
-  function icon(name) {
-    const icons = {
-      heart: '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
-      store: '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 9l2-5h14l2 5"></path><path d="M5 9v11h14V9"></path><path d="M9 20v-6h6v6"></path></svg>',
-      truck: '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7h11v10H3z"></path><path d="M14 10h4l3 3v4h-7z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>',
-      check: '<svg aria-hidden="true" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-      arrow: '<svg aria-hidden="true" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>',
-    };
-    return icons[name] || "";
-  }
-
-  function stars(rating) {
-    return `<span class="stars" aria-label="Avaliação ${rating} de 5">★★★★★</span><span>${Number(rating).toFixed(1)}</span>`;
-  }
-
-  function initials(name) {
-    return name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  }
+  const U = window.UniCake;
+  if (!U) return;
 
   function productCard(product) {
     return `
       <article class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
         <div class="product-art" aria-hidden="true">
-          <span>${initials(product.name)}</span>
+          <span>${U.initials(product.name)}</span>
         </div>
         <div class="product-body">
           <div class="product-meta">
             <span>${product.badge}</span>
-            <span>${stars(product.rating)}</span>
+            <span>${U.stars(product.rating)}</span>
           </div>
           <h3>${product.name}</h3>
           <p>${product.description}</p>
           <small>${product.store}</small>
           <div class="product-footer">
-            <strong>${money.format(product.price)}</strong>
+            <strong>${U.money.format(product.price)}</strong>
             <button type="button" data-add-cart="${product.id}">Adicionar</button>
           </div>
         </div>
@@ -65,7 +32,7 @@
         <div>
           <h3>${store.name}</h3>
           <p>${store.specialty}</p>
-          <span>${stars(store.rating)} · ${store.time}</span>
+          <span>${U.stars(store.rating)} · ${store.time}</span>
         </div>
       </article>
     `;
@@ -77,15 +44,15 @@
     const party = document.getElementById("homeParty");
     const testimonials = document.getElementById("testimonialsGrid");
 
-    if (stores) stores.innerHTML = (data.stores || []).slice(0, 3).map(storeCard).join("");
-    if (popular) popular.innerHTML = (data.products || []).filter((product) => product.popular).map(productCard).join("");
-    if (party) party.innerHTML = (data.products || []).filter((product) => product.party).map(productCard).join("");
+    if (stores) stores.innerHTML = (U.data.stores || []).slice(0, 3).map(storeCard).join("");
+    if (popular) popular.innerHTML = (U.data.products || []).filter((product) => product.popular).map(productCard).join("");
+    if (party) party.innerHTML = (U.data.products || []).filter((product) => product.party).map(productCard).join("");
     if (testimonials) {
-      testimonials.innerHTML = (data.testimonials || [])
+      testimonials.innerHTML = (U.data.testimonials || [])
         .map(
           (item) => `
             <article class="testimonial-card reveal">
-              <div class="avatar" aria-hidden="true">${initials(item.name)}</div>
+              <div class="avatar" aria-hidden="true">${U.initials(item.name)}</div>
               <h3>${item.name}</h3>
               <div class="stars">★★★★★</div>
               <p>${item.text}</p>
@@ -108,7 +75,7 @@
 
     chips.innerHTML = [
       '<button type="button" data-category-filter="todos">Todos</button>',
-      ...(data.categories || []).map((category) => `<button type="button" data-category-filter="${category.id}">${category.label}</button>`),
+      ...(U.data.categories || []).map((category) => `<button type="button" data-category-filter="${category.id}">${category.label}</button>`),
     ].join("");
 
     if (search && params.get("q")) search.value = params.get("q");
@@ -116,7 +83,7 @@
     function applyFilters() {
       const term = (search?.value || "").trim().toLowerCase();
       const sortValue = sort?.value || "relevancia";
-      let products = [...(data.products || [])];
+      let products = [...(U.data.products || [])];
 
       if (activeCategory !== "todos") products = products.filter((product) => product.category === activeCategory);
       if (term) {
@@ -146,7 +113,7 @@
   function renderPromotions() {
     const grid = document.getElementById("promoGrid");
     if (!grid) return;
-    grid.innerHTML = (data.products || [])
+    grid.innerHTML = (U.data.products || [])
       .filter((product) => product.promo)
       .map(
         (product) => `
@@ -168,7 +135,7 @@
 
     function apply() {
       const term = (search?.value || "").trim().toLowerCase();
-      const stores = (data.stores || []).filter((store) =>
+      const stores = (U.data.stores || []).filter((store) =>
         [store.name, store.neighborhood, store.specialty, store.description].join(" ").toLowerCase().includes(term)
       );
 
@@ -184,7 +151,7 @@
                   <span>${store.specialty}</span>
                   <span>${store.neighborhood}</span>
                   <span>${store.time}</span>
-                  <span>${stars(store.rating)}</span>
+                  <span>${U.stars(store.rating)}</span>
                 </div>
                 <a href="ParaVoce.html?q=${encodeURIComponent(store.name)}">Ver produtos</a>
               </div>
@@ -201,17 +168,17 @@
   function renderCompanies() {
     const plans = document.getElementById("plansGrid");
     if (!plans) return;
-    plans.innerHTML = (data.plans || [])
+    plans.innerHTML = (U.data.plans || [])
       .map(
         (plan) => `
           <article class="plan-card ${plan.featured ? "is-featured" : ""}">
             ${plan.featured ? '<span class="plan-ribbon">Mais popular</span>' : ""}
-            <div class="plan-icon">${icon("heart")}</div>
+            <div class="plan-icon">${U.icons.heart}</div>
             <h2>${plan.name}</h2>
             <p>${plan.tagline}</p>
             <div class="plan-price"><strong>${plan.price}</strong><span>${plan.period}</span></div>
             <ul>
-              ${plan.features.map((feature) => `<li>${icon("check")}<span>${feature}</span></li>`).join("")}
+              ${plan.features.map((feature) => `<li>${U.icons.check}<span>${feature}</span></li>`).join("")}
             </ul>
             <button type="button" data-plan="${plan.name}">Escolher plano</button>
           </article>
@@ -232,7 +199,7 @@
     const faq = document.getElementById("faqList");
     const form = document.getElementById("supportForm");
     if (faq) {
-      faq.innerHTML = (data.faqs || [])
+      faq.innerHTML = (U.data.faqs || [])
         .map(
           (item) => `
             <details>
@@ -275,7 +242,7 @@
     items.forEach((item) => observer.observe(item));
   }
 
-  ready(() => {
+  U.ready(() => {
     renderHome();
     renderProductPage();
     renderPromotions();

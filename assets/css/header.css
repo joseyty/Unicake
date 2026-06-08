@@ -1,0 +1,235 @@
+﻿.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  border-bottom: 1px solid rgba(255, 242, 230, 0.28);
+  background: rgba(107, 76, 56, 0.96);
+  color: var(--cream);
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  width: min(100%, var(--content));
+  min-height: 70px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand,
+.footer-logo {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+}
+
+.brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--rose), #f3c7d2);
+  color: var(--brown-dark);
+  font-family: var(--font-round);
+  font-weight: 800;
+  box-shadow: inset 0 -3px 0 rgba(92, 50, 32, 0.18);
+}
+
+.brand-name,
+.footer-logo {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.45rem, 3vw, 1.8rem);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.site-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 999px;
+  color: rgba(255, 250, 245, 0.9);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.site-nav a:hover,
+.site-nav a.is-active {
+  background: rgba(255, 250, 245, 0.16);
+  color: #fff;
+}
+
+.site-nav a:hover {
+  transform: translateY(-1px);
+}
+
+.site-nav .nav-highlight {
+  background: linear-gradient(135deg, #ffd84b, var(--gold));
+  color: var(--brown-dark);
+  box-shadow: 0 8px 20px rgba(212, 172, 0, 0.24);
+}
+
+.site-nav .nav-highlight:hover,
+.site-nav .nav-highlight.is-active {
+  color: var(--brown-dark);
+  background: linear-gradient(135deg, #ffe37a, #d7a900);
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.search-box {
+  position: relative;
+  width: min(23vw, 16rem);
+  min-width: 11.5rem;
+  height: 2.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 250, 245, 0.3);
+  border-radius: 999px;
+  background: var(--cream-strong);
+  color: var(--muted);
+  padding: 0 0.4rem 0 0.85rem;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.82rem;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  display: none;
+  max-height: min(24rem, calc(100vh - 8rem));
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream-strong);
+  box-shadow: var(--shadow);
+  padding: 0.4rem;
+  z-index: 20;
+}
+
+.search-results.is-open {
+  display: block;
+}
+
+.search-results a,
+.search-results p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.search-results a:hover {
+  background: rgba(224, 123, 154, 0.16);
+}
+
+.search-results strong {
+  color: var(--rose-dark);
+  white-space: nowrap;
+}
+
+.icon-button,
+.cart-button,
+.login-link,
+.search-filter {
+  min-width: 2.45rem;
+  height: 2.45rem;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.icon-button,
+.search-filter {
+  background: transparent;
+  color: currentColor;
+}
+
+.search-filter {
+  color: var(--brown-soft);
+}
+
+.login-link,
+.cart-button {
+  background: var(--brown-dark);
+  color: var(--cream);
+  box-shadow: 0 8px 18px rgba(47, 27, 19, 0.24);
+}
+
+.login-link {
+  grid-template-columns: auto auto;
+  gap: 0.4rem;
+  padding: 0 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cart-button {
+  position: relative;
+  padding: 0;
+}
+
+.cart-total {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(107, 76, 56, 0.96);
+  border-radius: 50%;
+  background: var(--rose);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.menu-toggle {
+  display: none;
+}
+

@@ -1,0 +1,147 @@
+﻿.support-widget,
+.access-widget {
+  position: fixed;
+  right: 1rem;
+  z-index: 930;
+}
+
+.support-widget {
+  bottom: 1rem;
+}
+
+.access-widget {
+  bottom: 5rem;
+}
+
+.support-toggle,
+.access-toggle {
+  width: 3.35rem;
+  height: 3.35rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brown);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.access-toggle {
+  background: var(--rose-dark);
+}
+
+.support-panel,
+.access-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
+  width: min(calc(100vw - 2rem), 23rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream-strong);
+  box-shadow: var(--shadow);
+  transform: translateY(0.75rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.support-open .support-panel,
+.access-open .access-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.support-header,
+.access-panel header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.support-header p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.support-messages {
+  max-height: 16rem;
+  overflow: auto;
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.message {
+  width: fit-content;
+  max-width: 82%;
+  border-radius: var(--radius);
+  padding: 0.65rem 0.75rem;
+}
+
+.message p {
+  margin: 0;
+  line-height: 1.45;
+  font-size: 0.86rem;
+}
+
+.message span {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.message-bot {
+  background: rgba(232, 213, 192, 0.52);
+}
+
+.message-user {
+  justify-self: end;
+  background: var(--brown);
+  color: #fff;
+}
+
+.message-user span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.support-options,
+.access-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0 1rem 1rem;
+}
+
+.support-options button,
+.access-actions button {
+  font-size: 0.78rem;
+}
+
+.support-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.support-form input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem;
+}
+
+.access-panel {
+  width: min(calc(100vw - 2rem), 19rem);
+}
+
+.access-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 1rem;
+}
+

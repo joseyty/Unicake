@@ -1,0 +1,254 @@
+﻿@media (max-width: 1120px) {
+  .header-inner {
+    grid-template-columns: auto auto 1fr;
+  }
+
+  .menu-toggle {
+    display: inline-grid;
+  }
+
+  .site-nav {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    top: calc(100% + 0.5rem);
+    display: none;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    background: rgba(107, 76, 56, 0.98);
+    box-shadow: var(--shadow);
+  }
+
+  .site-nav.is-open {
+    display: flex;
+  }
+
+  .header-tools {
+    justify-self: end;
+  }
+
+  .search-box {
+    width: min(38vw, 20rem);
+  }
+
+  .hero-content,
+  .page-hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-copy {
+    max-width: 40rem;
+    padding-bottom: 0;
+  }
+
+  .cake-stage {
+    min-height: 18rem;
+  }
+
+  .product-grid,
+  .promo-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .header-inner {
+    grid-template-columns: auto auto;
+  }
+
+  .header-tools {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .search-box {
+    width: auto;
+    min-width: 0;
+  }
+
+  .login-link {
+    display: none;
+  }
+
+  .hero {
+    min-height: 37rem;
+    padding-top: 3rem;
+  }
+
+  .watermark {
+    font-size: clamp(5rem, 28vw, 11rem);
+  }
+
+  .store-grid,
+  .product-grid,
+  .promo-grid,
+  .why-grid,
+  .testimonials-grid,
+  .steps-grid,
+  .plans-grid,
+  .stores-grid,
+  .about-grid,
+  .support-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 620px) {
+  .content-section,
+  .page-hero,
+  .support-layout,
+  .auth-layout,
+  .category-strip {
+    width: min(100% - 1.5rem, var(--content));
+  }
+
+  .header-inner {
+    padding-inline: 0.75rem;
+  }
+
+  .brand-name {
+    font-size: 1.42rem;
+  }
+
+  .brand-mark {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .header-tools {
+    gap: 0.45rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cart-button,
+  .login-link,
+  .icon-button,
+  .search-filter {
+    min-width: 2.3rem;
+    height: 2.3rem;
+  }
+
+  .header-tools .cart-button {
+    position: fixed;
+    right: 0.75rem;
+    bottom: 8.65rem;
+    z-index: 940;
+    border-radius: 50%;
+  }
+
+  .header-tools .cart-total {
+    border-color: var(--beige);
+  }
+
+  .hero {
+    min-height: 35rem;
+    padding-inline: 0.75rem;
+  }
+
+  .hero h1:not(.watermark),
+  .page-hero h1 {
+    font-size: clamp(2.2rem, 14vw, 3.5rem);
+  }
+
+  .cake-stage img {
+    width: min(86vw, 25rem);
+  }
+
+  .filter-panel-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .store-grid,
+  .product-grid,
+  .promo-grid,
+  .why-grid,
+  .testimonials-grid,
+  .steps-grid,
+  .plans-grid,
+  .stores-grid,
+  .about-grid,
+  .support-layout,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-suggestions,
+  .pay-options,
+  .coupon-box div {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr;
+  }
+
+  .qty-control {
+    width: fit-content;
+  }
+
+  .support-widget,
+  .access-widget {
+    right: 0.75rem;
+  }
+
+  .support-widget {
+    bottom: 0.75rem;
+  }
+
+  .access-widget {
+    bottom: 4.7rem;
+  }
+
+  .support-panel,
+  .access-panel {
+    right: -0.2rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-tools {
+    grid-template-columns: 1fr auto;
+  }
+
+  .login-link {
+    display: none;
+  }
+
+  .hero {
+    min-height: 32rem;
+  }
+
+  .product-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .product-footer button {
+    width: 100%;
+  }
+}

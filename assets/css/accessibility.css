@@ -1,0 +1,46 @@
+﻿.access-contrast body {
+  background: #080604;
+  color: #fff;
+}
+
+.access-contrast .site-header,
+.access-contrast .site-footer,
+.access-contrast .btn-primary,
+.access-contrast .product-footer button,
+.access-contrast .plan-card button {
+  background: #000;
+  color: #fff;
+}
+
+.access-contrast .product-card,
+.access-contrast .store-card,
+.access-contrast .login-card,
+.access-contrast .support-card,
+.access-contrast .info-panel,
+.access-contrast .cart-drawer,
+.access-contrast .support-panel,
+.access-contrast .access-panel,
+.access-contrast details {
+  background: #111;
+  color: #fff;
+  border-color: #fff;
+}
+
+.access-links a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.18em;
+}
+
+.access-line body {
+  line-height: 1.85;
+}
+
+.access-motion *,
+.access-motion *::before,
+.access-motion *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+
