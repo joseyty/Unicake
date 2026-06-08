@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Para você</title>
+    <meta name="description" content="Explore bolos, cupcakes, tortas, doces e kits festa na UniCake." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/components.js"></script>
+    <script defer src="../assets/js/app.js"></script>
+  </head>
+  <body data-page="para-voce">
+    <div class="page-shell">
+      <div id="site-header"></div>
+
+      <main id="conteudo">
+        <section class="page-hero">
+          <div class="page-hero-inner">
+            <div>
+              <span class="eyebrow">Para você</span>
+              <h1>Escolha sua próxima sobremesa.</h1>
+              <p>Filtre por categoria, busque sua loja favorita e adicione produtos ao carrinho em poucos cliques.</p>
+            </div>
+            <aside class="hero-card">
+              <strong>UNICAKE10</strong>
+              <p>Use este cupom no carrinho para testar o fluxo de desconto.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <div class="filter-panel-inline">
+            <input id="productSearch" type="search" placeholder="Buscar por produto, loja ou sabor" aria-label="Buscar produtos" />
+            <select id="productSort" aria-label="Ordenar produtos">
+              <option value="relevancia">Ordenar por relevância</option>
+              <option value="menor">Menor preço</option>
+              <option value="maior">Maior preço</option>
+              <option value="avaliacao">Melhor avaliação</option>
+            </select>
+          </div>
+          <div class="chip-row" id="categoryChips" aria-label="Filtrar por categoria"></div>
+          <div class="product-grid" id="productsGrid"></div>
+        </section>
+      </main>
+
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-support"></div>
+    <div id="site-accessibility"></div>
+  </body>
+</html>

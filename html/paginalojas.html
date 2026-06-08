@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Lojas cadastradas</title>
+    <meta name="description" content="Conheça as confeitarias cadastradas na UniCake." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/components.js"></script>
+    <script defer src="../assets/js/app.js"></script>
+  </head>
+  <body data-page="lojas">
+    <div class="page-shell">
+      <div id="site-header"></div>
+
+      <main id="conteudo">
+        <section class="page-hero">
+          <div class="page-hero-inner">
+            <div>
+              <span class="eyebrow">Lojas cadastradas</span>
+              <h1>Confeitarias parceiras da UniCake.</h1>
+              <p>Veja especialidades, bairros, avaliações e acesse produtos de cada loja.</p>
+            </div>
+            <aside class="hero-card">
+              <strong>4.8+</strong>
+              <p>Avaliação média das lojas em destaque no catálogo.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <div class="filter-panel-inline">
+            <input id="storeSearch" type="search" placeholder="Buscar por loja, bairro ou especialidade" aria-label="Buscar lojas" />
+          </div>
+          <div class="stores-grid" id="storesGrid"></div>
+        </section>
+      </main>
+
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-support"></div>
+    <div id="site-accessibility"></div>
+  </body>
+</html>

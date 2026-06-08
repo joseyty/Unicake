@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Suporte</title>
+    <meta name="description" content="Central de suporte UniCake para pedidos, produtos, reclamações e empresas." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/components.js"></script>
+    <script defer src="../assets/js/app.js"></script>
+  </head>
+  <body data-page="suporte">
+    <div class="page-shell">
+      <div id="site-header"></div>
+
+      <main id="conteudo">
+        <section class="page-hero">
+          <div class="page-hero-inner">
+            <div>
+              <span class="eyebrow">Suporte</span>
+              <h1>Ajuda para pedidos, produtos e empresas.</h1>
+              <p>
+                Use o chat flutuante para respostas rápidas ou registre uma solicitação completa pelo formulário.
+              </p>
+            </div>
+            <aside class="hero-card">
+              <strong>24h</strong>
+              <p>Chat disponível em todas as páginas para dúvidas frequentes e encaminhamento.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="support-layout">
+          <article class="support-card">
+            <h2>Registrar solicitação</h2>
+            <form class="support-page-form" id="supportForm">
+              <label>
+                Nome
+                <input type="text" name="name" placeholder="Seu nome" required />
+              </label>
+              <label>
+                E-mail
+                <input type="email" name="email" placeholder="voce@email.com" required />
+              </label>
+              <label>
+                Assunto
+                <select name="subject" required>
+                  <option value="">Selecione</option>
+                  <option>Pedido</option>
+                  <option>Produto</option>
+                  <option>Reclamação</option>
+                  <option>Empresas</option>
+                  <option>Outro</option>
+                </select>
+              </label>
+              <label>
+                Mensagem
+                <textarea name="message" placeholder="Conte como podemos ajudar" required></textarea>
+              </label>
+              <button type="submit">Enviar solicitação</button>
+              <p class="form-status" id="supportFormStatus" role="status"></p>
+            </form>
+          </article>
+
+          <article class="support-card" id="faq">
+            <h2>Central de ajuda</h2>
+            <div id="faqList"></div>
+          </article>
+        </section>
+      </main>
+
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-support"></div>
+    <div id="site-accessibility"></div>
+  </body>
+</html>

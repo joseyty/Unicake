@@ -1,47 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Unicake</title>
-  <link rel="stylesheet" href="entrar.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Entrar</title>
+    <meta name="description" content="Acesse sua conta UniCake." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/components.js"></script>
+    <script defer src="../assets/js/app.js"></script>
+  </head>
+  <body data-page="entrar">
+    <div class="page-shell">
+      <div id="site-header"></div>
 
-  <main class="login-container">
-    <section class="login-card">
-      <h1>Entrar</h1>
-      <p class="subtitle">Acesse sua conta para continuar</p>
+      <main id="conteudo" class="auth-layout">
+        <section class="login-card" aria-labelledby="login-title">
+          <span class="eyebrow">Conta UniCake</span>
+          <h1 id="login-title">Entrar</h1>
+          <p>Acesse sua conta para acompanhar pedidos, salvar lojas e revisar compras.</p>
+          <form id="loginForm">
+            <label>
+              E-mail
+              <input type="email" name="email" autocomplete="email" placeholder="voce@email.com" required />
+            </label>
+            <label>
+              Senha
+              <input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required />
+            </label>
+            <button type="submit">Entrar</button>
+          </form>
+          <button class="google-button" type="button">Entrar com Google</button>
+          <p class="form-status" id="loginStatus" role="status"></p>
+          <p class="register">Ainda não tem conta? <a href="Suporte.html">Peça ajuda no suporte</a></p>
+        </section>
+      </main>
 
-      <form>
-        <div class="input-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" placeholder="Digite seu e-mail" required />
-        </div>
-
-        <div class="input-group">
-          <label for="senha">Senha</label>
-          <input type="password" id="senha" placeholder="Digite sua senha" required />
-        </div>
-
-        <button type="submit" class="btn-login">Entrar</button>
-      </form>
-
-      <div class="divider">
-        <span>ou</span>
-      </div>
-
-      <button class="btn-google">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-        Entrar com Google
-      </button>
-
-      <p class="register">
-        Não tem conta?
-        <a href="#">Cadastre-se</a>
-      </p>
-    </section>
-  </main>
-
-</body>
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-support"></div>
+    <div id="site-accessibility"></div>
+  </body>
 </html>
