@@ -102,17 +102,25 @@
   }
 
   function initHeader() {
-    const menuToggle = document.querySelector(".menu-toggle");
-    const nav = document.querySelector(".site-nav");
+    let menuToggle = document.querySelector(".menu-toggle");
+    let nav = document.querySelector(".site-nav");
+    let results = null;
     if (menuToggle && nav) {
       menuToggle.addEventListener("click", () => {
         const open = nav.classList.toggle("is-open");
         menuToggle.setAttribute("aria-expanded", String(open));
       });
+
+      nav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          nav.classList.remove("is-open");
+          menuToggle.setAttribute("aria-expanded", "false");
+        });
+      });
     }
 
     const input = document.getElementById("siteSearch");
-    const results = document.getElementById("siteSearchResults");
+    results = document.getElementById("siteSearchResults");
     if (input && results) {
       const showResults = () => {
         const term = input.value.trim().toLowerCase();
@@ -156,6 +164,14 @@
         if (!event.target.closest(".search-box")) results.classList.remove("is-open");
       });
     }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        nav?.classList.remove("is-open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        results?.classList.remove("is-open");
+      }
+    });
 
     document.querySelector("[data-search-promo]")?.addEventListener("click", () => {
       window.location.href = "promocoes.html";

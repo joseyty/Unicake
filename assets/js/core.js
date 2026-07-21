@@ -69,6 +69,45 @@
     el.timer = window.setTimeout(() => el.classList.remove("is-visible"), 2800);
   }
 
+  function initGlobalUX() {
+    if (!document.body) return;
+
+    let progressBar = document.querySelector(".progress-bar");
+    if (!progressBar) {
+      progressBar = document.createElement("div");
+      progressBar.className = "progress-bar";
+      progressBar.setAttribute("aria-hidden", "true");
+      document.body.prepend(progressBar);
+    }
+
+    let backToTop = document.querySelector(".back-to-top");
+    if (!backToTop) {
+      backToTop = document.createElement("button");
+      backToTop.className = "back-to-top";
+      backToTop.type = "button";
+      backToTop.setAttribute("aria-label", "Voltar ao topo");
+      backToTop.innerHTML = `${icons.arrow} <span>Topo</span>`;
+      document.body.appendChild(backToTop);
+    }
+
+    const updateScrollUI = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, scrollTop / max)) : 0;
+
+      progressBar.style.transform = `scaleX(${progress})`;
+      backToTop.classList.toggle("is-visible", scrollTop > 480);
+    };
+
+    updateScrollUI();
+    window.addEventListener("scroll", updateScrollUI, { passive: true });
+    window.addEventListener("resize", updateScrollUI);
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      backToTop.blur();
+    });
+  }
+
   window.UniCake = {
     data,
     icons,
@@ -81,4 +120,8 @@
     stars,
     toast,
   };
+
+  window.UniCake.ready(() => {
+    initGlobalUX();
+  });
 })();

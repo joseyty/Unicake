@@ -6,6 +6,7 @@
   background: rgba(107, 76, 56, 0.96);
   color: var(--cream);
   backdrop-filter: blur(12px);
+  box-shadow: 0 10px 24px rgba(47, 27, 19, 0.14);
 }
 
 .header-inner {
@@ -126,6 +127,19 @@
   background: transparent;
   color: var(--ink);
   font-size: 0.82rem;
+}
+
+.search-box:focus-within {
+  border-color: rgba(224, 123, 154, 0.84);
+  box-shadow: 0 0 0 3px rgba(224, 123, 154, 0.16);
+}
+
+.site-nav a:focus-visible,
+.icon-button:focus-visible,
+.cart-button:focus-visible,
+.login-link:focus-visible,
+.search-filter:focus-visible {
+  outline-offset: 2px;
 }
 
 .search-results {

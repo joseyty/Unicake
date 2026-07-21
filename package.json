@@ -1,0 +1,26 @@
+{
+  "name": "unicake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joseyty/Unicake.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joseyty/Unicake/issues"
+  },
+  "homepage": "https://github.com/joseyty/Unicake#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

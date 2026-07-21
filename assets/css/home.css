@@ -168,6 +168,35 @@
   animation: floatCake 4s ease-in-out infinite;
 }
 
+.hero-highlights {
+  width: min(100% - 2.5rem, var(--content));
+  margin: -0.75rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hero-highlight {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(92, 50, 32, 0.12);
+  background: rgba(255, 250, 245, 0.84);
+  box-shadow: var(--soft-shadow);
+}
+
+.hero-highlight strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--brown-dark);
+  font-weight: 800;
+}
+
+.hero-highlight span {
+  color: var(--brown-soft);
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
 @keyframes floatCake {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-0.7rem); }

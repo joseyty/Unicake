@@ -38,6 +38,10 @@
     grid-template-columns: 1fr;
   }
 
+  .hero-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-copy {
     max-width: 40rem;
     padding-bottom: 0;
@@ -164,6 +168,10 @@
   .hero {
     min-height: 35rem;
     padding-inline: 0.75rem;
+  }
+
+  .hero-highlights {
+    grid-template-columns: 1fr;
   }
 
   .hero h1:not(.watermark),

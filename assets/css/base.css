@@ -28,6 +28,16 @@
   font-size: 16px;
 }
 
+:focus-visible {
+  outline: 3px solid rgba(224, 123, 154, 0.7);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(224, 123, 154, 0.28);
+  color: var(--brown-dark);
+}
+
 html[data-font-scale="1"] {
   font-size: 18px;
 }
@@ -116,6 +126,77 @@ main {
 }
 
 .skip-link:focus {
+  transform: translateY(0);
+}
+
+.progress-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1100;
+  height: 3px;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--rose), var(--gold));
+  box-shadow: 0 0 16px rgba(224, 123, 154, 0.45);
+}
+
+.back-to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1050;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 0.95rem;
+  background: var(--brown-dark);
+  color: #fff;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  z-index: 1100;
+  transform: translate(-50%, 16px);
+  min-width: min(90vw, 18rem);
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
+  background: rgba(60, 35, 24, 0.95);
+  color: #fff;
+  text-align: center;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
   transform: translateY(0);
 }
 
