@@ -221,11 +221,60 @@
 
   function renderLogin() {
     const form = document.getElementById("loginForm");
+    const googleButton = document.querySelector(".google-button");
+    const Auth = window.UniCakeAuth;
+
     form?.addEventListener("submit", (event) => {
       event.preventDefault();
+      const email = form.email.value;
+      const password = form.password.value;
       const status = document.getElementById("loginStatus");
-      if (status) status.textContent = "Login simulado com sucesso. Integre aqui sua API de autenticação.";
+
+      const user = Auth?.handleTraditionalLogin(email, password);
+      if (user) {
+        if (status) {
+          status.textContent = `Bem-vindo, ${user.name}! Login realizado com sucesso.`;
+          status.style.color = "green";
+        }
+        // Redirecionar após login bem-sucedido
+        setTimeout(() => {
+          window.location.href = "../index.html";
+        }, 1500);
+      } else {
+        if (status) {
+          status.textContent = "Erro ao fazer login. Verifique as credenciais.";
+          status.style.color = "red";
+        }
+      }
     });
+
+    // Handle Google Sign-In
+    if (googleButton && window.google && window.google.accounts) {
+      window.google.accounts.id.initialize({
+        client_id: "YOUR_GOOGLE_CLIENT_ID_HERE", // Substitua com seu CLIENT_ID
+        callback: (response) => {
+          const user = Auth?.handleGoogleCallback(response);
+          if (user) {
+            const status = document.getElementById("loginStatus");
+            if (status) {
+              status.textContent = `Bem-vindo, ${user.name}! Você foi autenticado com Google.`;
+              status.style.color = "green";
+            }
+            // Redirecionar após login bem-sucedido
+            setTimeout(() => {
+              window.location.href = "../index.html";
+            }, 1500);
+          }
+        },
+      });
+
+      // Render Google Sign-In button
+      window.google.accounts.id.renderButton(googleButton, {
+        theme: "outline",
+        size: "large",
+        width: "100%",
+      });
+    }
   }
 
   function initReveal() {
