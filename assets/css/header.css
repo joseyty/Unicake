@@ -222,6 +222,79 @@
   font-weight: 600;
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-button {
+  background: var(--brown-dark);
+  color: var(--cream);
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0 0.75rem;
+  min-height: 2.45rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  place-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(47, 27, 19, 0.24);
+  transition: background 0.2s ease;
+}
+
+.user-button:hover {
+  background: var(--brown);
+}
+
+.user-avatar,
+.user-avatar-initials {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.user-avatar-initials {
+  background: var(--rose);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+.logout-button {
+  background: var(--rose-dark);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #c94141;
+}
+
+.logout-button:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 2px;
+}
+
 .cart-button {
   position: relative;
   padding: 0;

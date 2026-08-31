@@ -108,14 +108,26 @@
     },
   };
 
+  // Verificar sessão ao carregar página
+  function checkAndRestoreSession() {
+    const user = window.UniCakeAuth.getUser();
+    if (user) {
+      console.log("✅ Sessão restaurada:", user.name);
+      // Disparar evento de sessão restaurada
+      document.dispatchEvent(new CustomEvent("unicake:session-restored", { detail: user }));
+    }
+  }
+
   // Initialize when DOM is ready
   const U = window.UniCake;
   if (U && U.ready) {
     U.ready(() => {
+      checkAndRestoreSession();
       window.UniCakeAuth.initGoogleSignIn();
     });
   } else {
     document.addEventListener("DOMContentLoaded", () => {
+      checkAndRestoreSession();
       window.UniCakeAuth.initGoogleSignIn();
     });
   }

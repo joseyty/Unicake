@@ -45,10 +45,27 @@
               </button>
               <div class="search-results" id="siteSearchResults"></div>
             </div>
-            <a class="login-link" href="Entrar.html" aria-label="Entrar">
-              ${U.icons.user}
-              <span>Entrar</span>
-            </a>
+            <div class="user-section">
+              ${
+                window.UniCakeAuth?.isLoggedIn()
+                  ? (() => {
+                      const user = window.UniCakeAuth.getUser();
+                      return `
+                        <div class="user-menu">
+                          <button class="user-button" type="button" aria-label="Menu do usuário">
+                            ${user.picture ? `<img src="${user.picture}" alt="${user.name}" class="user-avatar">` : `<div class="user-avatar-initials">${U.initials(user.name)}</div>`}
+                            <span>${user.name.split(" ")[0]}</span>
+                          </button>
+                          <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
+                        </div>
+                      `;
+                    })()
+                  : `<a class="login-link" href="Entrar.html" aria-label="Entrar">
+                      ${U.icons.user}
+                      <span>Entrar</span>
+                    </a>`
+              }
+            </div>
             <button class="cart-button" type="button" data-cart-open aria-label="Abrir carrinho">
               ${U.icons.cart}
               <span class="cart-total" data-cart-count>0</span>
@@ -182,5 +199,22 @@
     renderHeader();
     renderFooter();
     initHeader();
+
+    // Adicionar event listener para logout
+    const logoutButton = document.querySelector("[data-logout]");
+    if (logoutButton) {
+      logoutButton.addEventListener("click", () => {
+        if (confirm("Tem certeza que deseja sair?")) {
+          window.UniCakeAuth?.logout();
+          window.location.href = "Entrar.html";
+        }
+      });
+    }
+
+    // Adicionar event listener para restauração de sessão
+    document.addEventListener("unicake:session-restored", (event) => {
+      const user = event.detail;
+      console.log("✅ Sessão do usuário restaurada:", user.name);
+    });
   });
 })();
