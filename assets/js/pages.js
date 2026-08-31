@@ -251,7 +251,7 @@
     // Handle Google Sign-In
     if (googleButton && window.google && window.google.accounts) {
       window.google.accounts.id.initialize({
-        client_id: "YOUR_GOOGLE_CLIENT_ID_HERE", // Substitua com seu CLIENT_ID
+        client_id: "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.comSS", // Substitua com seu CLIENT_ID
         callback: (response) => {
           const user = Auth?.handleGoogleCallback(response);
           if (user) {

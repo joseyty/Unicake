@@ -1,6 +1,6 @@
 (function () {
   const AUTH_STORAGE_KEY = "unicake.auth";
-  const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID_HERE";
+  const GOOGLE_CLIENT_ID = "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.com";
 
   // Expose auth functions to window
   window.UniCakeAuth = {
