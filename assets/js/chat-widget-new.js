@@ -63,8 +63,8 @@
     const chatWindow = document.getElementById("chatWindow");
     const form = document.getElementById("chatForm");
     const input = document.getElementById("chatInput");
-    const messagesDiv = document.getElementById("chatMessages");
     let chat = chatParam;
+    let lastMessageCount = chat ? chat.mensagens.length : 0;
 
     // Toggle da janela
     toggle?.addEventListener("click", () => {
@@ -87,6 +87,7 @@
         
         // Pega versão atualizada após marcar como lida
         chat = Chat.getChat(chat.id);
+        lastMessageCount = chat.mensagens.length;
         renderMessages(chat);
         input.focus();
       } else {
@@ -94,92 +95,46 @@
       }
     });
 
-  // Enviar mensagem
-form?.addEventListener("submit", (e) => {
-  e.preventDefault();
+    // Enviar mensagem
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const texto = input.value.trim();
 
-  const texto = input.value.trim();
+      if (texto && chat && chat.status === "aberto") {
+        Chat.enviarMensagem(chat.id, texto, "cliente");
+        input.value = "";
+        input.focus();
+        
+        // Atualiza a conversa após enviar
+        chat = Chat.getChat(chat.id);
+        lastMessageCount = chat.mensagens.length;
+        renderMessages(chat);
+      }
+    });
 
-  if (!texto || !chat || chat.status !== "aberto") {
-    return;
-  }
-
-  Chat.enviarMensagem(chat.id, texto, "cliente");
-
-  input.value = "";
-  input.focus();
-
-  chat = Chat.getChat(chat.id);
-
-  renderMessages(chat);
-  updateUnreadIndicator(chat);
-});
-
-
-// COLOCA ESSE BLOCO AQUI
-window.addEventListener("unicake:chats-updated", () => {
-  if (!chat) return;
-
-  const chatAtualizado = Chat.getChat(chat.id);
-
-  if (!chatAtualizado) return;
-
-  chat = chatAtualizado;
-
-  renderMessages(chat);
-  updateUnreadIndicator(chat);
-});
-
-
-// FECHA initChatEvents
-}
-
-
-// DEPOIS CONTINUA O QUE VOCÊ JÁ TEM
-    // Sincronizar mensagens em tempo real
-  setInterval(() => {
-    if (!chat) return;
-
-    const atualizado = Chat.getChat(chat.id);
-    if (!atualizado) return;
-
-    const mudou =
-      atualizado.mensagens.length !== chat.mensagens.length ||
-      atualizado.ultimaMensagemEm !== chat.ultimaMensagemEm;
-
-    chat = atualizado;
-
-    if (mudou) {
+    // Renderizar mensagens iniciais se chat já existe
+    if (chat) {
       renderMessages(chat);
+      updateUnreadIndicator(chat);
     }
 
-    updateUnreadIndicator(chat);
-  }, 500);
+    // ÚNICO event listener - sem duplicatas
+    const handleChatUpdate = () => {
+      if (!chat) return;
 
-} // fecha initChatEvents(chat)
+      const chatAtualizado = Chat.getChat(chat.id);
+      if (!chatAtualizado) return;
 
-function renderMessages(chat) {
-  const messagesDiv = document.getElementById("chatMessages");
-  if (!messagesDiv) return;
+      // Só renderiza se realmente mudou
+      if (chatAtualizado.mensagens.length !== lastMessageCount) {
+        lastMessageCount = chatAtualizado.mensagens.length;
+        chat = chatAtualizado;
+        renderMessages(chat);
+        updateUnreadIndicator(chat);
+      }
+    };
 
-  // ...
-
-// ATUALIZAR QUANDO CLIENTE/SUPORTE MANDA MENSAGEM
-window.addEventListener("unicake:chats-updated", () => {
-  if (!chat) return;
-
-  const chatAtualizado = Chat.getChat(chat.id);
-
-  if (!chatAtualizado) return;
-
-  chat = chatAtualizado;
-
-  // Atualiza as mensagens na tela
-  renderMessages(chat);
-
-  // Atualiza bolinha de não lidas
-  updateUnreadIndicator(chat);
-});
+    window.addEventListener("unicake:chats-updated", handleChatUpdate);
   }
 
   function renderMessages(chat) {

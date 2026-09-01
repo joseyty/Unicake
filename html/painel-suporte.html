@@ -379,7 +379,34 @@
         transform: translateY(0);
       }
 
-      .no-chat-selected {
+      .delete-chat-btn {
+        padding: 0.65rem 1.25rem;
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        border: 0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+      }
+
+      .delete-chat-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(108, 117, 125, 0.5);
+        background: linear-gradient(135deg, #5a6268, #495057);
+      }
+
+      .delete-chat-btn:active {
+        transform: translateY(0);
+      }
+
+      .chat-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
         display: grid;
         place-items: center;
         min-height: 100%;
@@ -500,7 +527,10 @@
               <small id="chatClienteEmail"></small>
               <span class="chat-status-badge" id="chatStatus"></span>
             </div>
-            <button class="close-chat-btn" id="closeChat">Fechar conversa</button>
+            <div class="chat-actions">
+              <button class="close-chat-btn" id="closeChat">Fechar conversa</button>
+              <button class="delete-chat-btn" id="deleteChat">🗑️ Deletar</button>
+            </div>
           </div>
 
           <div class="messages-container" id="messagesContainer"></div>
@@ -526,186 +556,286 @@
     <script src="../assets/js/core.js"></script>
     <script src="../assets/js/chat.js"></script>
     <script src="../assets/js/support-auth.js"></script>
-      const Chat = window.UniCakeChat;
 
-      if (!Chat) {
-        alert("Sistema de chat não disponível");
-        location.href = "../index.html";
-      }
+    <script>
+(() => {
+  const Chat = window.UniCakeChat;
 
-      // Verificar autenticação
-      if (!window.UniCakeSupportAuth?.isLoggedIn()) {
-        location.href = "login-suporte.html";
-      }
+  if (!Chat) {
+    console.error("UniCakeChat não carregou.");
+    return;
+  }
 
-      let chatAtivo = null;
+  let chatAtivo = null;
 
-      function renderChatsList() {
-        const list = document.getElementById("chatsList");
-        const chats = Chat.getAllChats();
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = String(text ?? "");
+    return div.innerHTML;
+  }
 
-        if (chats.length === 0) {
-          list.innerHTML = '<p style="padding: 1rem; opacity: 0.7;">Nenhuma conversa ainda</p>';
-          return;
-        }
+  function updateStats() {
+    const stats = Chat.getEstatisticas();
 
-        list.innerHTML = chats
-          .sort((a, b) => new Date(b.ultimaMensagemEm || b.criadoEm) - new Date(a.ultimaMensagemEm || a.criadoEm))
-          .map(
-            (chat) => `
-              <li class="chat-item ${chatAtivo?.id === chat.id ? "ativo" : ""}" data-chat-id="${chat.id}">
-                <div class="chat-item-name">
-                  ${chat.clienteNome}
-                  ${chat.naoLidosPorSuporte > 0 ? `<span class="chat-unread-badge">${chat.naoLidosPorSuporte}</span>` : ""}
-                </div>
-                <div class="chat-item-preview">${chat.ultimaMensagem || "Clique para iniciar"}</div>
-              </li>
-            `
-          )
-          .join("");
+    const abertos = document.getElementById("statAbertos");
+    const naoLidos = document.getElementById("statNaoLidos");
+    const total = document.getElementById("statTotal");
 
-        document.querySelectorAll(".chat-item").forEach((item) => {
-          item.addEventListener("click", () => {
-            const chatId = item.dataset.chatId;
-            abrirChat(chatId);
-          });
-        });
-      }
+    if (abertos) abertos.textContent = stats.abertos;
+    if (naoLidos) naoLidos.textContent = stats.naoLidos;
+    if (total) total.textContent = stats.total;
+  }
 
-      function abrirChat(chatId) {
-        chatAtivo = Chat.getChat(chatId);
-        if (!chatAtivo) return;
+  function renderChatsList() {
+    const list = document.getElementById("chatsList");
 
-        Chat.marcarComoLido(chatId, "suporte");
+    if (!list) return;
 
-        // UI
-        document.getElementById("noChat").style.display = "none";
-        document.getElementById("chatArea").classList.add("ativo");
+    const chats = Chat.getAllChats();
 
-        document.getElementById("chatClienteName").textContent = chatAtivo.clienteNome;
-        document.getElementById("chatClienteEmail").textContent = chatAtivo.clienteEmail;
+    if (!chats.length) {
+      list.innerHTML = `
+        <p style="padding:15px;opacity:.7">
+          Nenhuma conversa ainda
+        </p>
+      `;
+      return;
+    }
 
-        const statusEl = document.getElementById("chatStatus");
-        statusEl.textContent = chatAtivo.status === "aberto" ? "Aberto" : "Fechado";
-        statusEl.className = `chat-status-badge ${chatAtivo.status}`;
+    list.innerHTML = [...chats]
+      .sort(
+        (a, b) =>
+          new Date(b.ultimaMensagemEm || b.criadoEm) -
+          new Date(a.ultimaMensagemEm || a.criadoEm)
+      )
+      .map(
+        chat => `
+          <li
+            class="chat-item ${chatAtivo?.id === chat.id ? "ativo" : ""}"
+            data-chat-id="${chat.id}"
+          >
+            <div class="chat-item-name">
+              ${escapeHtml(chat.clienteNome)}
 
-        renderMessages();
-        renderChatsList();
-        updateStats();
-      }
+              ${
+                chat.naoLidosPorSuporte > 0
+                  ? `<span class="chat-unread-badge">
+                      ${chat.naoLidosPorSuporte}
+                    </span>`
+                  : ""
+              }
+            </div>
 
-      function renderMessages() {
-        const container = document.getElementById("messagesContainer");
+            <div class="chat-item-preview">
+              ${escapeHtml(chat.ultimaMensagem || "Clique para abrir")}
+            </div>
+          </li>
+        `
+      )
+      .join("");
 
-        const html = chatAtivo.mensagens
-          .map(
-            (msg) => `
-              <div class="message ${msg.remetente}">
-                <div class="message-content">${escapeHtml(msg.texto)}</div>
-                <small class="message-time">${new Date(msg.timestamp).toLocaleTimeString("pt-BR")}</small>
-              </div>
-            `
-          )
-          .join("");
-
-        container.innerHTML = html;
-
-        // Auto-scroll
-        setTimeout(() => {
-          container.scrollTop = container.scrollHeight;
-        }, 100);
-      }
-
-      function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      function updateStats() {
-        const stats = Chat.getEstatisticas();
-        document.getElementById("statAbertos").textContent = stats.abertos;
-        document.getElementById("statNaoLidos").textContent = stats.naoLidos;
-        document.getElementById("statTotal").textContent = stats.total;
-      }
-
-      // EVENTOS
-      document.getElementById("supportReplyForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        const input = document.getElementById("replyInput");
-        const texto = input.value.trim();
-
-        if (texto && chatAtivo && chatAtivo.status === "aberto") {
-          Chat.enviarMensagem(chatAtivo.id, texto, "suporte");
-          input.value = "";
-          input.focus();
-          renderMessages();
-        }
+    document.querySelectorAll(".chat-item").forEach(item => {
+      item.addEventListener("click", () => {
+        abrirChat(item.dataset.chatId);
       });
+    });
+  }
 
-      document.getElementById("closeChat").addEventListener("click", () => {
-        if (confirm("Tem certeza que quer fechar esta conversa?")) {
-          Chat.fecharChat(chatAtivo.id);
-          chatAtivo = null;
-          document.getElementById("chatArea").classList.remove("ativo");
-          document.getElementById("noChat").style.display = "grid";
-          renderChatsList();
-          updateStats();
-        }
-      });
+  function abrirChat(chatId) {
+    chatAtivo = Chat.getChat(chatId);
 
-      document.getElementById("searchChats").addEventListener("input", (e) => {
-        const termo = e.target.value;
-        const list = document.getElementById("chatsList");
+    if (!chatAtivo) return;
 
-        if (!termo.trim()) {
-          renderChatsList();
-          return;
-        }
+    Chat.marcarComoLido(chatId, "suporte");
 
-        const resultados = Chat.buscarChats(termo);
-        list.innerHTML = resultados
-          .map(
-            (chat) => `
-              <li class="chat-item" data-chat-id="${chat.id}">
-                <div class="chat-item-name">
-                  ${chat.clienteNome}
-                  ${chat.naoLidosPorSuporte > 0 ? `<span class="chat-unread-badge">${chat.naoLidosPorSuporte}</span>` : ""}
-                </div>
-                <div class="chat-item-preview">${chat.ultimaMensagem || "Clique para iniciar"}</div>
-              </li>
-            `
-          )
-          .join("");
+    chatAtivo = Chat.getChat(chatId);
 
-        document.querySelectorAll(".chat-item").forEach((item) => {
-          item.addEventListener("click", () => {
-            abrirChat(item.dataset.chatId);
-          });
-        });
-      });
+    const noChat = document.getElementById("noChat");
+    const chatArea = document.getElementById("chatArea");
 
-      // Atualizar em tempo real
-      window.addEventListener("unicake:chats-updated", () => {
-        if (chatAtivo) {
-          chatAtivo = Chat.getChat(chatAtivo.id);
-          renderMessages();
-        }
-        renderChatsList();
-        updateStats();
-      });
+    if (noChat) noChat.style.display = "none";
+    if (chatArea) chatArea.classList.add("ativo");
 
-      // Logout
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        if (confirm("Tem certeza que quer sair?")) {
-          window.UniCakeSupportAuth?.logout();
-          location.href = "login-suporte.html";
-        }
-      });
+    const nome = document.getElementById("chatClienteName");
+    const email = document.getElementById("chatClienteEmail");
+    const status = document.getElementById("chatStatus");
 
-      // Inicializar
+    if (nome) nome.textContent = chatAtivo.clienteNome;
+    if (email) email.textContent = chatAtivo.clienteEmail;
+
+    if (status) {
+      status.textContent =
+        chatAtivo.status === "aberto" ? "Aberto" : "Fechado";
+
+      status.className =
+        "chat-status-badge " + chatAtivo.status;
+    }
+
+    renderMessages();
+    updateStats();
+  }
+
+  function renderMessages() {
+    if (!chatAtivo) return;
+
+    const container =
+      document.getElementById("messagesContainer");
+
+    if (!container) return;
+
+    container.innerHTML = chatAtivo.mensagens
+      .map(
+        msg => `
+          <div class="message ${msg.remetente}">
+            <div class="message-content">
+              ${escapeHtml(msg.texto)}
+            </div>
+
+            <small class="message-time">
+              ${new Date(msg.timestamp).toLocaleTimeString(
+                "pt-BR",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                }
+              )}
+            </small>
+          </div>
+        `
+      )
+      .join("");
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // RESPONDER PELO PAINEL
+  document
+    .getElementById("supportReplyForm")
+    ?.addEventListener("submit", e => {
+      e.preventDefault();
+
+      if (!chatAtivo) return;
+
+      const input =
+        document.getElementById("replyInput");
+
+      if (!input) return;
+
+      const texto = input.value.trim();
+
+      if (!texto) return;
+
+      Chat.enviarMensagem(
+        chatAtivo.id,
+        texto,
+        "suporte"
+      );
+
+      input.value = "";
+      input.focus();
+
+      chatAtivo =
+        Chat.getChat(chatAtivo.id);
+
+      renderMessages();
       renderChatsList();
       updateStats();
-    </script>
+    });
+
+  // FECHAR CHAT
+  document
+    .getElementById("closeChat")
+    ?.addEventListener("click", () => {
+      if (!chatAtivo) return;
+
+      if (!confirm("Fechar esta conversa?")) {
+        return;
+      }
+
+      Chat.fecharChat(chatAtivo.id);
+
+      chatAtivo = null;
+
+      document
+        .getElementById("chatArea")
+        ?.classList.remove("ativo");
+
+      const noChat =
+        document.getElementById("noChat");
+
+      if (noChat) {
+        noChat.style.display = "grid";
+      }
+
+      renderChatsList();
+      updateStats();
+    });
+
+  // DELETAR CONVERSA
+  document
+    .getElementById("deleteChat")
+    ?.addEventListener("click", () => {
+      if (!chatAtivo) return;
+
+      if (!confirm("Deseja DELETAR esta conversa permanentemente? ⚠️")) {
+        return;
+      }
+
+      Chat.excluirChat(chatAtivo.id);
+
+      chatAtivo = null;
+
+      document
+        .getElementById("chatArea")
+        ?.classList.remove("ativo");
+
+      const noChat =
+        document.getElementById("noChat");
+
+      if (noChat) {
+        noChat.style.display = "grid";
+      }
+
+      renderChatsList();
+      updateStats();
+    });
+
+  // SINCRONIZA A CADA 500ms
+  setInterval(() => {
+    renderChatsList();
+    updateStats();
+
+    if (chatAtivo) {
+      const atualizado =
+        Chat.getChat(chatAtivo.id);
+
+      if (atualizado) {
+        chatAtivo = atualizado;
+        renderMessages();
+      }
+    }
+  }, 500);
+
+  // TAMBÉM ESCUTA EVENTOS EM TEMPO REAL
+  window.addEventListener("unicake:chats-updated", () => {
+    renderChatsList();
+    updateStats();
+
+    if (chatAtivo) {
+      const atualizado =
+        Chat.getChat(chatAtivo.id);
+
+      if (atualizado) {
+        chatAtivo = atualizado;
+        renderMessages();
+      }
+    }
+  });
+
+  // PRIMEIRA ATUALIZAÇÃO
+  renderChatsList();
+  updateStats();
+})();
+</script>
 </body>
 </html>
