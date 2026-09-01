@@ -52,11 +52,15 @@
                       const user = window.UniCakeAuth.getUser();
                       return `
                         <div class="user-menu">
-                          <button class="user-button" type="button" aria-label="Menu do usuário">
-                            ${user.picture ? `<img src="${user.picture}" alt="${user.name}" class="user-avatar">` : `<div class="user-avatar-initials">${U.initials(user.name)}</div>`}
-                            <span>${user.name.split(" ")[0]}</span>
+                          <button class="user-button" type="button" aria-label="Abrir informações da conta" aria-expanded="false" data-user-menu-toggle>
+                            ${user.picture ? `<img src="${user.picture}" alt="Foto de ${user.name}" class="user-avatar">` : `<div class="user-avatar-initials" aria-hidden="true">${U.initials(user.name)}</div>`}
                           </button>
-                          <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
+                          <div class="user-dropdown" data-user-dropdown hidden>
+                            <strong>${user.name}</strong>
+                            <span>${user.email}</span>
+                            <small>Conta ${user.provider === "google" ? "Google" : "UniCake"}</small>
+                            <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
+                          </div>
                         </div>
                       `;
                     })()
@@ -113,7 +117,6 @@
         </div>
         <div class="footer-bottom">
           <span>&copy; 2026 UniCake. Todos os direitos reservados.</span>
-          <a href="login-suporte.html" class="support-secret-link" title="Acesso reservado" aria-label="Link oculto">⚙</a>
         </div>
       </footer>
     `;
@@ -188,6 +191,25 @@
         nav?.classList.remove("is-open");
         menuToggle?.setAttribute("aria-expanded", "false");
         results?.classList.remove("is-open");
+        const userToggle = document.querySelector("[data-user-menu-toggle]");
+        const userDropdown = document.querySelector("[data-user-dropdown]");
+        userDropdown?.setAttribute("hidden", "");
+        userToggle?.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    const userToggle = document.querySelector("[data-user-menu-toggle]");
+    const userDropdown = document.querySelector("[data-user-dropdown]");
+    userToggle?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isHidden = userDropdown?.hasAttribute("hidden");
+      userDropdown?.toggleAttribute("hidden", !isHidden);
+      userToggle.setAttribute("aria-expanded", String(Boolean(isHidden)));
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".user-menu")) {
+        userDropdown?.setAttribute("hidden", "");
+        userToggle?.setAttribute("aria-expanded", "false");
       }
     });
 
