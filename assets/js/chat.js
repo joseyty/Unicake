@@ -18,74 +18,76 @@
     },
 
     // Criar nova conversa
-    createChat(cliente) {
-      const chats = this.getAllChats();
-      const existingChat = chats.find((c) => c.clienteEmail === cliente.email);
+createChat(cliente, assunto = "outro") {
+  const chats = this.getAllChats();
 
-      if (existingChat) {
-        return existingChat;
-      }
+  const existingChat = chats.find(
+    (c) => c.clienteEmail === cliente.email && c.status === "aberto"
+  );
 
-      const novaConversa = {
-        id: "chat_" + Date.now(),
-        clienteEmail: cliente.email,
-        clienteNome: cliente.name,
-        clienteFoto: cliente.picture || null,
-        mensagens: [],
-        criadoEm: new Date().toISOString(),
-        status: "aberto", // aberto, fechado, resolvido
-        ultimaMensagem: null,
-        ultimaMensagemEm: null,
-        naoLidosPorSuporte: 0,
-        naoLidosPorCliente: 0,
-      };
+  // Se já existe conversa aberta, continua nela
+  if (existingChat) {
+    return existingChat;
+  }
 
-      chats.push(novaConversa);
-      this.saveAllChats(chats);
-      return novaConversa;
-    },
+  const agora = new Date().toISOString();
 
-    // Obter conversa específica
-    getChat(chatId) {
-      const chats = this.getAllChats();
-      return chats.find((c) => c.id === chatId);
-    },
+  // Mensagens automáticas de acordo com o assunto
+  const mensagensAutomaticas = {
+    pedido:
+      "Olá! 🍰 Vi que você precisa de ajuda com um pedido. Pode me informar o número do pedido?",
 
-    // Obter conversa do cliente logado
-    getClienteChat(clienteEmail) {
-      const chats = this.getAllChats();
-      return chats.find((c) => c.clienteEmail === clienteEmail);
-    },
+    pagamento:
+      "Olá! 💳 Vi que você precisa de ajuda com pagamento. Me conte o que aconteceu.",
 
-    // Enviar mensagem
-    enviarMensagem(chatId, mensagem, remetente) {
-      // remetente: 'cliente' ou 'suporte'
-      const chats = this.getAllChats();
-      const chat = chats.find((c) => c.id === chatId);
+    entrega:
+      "Olá! 🛵 Vi que você precisa de ajuda com uma entrega. Pode me informar o número do pedido?",
 
-      if (!chat) return null;
+    outro:
+      "Olá! 👋 Bem-vindo ao suporte da UniCake. Me conte com detalhes como posso te ajudar.",
+  };
 
-      const novaMensagem = {
+  const mensagemInicial =
+    mensagensAutomaticas[assunto] || mensagensAutomaticas.outro;
+
+  const novaConversa = {
+    id: "chat_" + Date.now(),
+
+    clienteEmail: cliente.email,
+    clienteNome: cliente.name,
+    clienteFoto: cliente.picture || null,
+
+    assunto: assunto,
+
+    // PRIMEIRA MENSAGEM DO SUPORTE
+    mensagens: [
+      {
         id: "msg_" + Date.now(),
-        texto: mensagem,
-        remetente: remetente,
-        timestamp: new Date().toISOString(),
+        texto: mensagemInicial,
+        remetente: "suporte",
+        timestamp: agora,
         lido: false,
-      };
+      },
+    ],
 
-      chat.mensagens.push(novaMensagem);
-      chat.ultimaMensagem = mensagem;
-      chat.ultimaMensagemEm = novaMensagem.timestamp;
+    criadoEm: agora,
+    status: "aberto",
 
-      if (remetente === "cliente") {
-        chat.naoLidosPorSuporte += 1;
-      } else {
-        chat.naoLidosPorCliente += 1;
-      }
+    ultimaMensagem: mensagemInicial,
+    ultimaMensagemEm: agora,
 
-      this.saveAllChats(chats);
-      return novaMensagem;
-    },
+    naoLidosPorSuporte: 0,
+
+    // Cliente ainda não leu a mensagem automática
+    naoLidosPorCliente: 1,
+  };
+
+  chats.push(novaConversa);
+
+  this.saveAllChats(chats);
+
+  return novaConversa;
+},
 
     // Marcar conversa como lida
     marcarComoLido(chatId, quemLeu) {
