@@ -800,7 +800,23 @@
       updateStats();
     });
 
-  // SINCRONIZA A CADA 500ms
+  // Escuta mudanças no localStorage (sincronização entre abas!)
+  window.addEventListener("storage", (event) => {
+    if (event.key === "unicake.chats") {
+      renderChatsList();
+      updateStats();
+
+      if (chatAtivo) {
+        const atualizado = Chat.getChat(chatAtivo.id);
+        if (atualizado) {
+          chatAtivo = atualizado;
+          renderMessages();
+        }
+      }
+    }
+  });
+
+  // SINCRONIZA A CADA 500ms (fallback - garante sincronização em qualquer cenário)
   setInterval(() => {
     renderChatsList();
     updateStats();
@@ -828,6 +844,22 @@
       if (atualizado) {
         chatAtivo = atualizado;
         renderMessages();
+      }
+    }
+  });
+
+  // Escuta mudanças no localStorage (sincronização entre abas!)
+  window.addEventListener("storage", (event) => {
+    if (event.key === "unicake.chats") {
+      renderChatsList();
+      updateStats();
+
+      if (chatAtivo) {
+        const atualizado = Chat.getChat(chatAtivo.id);
+        if (atualizado) {
+          chatAtivo = atualizado;
+          renderMessages();
+        }
       }
     }
   });

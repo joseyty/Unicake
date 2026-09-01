@@ -24,12 +24,15 @@
     saveAllChats(chats) {
       localStorage.setItem(CHATS_KEY, JSON.stringify(chats));
 
-      // Atualizar interfaces que estejam escutando o chat
+      // Atualizar interfaces que estejam escutando o chat (mesma aba)
       window.dispatchEvent(
         new CustomEvent("unicake:chats-updated", {
           detail: chats,
         })
       );
+
+      // Para sincronizar entre abas, dispara um evento de storage simulado
+      // (storage event já é disparado automaticamente pelo localStorage)
     },
 
     // Criar nova conversa
