@@ -13,42 +13,7 @@
     if (!chatContainer) return;
 
     // Procurar conversa existente
-let chat = Chat.getClienteChat(user.email);
-toggle?.addEventListener("click", () => {
-     const hidden = chatWindow.hasAttribute("hidden");
-
-  if (hidden) {
-
-    // Se ainda não existe conversa, cria agora
-    if (!chat) {
-      const user = window.UniCakeAuth?.getUser();
-
-      if (!user) {
-        alert("Você precisa estar logado para usar o suporte.");
-        return;
-      }
-
-      chat = Chat.createChat(user, "outro");
-
-      console.log("✅ Atendimento iniciado:", chat);
-    }
-
-    chatWindow.removeAttribute("hidden");
-
-    Chat.marcarComoLido(
-      chat.id,
-      "cliente"
-    );
-
-    // Pega versão atualizada após marcar como lida
-    chat = Chat.getChat(chat.id);
-
-    renderMessages(chat);
-
-  } else {
-    chatWindow.setAttribute("hidden", "");
-  }
-});
+    let chat = Chat.getClienteChat(user.email);
 
     const chatHtml = `
       <div class="chat-widget" id="chatWidget">
@@ -81,11 +46,7 @@ toggle?.addEventListener("click", () => {
           </div>
 
           <div class="chat-status">
-           ${
-  chat?.status === "fechado"
-    ? '<p>Conversa encerrada. <button type="button" data-reabrir-chat>Reabrir</button></p>'
-    : `<p>💬 Suporte disponível 24h</p>`
-}
+            <p>💬 Suporte disponível 24h</p>
           </div>
         </div>
       </div>
@@ -97,21 +58,37 @@ toggle?.addEventListener("click", () => {
     initChatEvents(chat);
   }
 
-  function initChatEvents(chat) {
+  function initChatEvents(chatParam) {
     const toggle = document.querySelector("[data-chat-toggle]");
     const chatWindow = document.getElementById("chatWindow");
     const form = document.getElementById("chatForm");
     const input = document.getElementById("chatInput");
     const messagesDiv = document.getElementById("chatMessages");
-    const reabrirBtn = document.querySelector("[data-reabrir-chat]");
+    let chat = chatParam;
 
     // Toggle da janela
     toggle?.addEventListener("click", () => {
       const hidden = chatWindow.hasAttribute("hidden");
+      
       if (hidden) {
+        // Se ainda não existe conversa, cria agora
+        if (!chat) {
+          const user = window.UniCakeAuth?.getUser();
+          if (!user) {
+            alert("Você precisa estar logado para usar o suporte.");
+            return;
+          }
+          chat = Chat.createChat(user, "outro");
+          console.log("✅ Atendimento iniciado:", chat);
+        }
+
         chatWindow.removeAttribute("hidden");
         Chat.marcarComoLido(chat.id, "cliente");
+        
+        // Pega versão atualizada após marcar como lida
+        chat = Chat.getChat(chat.id);
         renderMessages(chat);
+        input.focus();
       } else {
         chatWindow.setAttribute("hidden", "");
       }
@@ -122,30 +99,30 @@ toggle?.addEventListener("click", () => {
       e.preventDefault();
       const texto = input.value.trim();
 
-      if (texto && chat.status === "aberto") {
+      if (texto && chat && chat.status === "aberto") {
         Chat.enviarMensagem(chat.id, texto, "cliente");
         input.value = "";
         input.focus();
+        
+        // Atualiza a conversa após enviar
+        chat = Chat.getChat(chat.id);
         renderMessages(chat);
       }
     });
 
-    // Reabrir chat
-    reabrirBtn?.addEventListener("click", () => {
-      Chat.reabrirChat(chat.id);
-      location.reload();
-    });
-
-    // Renderizar mensagens iniciais
-    renderMessages(chat);
+    // Renderizar mensagens iniciais se chat já existe
+    if (chat) {
+      renderMessages(chat);
+      updateUnreadIndicator(chat);
+    }
 
     // Atualizar em tempo real quando há novos dados
     window.addEventListener("unicake:chats-updated", (e) => {
-      const chatAtualizado = e.detail.find((c) => c.id === chat.id);
+      const chatAtualizado = e.detail.find((c) => c.id === chat?.id);
       if (chatAtualizado) {
         chat = chatAtualizado;
         renderMessages(chat);
-        updateUnreadIndicator();
+        updateUnreadIndicator(chat);
       }
     });
   }
@@ -179,13 +156,10 @@ toggle?.addEventListener("click", () => {
     }
   }
 
-  function updateUnreadIndicator() {
+  function updateUnreadIndicator(chat) {
     const indicator = document.querySelector("[data-chat-unread]");
-    if (indicator) {
-      const user = window.UniCakeAuth?.getUser();
-      const chat = Chat.getClienteChat(user.email);
-
-      if (chat && chat.naoLidosPorCliente > 0) {
+    if (indicator && chat) {
+      if (chat.naoLidosPorCliente > 0) {
         indicator.textContent = chat.naoLidosPorCliente;
         indicator.style.display = "flex";
       } else {
