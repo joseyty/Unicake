@@ -12,11 +12,43 @@
     const chatContainer = document.getElementById("site-support");
     if (!chatContainer) return;
 
-    // Obter ou criar conversa
-    let chat = Chat.getClienteChat(user.email);
+    // Procurar conversa existente
+let chat = Chat.getClienteChat(user.email);
+toggle?.addEventListener("click", () => {
+     const hidden = chatWindow.hasAttribute("hidden");
+
+  if (hidden) {
+
+    // Se ainda não existe conversa, cria agora
     if (!chat) {
-      chat = Chat.createChat(user);
+      const user = window.UniCakeAuth?.getUser();
+
+      if (!user) {
+        alert("Você precisa estar logado para usar o suporte.");
+        return;
+      }
+
+      chat = Chat.createChat(user, "outro");
+
+      console.log("✅ Atendimento iniciado:", chat);
     }
+
+    chatWindow.removeAttribute("hidden");
+
+    Chat.marcarComoLido(
+      chat.id,
+      "cliente"
+    );
+
+    // Pega versão atualizada após marcar como lida
+    chat = Chat.getChat(chat.id);
+
+    renderMessages(chat);
+
+  } else {
+    chatWindow.setAttribute("hidden", "");
+  }
+});
 
     const chatHtml = `
       <div class="chat-widget" id="chatWidget">
@@ -49,11 +81,11 @@
           </div>
 
           <div class="chat-status">
-            ${
-              chat.status === "fechado"
-                ? '<p>Conversa encerrada. <button type="button" data-reabrir-chat>Reabrir</button></p>'
-                : `<p>💬 Suporte disponível 24h</p>`
-            }
+           ${
+  chat?.status === "fechado"
+    ? '<p>Conversa encerrada. <button type="button" data-reabrir-chat>Reabrir</button></p>'
+    : `<p>💬 Suporte disponível 24h</p>`
+}
           </div>
         </div>
       </div>
