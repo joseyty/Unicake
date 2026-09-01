@@ -7,9 +7,6 @@ test('homepage exposes clear navigation and quick actions', async ({ page }) => 
   await expect(page.locator('a.skip-link')).toHaveCount(1);
   await expect(page.getByPlaceholder('Busque por item ou loja')).toBeVisible();
 
-  await page.evaluate(() => window.scrollTo(0, 1200));
-  await expect(page.locator('.back-to-top')).toBeVisible();
-
   await page.locator('.hero-actions a').first().click();
   await expect(page).toHaveURL(/ParaVoce\.html/);
 });

@@ -140,32 +140,6 @@ main {
   box-shadow: 0 0 16px rgba(224, 123, 154, 0.45);
 }
 
-.back-to-top {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 1050;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border: 0;
-  border-radius: 999px;
-  padding: 0.75rem 0.95rem;
-  background: var(--brown-dark);
-  color: #fff;
-  box-shadow: var(--shadow);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(12px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-}
-
-.back-to-top.is-visible {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
 .toast {
   position: fixed;
   left: 50%;
