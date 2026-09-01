@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Suporte - UniCake</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-body);
+        background: #f5f5f5;
+        color: var(--brown-dark);
+      }
+
+      .support-panel {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+      }
+
+      .panel-sidebar {
+        background: var(--brown-dark);
+        color: var(--cream);
+        overflow-y: auto;
+        border-right: 1px solid rgba(0,0,0,0.1);
+      }
+
+      .panel-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .panel-header h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        font-family: var(--font-round);
+      }
+
+      .panel-stats {
+        display: grid;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .stat-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .stat-label {
+        opacity: 0.9;
+      }
+
+      .stat-value {
+        background: var(--rose);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 99px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .chats-list {
+        list-style: none;
+        padding: 0.5rem;
+      }
+
+      .chat-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        border-left: 3px solid transparent;
+      }
+
+      .chat-item:hover {
+        background: rgba(255,255,255,0.1);
+      }
+
+      .chat-item.ativo {
+        background: rgba(255,255,255,0.15);
+        border-left-color: var(--rose);
+      }
+
+      .chat-item-name {
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .chat-unread-badge {
+        background: var(--rose);
+        color: white;
+        font-size: 0.7rem;
+        padding: 0.15rem 0.35rem;
+        border-radius: 99px;
+        margin-left: auto;
+      }
+
+      .chat-item-preview {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .panel-main {
+        display: grid;
+        grid-template-rows: 1fr auto;
+        background: white;
+      }
+
+      .chat-area {
+        display: none;
+        grid-template-rows: auto 1fr;
+      }
+
+      .chat-area.ativo {
+        display: grid;
+      }
+
+      .chat-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+      }
+
+      .chat-header h2 {
+        font-size: 1.3rem;
+        font-family: var(--font-round);
+      }
+
+      .chat-status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .chat-status-badge.aberto {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .chat-status-badge.fechado {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .messages-container {
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .message {
+        display: grid;
+        gap: 0.3rem;
+      }
+
+      .message.cliente {
+        justify-self: start;
+        max-width: 70%;
+      }
+
+      .message.suporte {
+        justify-self: end;
+        max-width: 70%;
+      }
+
+      .message-content {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        word-wrap: break-word;
+      }
+
+      .message.cliente .message-content {
+        background: #f0f0f0;
+        color: var(--brown-dark);
+      }
+
+      .message.suporte .message-content {
+        background: var(--rose);
+        color: white;
+      }
+
+      .message-time {
+        font-size: 0.75rem;
+        opacity: 0.7;
+      }
+
+      .message.cliente .message-time {
+        text-align: left;
+      }
+
+      .message.suporte .message-time {
+        text-align: right;
+      }
+
+      .empty-state {
+        display: grid;
+        place-items: center;
+        min-height: 300px;
+        color: #999;
+        font-size: 1.1rem;
+      }
+
+      .input-area {
+        padding: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+      }
+
+      .input-area input {
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: inherit;
+      }
+
+      .input-area input:focus {
+        outline: none;
+        border-color: var(--rose);
+        box-shadow: 0 0 0 2px rgba(224, 123, 154, 0.1);
+      }
+
+      .input-area button {
+        padding: 0.75rem 1.5rem;
+        background: var(--rose);
+        color: white;
+        border: 0;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .input-area button:hover {
+        background: #d97d99;
+      }
+
+      .close-chat-btn {
+        padding: 0.5rem 1rem;
+        background: var(--brown-dark);
+        color: white;
+        border: 0;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .close-chat-btn:hover {
+        background: var(--brown);
+      }
+
+      .no-chat-selected {
+        display: grid;
+        place-items: center;
+        min-height: 100%;
+        color: #999;
+      }
+
+      .search-box {
+        padding: 1rem 0.5rem;
+        position: sticky;
+        top: 0;
+        background: var(--brown-dark);
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 0;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        .support-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .panel-sidebar {
+          position: absolute;
+          top: 0;
+          left: -280px;
+          height: 100%;
+          z-index: 100;
+          transition: left 0.3s ease;
+        }
+
+        .panel-sidebar.ativo {
+          left: 0;
+        }
+
+        .message.cliente,
+        .message.suporte {
+          max-width: 95%;
+        }
+      }
+    </style>
+</head>
+<body>
+    <div class="support-panel">
+      <!-- SIDEBAR -->
+      <div class="panel-sidebar" id="panelSidebar">
+        <div class="panel-header">
+          <h1>💬 Suporte UniCake</h1>
+          <div class="panel-stats">
+            <div class="stat-item">
+              <span class="stat-label">Abertos:</span>
+              <span class="stat-value" id="statAbertos">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Não lidos:</span>
+              <span class="stat-value" id="statNaoLidos">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total:</span>
+              <span class="stat-value" id="statTotal">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="searchChats" placeholder="Buscar conversas..." />
+        </div>
+
+        <ul class="chats-list" id="chatsList"></ul>
+      </div>
+
+      <!-- MAIN AREA -->
+      <div class="panel-main">
+        <div id="noChat" class="no-chat-selected">
+          <p>Selecione uma conversa para começar</p>
+        </div>
+
+        <div id="chatArea" class="chat-area">
+          <div class="chat-header">
+            <div>
+              <h2 id="chatClienteName"></h2>
+              <small id="chatClienteEmail"></small>
+              <span class="chat-status-badge" id="chatStatus"></span>
+            </div>
+            <button class="close-chat-btn" id="closeChat">Fechar conversa</button>
+          </div>
+
+          <div class="messages-container" id="messagesContainer"></div>
+
+          <div class="input-area">
+            <form id="supportReplyForm">
+              <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.75rem;">
+                <input
+                  type="text"
+                  id="replyInput"
+                  placeholder="Digite sua resposta..."
+                  autocomplete="off"
+                  required
+                />
+                <button type="submit">Enviar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script defer src="../assets/js/chat.js"></script>
+    <script defer src="../assets/js/core.js"></script>
+    <script>
+      const Chat = window.UniCakeChat;
+
+      if (!Chat) {
+        alert("Sistema de chat não disponível");
+        location.href = "../index.html";
+      }
+
+      let chatAtivo = null;
+
+      function renderChatsList() {
+        const list = document.getElementById("chatsList");
+        const chats = Chat.getAllChats();
+
+        if (chats.length === 0) {
+          list.innerHTML = '<p style="padding: 1rem; opacity: 0.7;">Nenhuma conversa ainda</p>';
+          return;
+        }
+
+        list.innerHTML = chats
+          .sort((a, b) => new Date(b.ultimaMensagemEm || b.criadoEm) - new Date(a.ultimaMensagemEm || a.criadoEm))
+          .map(
+            (chat) => `
+              <li class="chat-item ${chatAtivo?.id === chat.id ? "ativo" : ""}" data-chat-id="${chat.id}">
+                <div class="chat-item-name">
+                  ${chat.clienteNome}
+                  ${chat.naoLidosPorSuporte > 0 ? `<span class="chat-unread-badge">${chat.naoLidosPorSuporte}</span>` : ""}
+                </div>
+                <div class="chat-item-preview">${chat.ultimaMensagem || "Clique para iniciar"}</div>
+              </li>
+            `
+          )
+          .join("");
+
+        document.querySelectorAll(".chat-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            const chatId = item.dataset.chatId;
+            abrirChat(chatId);
+          });
+        });
+      }
+
+      function abrirChat(chatId) {
+        chatAtivo = Chat.getChat(chatId);
+        if (!chatAtivo) return;
+
+        Chat.marcarComoLido(chatId, "suporte");
+
+        // UI
+        document.getElementById("noChat").style.display = "none";
+        document.getElementById("chatArea").classList.add("ativo");
+
+        document.getElementById("chatClienteName").textContent = chatAtivo.clienteNome;
+        document.getElementById("chatClienteEmail").textContent = chatAtivo.clienteEmail;
+
+        const statusEl = document.getElementById("chatStatus");
+        statusEl.textContent = chatAtivo.status === "aberto" ? "Aberto" : "Fechado";
+        statusEl.className = `chat-status-badge ${chatAtivo.status}`;
+
+        renderMessages();
+        renderChatsList();
+        updateStats();
+      }
+
+      function renderMessages() {
+        const container = document.getElementById("messagesContainer");
+
+        const html = chatAtivo.mensagens
+          .map(
+            (msg) => `
+              <div class="message ${msg.remetente}">
+                <div class="message-content">${escapeHtml(msg.texto)}</div>
+                <small class="message-time">${new Date(msg.timestamp).toLocaleTimeString("pt-BR")}</small>
+              </div>
+            `
+          )
+          .join("");
+
+        container.innerHTML = html;
+
+        // Auto-scroll
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 100);
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function updateStats() {
+        const stats = Chat.getEstatisticas();
+        document.getElementById("statAbertos").textContent = stats.abertos;
+        document.getElementById("statNaoLidos").textContent = stats.naoLidos;
+        document.getElementById("statTotal").textContent = stats.total;
+      }
+
+      // EVENTOS
+      document.getElementById("supportReplyForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = document.getElementById("replyInput");
+        const texto = input.value.trim();
+
+        if (texto && chatAtivo && chatAtivo.status === "aberto") {
+          Chat.enviarMensagem(chatAtivo.id, texto, "suporte");
+          input.value = "";
+          input.focus();
+          renderMessages();
+        }
+      });
+
+      document.getElementById("closeChat").addEventListener("click", () => {
+        if (confirm("Tem certeza que quer fechar esta conversa?")) {
+          Chat.fecharChat(chatAtivo.id);
+          chatAtivo = null;
+          document.getElementById("chatArea").classList.remove("ativo");
+          document.getElementById("noChat").style.display = "grid";
+          renderChatsList();
+          updateStats();
+        }
+      });
+
+      document.getElementById("searchChats").addEventListener("input", (e) => {
+        const termo = e.target.value;
+        const list = document.getElementById("chatsList");
+
+        if (!termo.trim()) {
+          renderChatsList();
+          return;
+        }
+
+        const resultados = Chat.buscarChats(termo);
+        list.innerHTML = resultados
+          .map(
+            (chat) => `
+              <li class="chat-item" data-chat-id="${chat.id}">
+                <div class="chat-item-name">
+                  ${chat.clienteNome}
+                  ${chat.naoLidosPorSuporte > 0 ? `<span class="chat-unread-badge">${chat.naoLidosPorSuporte}</span>` : ""}
+                </div>
+                <div class="chat-item-preview">${chat.ultimaMensagem || "Clique para iniciar"}</div>
+              </li>
+            `
+          )
+          .join("");
+
+        document.querySelectorAll(".chat-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            abrirChat(item.dataset.chatId);
+          });
+        });
+      });
+
+      // Atualizar em tempo real
+      window.addEventListener("unicake:chats-updated", () => {
+        if (chatAtivo) {
+          chatAtivo = Chat.getChat(chatAtivo.id);
+          renderMessages();
+        }
+        renderChatsList();
+        updateStats();
+      });
+
+      // Inicializar
+      renderChatsList();
+      updateStats();
+    </script>
+</body>
+</html>
