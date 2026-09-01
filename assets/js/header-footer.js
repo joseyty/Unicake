@@ -113,6 +113,7 @@
         </div>
         <div class="footer-bottom">
           <span>&copy; 2026 UniCake. Todos os direitos reservados.</span>
+          <a href="login-suporte.html" class="support-secret-link" title="Acesso reservado" aria-label="Link oculto">⚙</a>
         </div>
       </footer>
     `;

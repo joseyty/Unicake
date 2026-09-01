@@ -335,7 +335,22 @@
       <div class="panel-sidebar" id="panelSidebar">
         <div class="panel-header">
           <h1>💬 Suporte UniCake</h1>
-          <div class="panel-stats">
+          <div style="display: grid; gap: 0.75rem; margin-top: 1rem;">
+            <button type="button" id="logoutBtn" style="
+              width: 100%;
+              background: rgba(255,255,255,0.1);
+              color: var(--cream);
+              border: 1px solid rgba(255,255,255,0.2);
+              padding: 0.5rem;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              cursor: pointer;
+              transition: all 0.2s ease;
+            " title="Sair do painel de suporte">
+              🚪 Sair
+            </button>
+          </div>
+          <div class="panel-stats" style="margin-top: 1rem;">
             <div class="stat-item">
               <span class="stat-label">Abertos:</span>
               <span class="stat-value" id="statAbertos">0</span>
@@ -396,12 +411,18 @@
 
     <script defer src="../assets/js/chat.js"></script>
     <script defer src="../assets/js/core.js"></script>
+    <script defer src="../assets/js/support-auth.js"></script>
     <script>
       const Chat = window.UniCakeChat;
 
       if (!Chat) {
         alert("Sistema de chat não disponível");
         location.href = "../index.html";
+      }
+
+      // Verificar autenticação
+      if (!window.UniCakeSupportAuth?.isLoggedIn()) {
+        location.href = "login-suporte.html";
       }
 
       let chatAtivo = null;
@@ -559,6 +580,14 @@
         }
         renderChatsList();
         updateStats();
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (confirm("Tem certeza que quer sair?")) {
+          window.UniCakeSupportAuth?.logout();
+          location.href = "login-suporte.html";
+        }
       });
 
       // Inicializar
