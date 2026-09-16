@@ -4,17 +4,27 @@
 
   const COUPON_STORAGE_KEY = "unicake.coupon";
 
+  function normalizeCouponCode(code) {
+    return String(code ?? "")
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+  }
+
   function findCoupon(code) {
-    return (U.data.coupons || []).find((coupon) => coupon.code === code);
+    const normalized = normalizeCouponCode(code);
+    return (U.data.coupons || []).find((coupon) => normalizeCouponCode(coupon.code) === normalized);
   }
 
   function getCouponCode() {
-    return localStorage.getItem(COUPON_STORAGE_KEY) || "";
+    return normalizeCouponCode(localStorage.getItem(COUPON_STORAGE_KEY));
   }
 
   function setCouponCode(code) {
-    if (code) localStorage.setItem(COUPON_STORAGE_KEY, code);
+    const normalized = normalizeCouponCode(code);
+    if (normalized) localStorage.setItem(COUPON_STORAGE_KEY, normalized);
     else localStorage.removeItem(COUPON_STORAGE_KEY);
+    return normalized;
   }
 
   function resolveCoupon(subtotal) {
@@ -22,7 +32,7 @@
     if (!code) return null;
     const coupon = findCoupon(code);
     if (!coupon) return null;
-    const meetsMinimum = !coupon.minSubtotal || subtotal >= coupon.minSubtotal;
+    const meetsMinimum = !coupon.minSubtotal || subtotal >= Number(coupon.minSubtotal || 0);
     return { coupon, meetsMinimum };
   }
 
@@ -117,7 +127,7 @@
     if (resolved && resolved.meetsMinimum) {
       const { coupon } = resolved;
       if (coupon.type === "percent") discount = subtotal * (coupon.value / 100);
-      if (coupon.type === "fixed") discount = Math.min(coupon.value, subtotal);
+      if (coupon.type === "fixed") discount = Math.min(Number(coupon.value) || 0, subtotal);
       if (coupon.type === "freeDelivery" || coupon.freeDelivery) freeDelivery = true;
     }
 
@@ -135,6 +145,8 @@
               resolved.coupon.minSubtotal
             )} em produtos. <button type="button" class="coupon-remove" data-coupon-remove>Remover</button>`;
       }
+    } else if (couponInput && !couponInput.value) {
+      if (couponFeedback) couponFeedback.textContent = "";
     }
 
     document.querySelectorAll("[data-cart-count]").forEach((el) => {
@@ -234,13 +246,15 @@
       if (coupon) {
         const input = document.getElementById("couponInput");
         const feedback = document.querySelector("[data-coupon-feedback]");
-        const value = (input?.value || "").trim().toUpperCase();
+        const value = normalizeCouponCode(input?.value || "");
         const match = findCoupon(value);
         if (match) {
           setCouponCode(match.code);
+          if (feedback) feedback.textContent = "";
         } else {
           setCouponCode("");
           if (feedback) feedback.textContent = "Cupom inválido. Confira o código e tente novamente.";
+          if (input) input.value = value;
         }
         syncCart();
       }
