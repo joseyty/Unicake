@@ -2,6 +2,30 @@
   const U = window.UniCake;
   if (!U) return;
 
+  const COUPON_STORAGE_KEY = "unicake.coupon";
+
+  function findCoupon(code) {
+    return (U.data.coupons || []).find((coupon) => coupon.code === code);
+  }
+
+  function getCouponCode() {
+    return localStorage.getItem(COUPON_STORAGE_KEY) || "";
+  }
+
+  function setCouponCode(code) {
+    if (code) localStorage.setItem(COUPON_STORAGE_KEY, code);
+    else localStorage.removeItem(COUPON_STORAGE_KEY);
+  }
+
+  function resolveCoupon(subtotal) {
+    const code = getCouponCode();
+    if (!code) return null;
+    const coupon = findCoupon(code);
+    if (!coupon) return null;
+    const meetsMinimum = !coupon.minSubtotal || subtotal >= coupon.minSubtotal;
+    return { coupon, meetsMinimum };
+  }
+
   function cartState() {
     try {
       return JSON.parse(localStorage.getItem(U.storageKeys.cart)) || [];
@@ -59,6 +83,7 @@
           </section>
           <section class="coupon-box">
             <label for="couponInput">Cupom</label>
+            <small class="coupon-hint">Assinante de um plano? Use o cupom do seu plano aqui.</small>
             <div>
               <input id="couponInput" type="text" placeholder="Digite UNICAKE10" />
               <button type="button" data-coupon-apply>Aplicar</button>
@@ -85,9 +110,32 @@
     const cart = cartState();
     const count = cartCount(cart);
     const subtotal = cartSubtotal(cart);
-    const delivery = subtotal > 120 || subtotal === 0 ? 0 : 5;
-    const discount = document.documentElement.dataset.coupon === "UNICAKE10" ? subtotal * 0.1 : 0;
+    const resolved = resolveCoupon(subtotal);
+
+    let discount = 0;
+    let freeDelivery = false;
+    if (resolved && resolved.meetsMinimum) {
+      const { coupon } = resolved;
+      if (coupon.type === "percent") discount = subtotal * (coupon.value / 100);
+      if (coupon.type === "fixed") discount = Math.min(coupon.value, subtotal);
+      if (coupon.type === "freeDelivery" || coupon.freeDelivery) freeDelivery = true;
+    }
+
+    const delivery = subtotal === 0 ? 0 : freeDelivery || subtotal > 120 ? 0 : 5;
     const total = Math.max(0, subtotal - discount + delivery);
+
+    const couponInput = document.getElementById("couponInput");
+    const couponFeedback = document.querySelector("[data-coupon-feedback]");
+    if (resolved) {
+      if (couponInput) couponInput.value = resolved.coupon.code;
+      if (couponFeedback) {
+        couponFeedback.innerHTML = resolved.meetsMinimum
+          ? `Cupom aplicado: ${resolved.coupon.description} <button type="button" class="coupon-remove" data-coupon-remove>Remover</button>`
+          : `Cupom "${resolved.coupon.code}" válido a partir de ${U.money.format(
+              resolved.coupon.minSubtotal
+            )} em produtos. <button type="button" class="coupon-remove" data-coupon-remove>Remover</button>`;
+      }
+    }
 
     document.querySelectorAll("[data-cart-count]").forEach((el) => {
       el.textContent = String(count);
@@ -169,6 +217,7 @@
       const remove = event.target.closest("[data-cart-remove]");
       const pay = event.target.closest("[data-pay]");
       const coupon = event.target.closest("[data-coupon-apply]");
+      const couponRemove = event.target.closest("[data-coupon-remove]");
       const checkout = event.target.closest("[data-checkout]");
 
       if (add) addToCart(add.dataset.addCart);
@@ -186,16 +235,26 @@
         const input = document.getElementById("couponInput");
         const feedback = document.querySelector("[data-coupon-feedback]");
         const value = (input?.value || "").trim().toUpperCase();
-        if (value === "UNICAKE10") {
-          document.documentElement.dataset.coupon = value;
-          if (feedback) feedback.textContent = "Cupom aplicado: 10% de desconto.";
-        } else if (feedback) {
-          feedback.textContent = "Cupom inválido. Tente UNICAKE10.";
+        const match = findCoupon(value);
+        if (match) {
+          setCouponCode(match.code);
+        } else {
+          setCouponCode("");
+          if (feedback) feedback.textContent = "Cupom inválido. Confira o código e tente novamente.";
         }
+        syncCart();
+      }
+      if (couponRemove) {
+        setCouponCode("");
+        const input = document.getElementById("couponInput");
+        const feedback = document.querySelector("[data-coupon-feedback]");
+        if (input) input.value = "";
+        if (feedback) feedback.textContent = "";
         syncCart();
       }
       if (checkout) {
         saveCart([]);
+        setCouponCode("");
         syncCart();
         closeCart();
         U.toast("Pedido confirmado. Seu número é #" + Math.floor(100000 + Math.random() * 899999));
