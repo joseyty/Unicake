@@ -170,7 +170,7 @@
 
 .hero-highlights {
   width: min(100% - 2.5rem, var(--content));
-  margin: -0.75rem auto 0;
+  margin: 1.25rem auto 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
