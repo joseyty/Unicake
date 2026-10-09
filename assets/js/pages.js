@@ -168,6 +168,7 @@
   function renderCompanies() {
     const plans = document.getElementById("plansGrid");
     if (!plans) return;
+    const maintenanceDialog = document.getElementById("maintenanceDialog");
     plans.innerHTML = (U.data.plans || [])
       .map(
         (plan) => `
@@ -189,9 +190,11 @@
     plans.addEventListener("click", (event) => {
       const button = event.target.closest("[data-plan]");
       if (!button) return;
-      localStorage.setItem("unicake.selectedPlan", button.dataset.plan);
-      document.body.classList.add("support-open");
-      document.querySelector("[data-support-open]")?.setAttribute("aria-expanded", "true");
+      maintenanceDialog?.showModal();
+    });
+
+    maintenanceDialog?.addEventListener("click", (event) => {
+      if (event.target === maintenanceDialog) maintenanceDialog.close();
     });
   }
 

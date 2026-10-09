@@ -360,6 +360,65 @@ details {
   color: #6d8e3f;
 }
 
+.maintenance-dialog {
+  width: min(calc(100% - 2rem), 21rem);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 16px 42px rgba(35, 20, 20, 0.24);
+}
+
+.maintenance-dialog::backdrop {
+  background: rgba(28, 20, 20, 0.42);
+}
+
+.maintenance-dialog__header {
+  min-height: 3.6rem;
+  display: grid;
+  place-items: center;
+  background: #ed5357;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.maintenance-dialog__content {
+  padding: 1rem 1.4rem 1.35rem;
+}
+
+.maintenance-dialog h2 {
+  margin: 0 0 0.45rem;
+  color: var(--brown-dark);
+  font-family: var(--font-round);
+  font-size: 1.3rem;
+}
+
+.maintenance-dialog p {
+  margin: 0 auto 1rem;
+  color: var(--brown-soft);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.maintenance-dialog form {
+  margin: 0;
+}
+
+.maintenance-dialog button {
+  min-height: 2rem;
+  padding: 0.35rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #ed5357;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .why-card,
 .stat-card,
 .step-card,

@@ -25,6 +25,22 @@ test('applies a saved coupon regardless of letter case and updates total', async
   await expect(page.locator('[data-cart-total]')).toContainText(/R\$\s*67,0?1|R\$\s*67,0?0/);
 });
 
+test('shows the maintenance message when choosing any company plan', async ({ page }) => {
+  await page.goto('http://127.0.0.1:8000/html/ParaEmpresas.html');
+
+  const planButtons = page.locator('[data-plan]');
+  await expect(planButtons).toHaveCount(3);
+  const maintenanceDialog = page.locator('#maintenanceDialog');
+  for (let index = 0; index < 3; index += 1) {
+    await planButtons.nth(index).click();
+    await expect(maintenanceDialog).toBeVisible();
+    await expect(maintenanceDialog.locator('h2')).toHaveText('Atenção!');
+    await expect(maintenanceDialog).toContainText('O sistema está em manutenção');
+    await maintenanceDialog.getByRole('button', { name: 'Entendi' }).click();
+    await expect(maintenanceDialog).not.toBeVisible();
+  }
+});
+
 test('registers a traditional account and validates its password at login', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/html/Entrar.html');
   await page.evaluate(() => localStorage.clear());
