@@ -224,6 +224,8 @@
     const googleButton = document.querySelector(".google-button");
     const Auth = window.UniCakeAuth;
     const nameField = form?.elements.namedItem("name");
+    const identifierField = form?.elements.namedItem("email");
+    const identifierLabel = document.getElementById("authIdentifierLabel");
     const confirmationField = form?.elements.namedItem("passwordConfirmation");
     const toggleMode = document.getElementById("authModeToggle");
     let isRegisterMode = false;
@@ -234,6 +236,10 @@
       confirmationField.closest("label").hidden = !enabled;
       nameField.required = enabled;
       confirmationField.required = enabled;
+      identifierField.type = enabled ? "email" : "text";
+      identifierField.autocomplete = enabled ? "email" : "username";
+      identifierField.placeholder = enabled ? "voce@email.com" : "Seu nome ou e-mail";
+      identifierLabel.textContent = enabled ? "E-mail" : "Nome ou e-mail";
       form.elements.password.minLength = enabled ? 8 : 0;
       form.elements.password.autocomplete = enabled ? "new-password" : "current-password";
       form.querySelector('[type="submit"]').textContent = enabled ? "Criar conta" : "Entrar";
@@ -303,7 +309,7 @@
         }, 1500);
       } else {
         if (status) {
-          status.textContent = "Erro ao fazer login. Verifique as credenciais.";
+          status.textContent = "Nome/e-mail ou senha incorretos.";
           status.style.color = "red";
         }
       }

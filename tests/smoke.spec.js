@@ -56,4 +56,10 @@ test('registers a traditional account and validates its password at login', asyn
     window.UniCakeAuth.handleTraditionalLogin('maria@example.com', 'DoceSenha123')
   );
   expect(authenticated).toMatchObject({ name: 'Maria Silva', provider: 'traditional' });
+
+  const authenticatedByName = await page.evaluate(async () => {
+    window.UniCakeAuth.logout();
+    return window.UniCakeAuth.handleTraditionalLogin('maria silva', 'DoceSenha123');
+  });
+  expect(authenticatedByName).toMatchObject({ name: 'Maria Silva', provider: 'traditional' });
 });

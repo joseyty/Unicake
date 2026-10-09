@@ -135,7 +135,11 @@
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedName = name.trim();
 
-      if (!normalizedName || !normalizedEmail || password.length < 8) {
+      if (
+        !normalizedName ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+        password.length < 8
+      ) {
         return { error: "Informe seu nome, um e-mail válido e uma senha com pelo menos 8 caracteres." };
       }
 
@@ -169,17 +173,20 @@
       return { user };
     },
 
-    async handleTraditionalLogin(email, password) {
-      if (!email || !password) {
+    async handleTraditionalLogin(identifier, password) {
+      if (!identifier || !password) {
         return null;
       }
 
-      const normalizedEmail = email.trim().toLowerCase();
-      const account = getRegisteredUsers().find(
-        (registeredUser) => registeredUser.email === normalizedEmail
+      const normalizedIdentifier = identifier.trim().toLowerCase();
+      const matches = getRegisteredUsers().filter(
+        (registeredUser) =>
+          registeredUser.email.toLowerCase() === normalizedIdentifier ||
+          registeredUser.name.trim().toLowerCase() === normalizedIdentifier
       );
+      const [account] = matches;
 
-      if (!account) {
+      if (matches.length !== 1) {
         return null;
       }
 
