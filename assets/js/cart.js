@@ -72,22 +72,6 @@
         </header>
         <div class="cart-body">
           <section>
-            <h3>Complete seu pedido</h3>
-            <div class="cart-suggestions">
-              ${(U.data.products || [])
-                .slice(0, 2)
-                .map(
-                  (product) => `
-                    <button class="cart-suggestion" type="button" data-add-cart="${product.id}">
-                      <span>${product.name}</span>
-                      <strong>${U.money.format(product.price)}</strong>
-                    </button>
-                  `
-                )
-                .join("")}
-            </div>
-          </section>
-          <section>
             <h3>Itens</h3>
             <div class="cart-items" data-cart-items></div>
           </section>
@@ -200,6 +184,7 @@
     saveCart(cart);
     syncCart();
     U.toast(`${product.name} foi adicionado ao carrinho.`);
+    openCart();
   }
 
   function updateQuantity(id, delta) {

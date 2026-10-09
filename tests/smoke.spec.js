@@ -25,6 +25,17 @@ test('applies a saved coupon regardless of letter case and updates total', async
   await expect(page.locator('[data-cart-total]')).toContainText(/R\$\s*67,0?1|R\$\s*67,0?0/);
 });
 
+test('opens the cart and shows the product immediately after adding it', async ({ page }) => {
+  await page.goto('http://127.0.0.1:8000/html/ParaVoce.html');
+  await page.evaluate(() => localStorage.clear());
+  await page.locator('[data-add-cart]').first().click();
+
+  await expect(page.locator('body')).toHaveClass(/cart-open/);
+  await expect(page.locator('.cart-drawer')).toBeVisible();
+  await expect(page.locator('.cart-drawer')).not.toContainText('Complete seu pedido');
+  await expect(page.locator('[data-cart-items] .cart-item')).toHaveCount(1);
+});
+
 test('shows the maintenance message when choosing any company plan', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/html/ParaEmpresas.html');
 
