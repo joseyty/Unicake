@@ -1,8 +1,50 @@
 (function () {
   const AUTH_STORAGE_KEY = "unicake.auth";
+  const USERS_STORAGE_KEY = "unicake.users";
+  const PASSWORD_ITERATIONS = 120000;
 
   const GOOGLE_CLIENT_ID =
     "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.com";
+
+  function getRegisteredUsers() {
+    try {
+      const users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || "[]");
+      return Array.isArray(users) ? users : [];
+    } catch (error) {
+      console.error("Erro ao recuperar contas cadastradas:", error);
+      return [];
+    }
+  }
+
+  function bytesToHex(bytes) {
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function hashPassword(password, salt) {
+    if (!window.crypto?.subtle) {
+      throw new Error("O cadastro e o login exigem uma conexão segura (HTTPS ou localhost).");
+    }
+
+    const key = await window.crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(password),
+      "PBKDF2",
+      false,
+      ["deriveBits"]
+    );
+    const hash = await window.crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        salt,
+        iterations: PASSWORD_ITERATIONS,
+        hash: "SHA-256",
+      },
+      key,
+      256
+    );
+
+    return bytesToHex(new Uint8Array(hash));
+  }
 
   window.UniCakeAuth = {
     isLoggedIn() {
@@ -89,15 +131,70 @@
       }
     },
 
-    handleTraditionalLogin(email, password) {
+    async registerTraditionalUser(name, email, password) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedName = name.trim();
+
+      if (!normalizedName || !normalizedEmail || password.length < 8) {
+        return { error: "Informe seu nome, um e-mail válido e uma senha com pelo menos 8 caracteres." };
+      }
+
+      const users = getRegisteredUsers();
+      if (users.some((user) => user.email === normalizedEmail)) {
+        return { error: "Já existe uma conta cadastrada com este e-mail." };
+      }
+
+      const salt = window.crypto.getRandomValues(new Uint8Array(16));
+      const account = {
+        id: "local_" + window.crypto.randomUUID(),
+        name: normalizedName,
+        email: normalizedEmail,
+        salt: bytesToHex(salt),
+        passwordHash: await hashPassword(password, salt),
+      };
+
+      users.push(account);
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+
+      const user = {
+        id: account.id,
+        name: account.name,
+        email: account.email,
+        picture: null,
+        provider: "traditional",
+        loginTime: new Date().toISOString(),
+      };
+      this.setUser(user);
+
+      return { user };
+    },
+
+    async handleTraditionalLogin(email, password) {
       if (!email || !password) {
         return null;
       }
 
+      const normalizedEmail = email.trim().toLowerCase();
+      const account = getRegisteredUsers().find(
+        (registeredUser) => registeredUser.email === normalizedEmail
+      );
+
+      if (!account) {
+        return null;
+      }
+
+      const salt = Uint8Array.from(
+        account.salt.match(/.{2}/g) || [],
+        (byte) => parseInt(byte, 16)
+      );
+      if ((await hashPassword(password, salt)) !== account.passwordHash) {
+        return null;
+      }
+
       const user = {
-        id: "local_" + Date.now(),
-        name: email.split("@")[0],
-        email: email,
+        id: account.id,
+        name: account.name,
+        email: account.email,
         picture: null,
         provider: "traditional",
         loginTime: new Date().toISOString(),

@@ -44,6 +44,10 @@
           <h1 id="login-title">Entrar</h1>
           <p>Acesse sua conta para acompanhar pedidos, salvar lojas e revisar compras.</p>
           <form id="loginForm">
+            <label hidden>
+              Nome completo
+              <input type="text" name="name" autocomplete="name" maxlength="100" placeholder="Seu nome" />
+            </label>
             <label>
               E-mail
               <input type="email" name="email" autocomplete="email" placeholder="voce@email.com" required />
@@ -52,11 +56,15 @@
               Senha
               <input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required />
             </label>
+            <label hidden>
+              Confirme sua senha
+              <input type="password" name="passwordConfirmation" autocomplete="new-password" placeholder="Digite a senha novamente" />
+            </label>
             <button type="submit">Entrar</button>
           </form>
           <button class="google-button" type="button">Entrar com Google</button>
           <p class="form-status" id="loginStatus" role="status"></p>
-          <p class="register">Ainda não tem conta? <a href="Suporte.html">Peça ajuda no suporte</a></p>
+          <p class="register"><a href="#" id="authModeToggle">Ainda não tem conta? Cadastre-se</a></p>
         </section>
       </main>
 

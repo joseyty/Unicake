@@ -223,17 +223,78 @@
     const form = document.getElementById("loginForm");
     const googleButton = document.querySelector(".google-button");
     const Auth = window.UniCakeAuth;
+    const nameField = form?.elements.namedItem("name");
+    const confirmationField = form?.elements.namedItem("passwordConfirmation");
+    const toggleMode = document.getElementById("authModeToggle");
+    let isRegisterMode = false;
 
-    form?.addEventListener("submit", (event) => {
+    function setRegisterMode(enabled) {
+      isRegisterMode = enabled;
+      nameField.closest("label").hidden = !enabled;
+      confirmationField.closest("label").hidden = !enabled;
+      nameField.required = enabled;
+      confirmationField.required = enabled;
+      form.elements.password.minLength = enabled ? 8 : 0;
+      form.elements.password.autocomplete = enabled ? "new-password" : "current-password";
+      form.querySelector('[type="submit"]').textContent = enabled ? "Criar conta" : "Entrar";
+      document.getElementById("login-title").textContent = enabled ? "Criar conta" : "Entrar";
+      toggleMode.textContent = enabled ? "Já tem conta? Entre" : "Ainda não tem conta? Cadastre-se";
+    }
+
+    toggleMode?.addEventListener("click", (event) => {
       event.preventDefault();
-      const email = form.email.value;
-      const password = form.password.value;
+      setRegisterMode(!isRegisterMode);
+      const status = document.getElementById("loginStatus");
+      if (status) status.textContent = "";
+    });
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = form.elements.email.value;
+      const password = form.elements.password.value;
       const status = document.getElementById("loginStatus");
 
-      const user = Auth?.handleTraditionalLogin(email, password);
+      if (isRegisterMode && password !== confirmationField.value) {
+        if (status) {
+          status.textContent = "As senhas não conferem.";
+          status.style.color = "red";
+        }
+        return;
+      }
+
+      let user;
+      try {
+        if (isRegisterMode) {
+          const result = await Auth?.registerTraditionalUser(
+            nameField.value,
+            email,
+            password
+          );
+          if (result?.error) {
+            if (status) {
+              status.textContent = result.error;
+              status.style.color = "red";
+            }
+            return;
+          }
+          user = result?.user;
+        } else {
+          user = await Auth?.handleTraditionalLogin(email, password);
+        }
+      } catch (error) {
+        console.error("Erro na autenticação tradicional:", error);
+        if (status) {
+          status.textContent = error.message || "Não foi possível concluir a autenticação.";
+          status.style.color = "red";
+        }
+        return;
+      }
+
       if (user) {
         if (status) {
-          status.textContent = `Bem-vindo, ${user.name}! Login realizado com sucesso.`;
+          status.textContent = isRegisterMode
+            ? `Conta criada. Bem-vindo, ${user.name}!`
+            : `Bem-vindo, ${user.name}! Login realizado com sucesso.`;
           status.style.color = "green";
         }
         // Redirecionar após login bem-sucedido
@@ -247,6 +308,8 @@
         }
       }
     });
+
+    setRegisterMode(false);
 
     // Handle Google Sign-In
     if (googleButton && window.google && window.google.accounts) {
