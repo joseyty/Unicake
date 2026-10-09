@@ -33,7 +33,6 @@ test('registers a traditional account and validates its password at login', asyn
   await page.locator('[name="name"]').fill('Maria Silva');
   await page.locator('[name="email"]').fill('maria@example.com');
   await page.locator('[name="password"]').fill('DoceSenha123');
-  await page.locator('[name="passwordConfirmation"]').fill('DoceSenha123');
   await page.getByRole('button', { name: 'Criar conta' }).click();
 
   await expect(page.locator('#loginStatus')).toContainText('Conta criada');

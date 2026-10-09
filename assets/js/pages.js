@@ -226,16 +226,13 @@
     const nameField = form?.elements.namedItem("name");
     const identifierField = form?.elements.namedItem("email");
     const identifierLabel = document.getElementById("authIdentifierLabel");
-    const confirmationField = form?.elements.namedItem("passwordConfirmation");
     const toggleMode = document.getElementById("authModeToggle");
     let isRegisterMode = false;
 
     function setRegisterMode(enabled) {
       isRegisterMode = enabled;
       nameField.closest("label").hidden = !enabled;
-      confirmationField.closest("label").hidden = !enabled;
       nameField.required = enabled;
-      confirmationField.required = enabled;
       identifierField.type = enabled ? "email" : "text";
       identifierField.autocomplete = enabled ? "email" : "username";
       identifierField.placeholder = enabled ? "voce@email.com" : "Seu nome ou e-mail";
@@ -259,14 +256,6 @@
       const email = form.elements.email.value;
       const password = form.elements.password.value;
       const status = document.getElementById("loginStatus");
-
-      if (isRegisterMode && password !== confirmationField.value) {
-        if (status) {
-          status.textContent = "As senhas não conferem.";
-          status.style.color = "red";
-        }
-        return;
-      }
 
       let user;
       try {
