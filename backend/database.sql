@@ -259,6 +259,37 @@ BEGIN
 END
 GO
 
+-- Suporte: quem pode abrir o painel de chamados. Para liberar alguém (que já tenha conta de cliente):
+--   UPDATE dbo.cliente SET administrador = 1 WHERE email = 'pessoa@email.com';
+IF COL_LENGTH(N'dbo.cliente', N'administrador') IS NULL
+    ALTER TABLE dbo.cliente ADD administrador BIT NOT NULL CONSTRAINT df_cliente_administrador DEFAULT 0;
+GO
+
+-- Chamados enviados pela página Suporte (feedbacks, reclamações, bugs, dúvidas) e a resposta da equipe
+IF OBJECT_ID(N'dbo.chamado', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.chamado (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_chamado PRIMARY KEY,
+        -- NULL quando quem escreveu não estava logado
+        cliente_id INT NULL,
+        nome NVARCHAR(150) NOT NULL,
+        email NVARCHAR(150) NOT NULL,
+        tipo VARCHAR(20) NOT NULL,
+        mensagem NVARCHAR(2000) NOT NULL,
+        status VARCHAR(20) NOT NULL CONSTRAINT df_chamado_status DEFAULT 'ABERTO',
+        resposta NVARCHAR(2000) NULL,
+        respondido_por INT NULL,
+        data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_chamado_criacao DEFAULT SYSDATETIME(),
+        data_resposta DATETIME2(0) NULL,
+        CONSTRAINT fk_chamado_cliente FOREIGN KEY (cliente_id) REFERENCES dbo.cliente(id) ON DELETE SET NULL,
+        CONSTRAINT ck_chamado_tipo CHECK (tipo IN ('PEDIDO', 'PRODUTO', 'RECLAMACAO', 'BUG', 'FEEDBACK', 'EMPRESAS', 'OUTRO')),
+        CONSTRAINT ck_chamado_status CHECK (status IN ('ABERTO', 'RESPONDIDO', 'RESOLVIDO'))
+    );
+    CREATE INDEX idx_chamado_cliente ON dbo.chamado (cliente_id);
+    CREATE INDEX idx_chamado_status ON dbo.chamado (status);
+END
+GO
+
 -- Cartão fidelidade: o confeiteiro escolhe até 10 dos seus produtos para participar
 IF COL_LENGTH(N'dbo.produto', N'fidelidade') IS NULL
     ALTER TABLE dbo.produto ADD fidelidade BIT NOT NULL CONSTRAINT df_produto_fidelidade DEFAULT 0;
@@ -287,14 +318,14 @@ GO
 INSERT INTO dbo.produto (categoria_id, codigo, loja, nome, descricao, preco, estoque)
 SELECT c.id, v.codigo, v.loja, v.nome, v.descricao, v.preco, 100
 FROM (VALUES
-    (N'bolo-chocolate', N'Bolos', N'Confeitaria da Maria', N'Bolo de chocolate trufado', N'Massa fofinha, brigadeiro cremoso e cobertura de chocolate.', 68.90),
-    (N'cupcake-red', N'Cupcakes', N'Cupcake & Cia', N'Cupcake red velvet', N'Massa red velvet com cream cheese suave.', 12.90),
-    (N'torta-limao', N'Tortas', N'Bomboniere Bolos', N'Torta de limao', N'Creme de limao, merengue tostado e base crocante.', 54.50),
-    (N'brigadeiros', N'Doces gourmet', N'Doce Encanto', N'Caixa de brigadeiros gourmet', N'Sabores variados com confeitos artesanais.', 39.90),
-    (N'brownie-nozes', N'Cookies e brownies', N'Cupcake & Cia', N'Brownie com nozes', N'Brownie intenso com nozes e calda de chocolate.', 16.50),
-    (N'kit-infantil', N'Kits festa', N'Doce Encanto', N'Kit festa infantil', N'Bolo, docinhos e cupcakes para ate 15 pessoas.', 149.90),
-    (N'bolo-foto', N'Personalizados', N'Confeitaria da Maria', N'Bolo personalizado com foto', N'Arte comestivel, recheio a escolha e acabamento premium.', 119.90),
-    (N'cookies-recheados', N'Cookies e brownies', N'Cupcake & Cia', N'Cookies recheados', N'Cookies macios com recheios de chocolate, doce de leite e baunilha.', 24.90)
+    (N'bolo-chocolate', N'Bolos', N'Confeitaria da Maria', N'Bolo de chocolate trufado', N'Massa fofinha, brigadeiro cremoso e cobertura de chocolate.', 17.49),
+    (N'cupcake-red', N'Cupcakes', N'Cupcake & Cia', N'Cupcake red velvet', N'Massa red velvet com cream cheese suave.', 7.90),
+    (N'torta-limao', N'Tortas', N'Bomboniere Bolos', N'Torta de limao', N'Creme de limao, merengue tostado e base crocante.', 39.90),
+    (N'brigadeiros', N'Doces gourmet', N'Doce Encanto', N'Caixa de brigadeiros gourmet', N'Sabores variados com confeitos artesanais.', 24.90),
+    (N'brownie-nozes', N'Cookies e brownies', N'Cupcake & Cia', N'Brownie com nozes', N'Brownie intenso com nozes e calda de chocolate.', 9.90),
+    (N'kit-infantil', N'Kits festa', N'Doce Encanto', N'Kit festa infantil', N'Bolo, docinhos e cupcakes para ate 15 pessoas.', 89.90),
+    (N'bolo-foto', N'Personalizados', N'Confeitaria da Maria', N'Bolo personalizado com foto', N'Arte comestivel, recheio a escolha e acabamento premium.', 69.90),
+    (N'cookies-recheados', N'Cookies e brownies', N'Cupcake & Cia', N'Cookies recheados', N'Cookies macios com recheios de chocolate, doce de leite e baunilha.', 14.90)
 ) AS v (codigo, categoria, loja, nome, descricao, preco)
 INNER JOIN dbo.categoria c ON c.nome = v.categoria
 WHERE NOT EXISTS (SELECT 1 FROM dbo.produto p WHERE p.codigo = v.codigo);

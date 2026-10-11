@@ -18,11 +18,12 @@ from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import RequestEntityTooLarge
 
 from services.categoria_service import CategoriaService
+from services.chamado_service import ChamadoService
 from services.cliente_service import ClienteService
 from services.confeiteiro_service import ConfeiteiroService
 from services.pedido_service import PedidoService
 from services.produto_service import ProdutoService
-from utils.seguranca import ErroAutenticacao
+from utils.seguranca import ErroAutenticacao, ErroPermissao
 
 app = Flask(__name__)
 
@@ -72,6 +73,11 @@ def erro_de_validacao(exc):
 @app.errorhandler(ErroAutenticacao)
 def erro_de_autenticacao(exc):
     return jsonify({"erro": str(exc)}), 401
+
+
+@app.errorhandler(ErroPermissao)
+def erro_de_permissao(exc):
+    return jsonify({"erro": str(exc)}), 403
 
 
 @app.errorhandler(RequestEntityTooLarge)
@@ -127,6 +133,57 @@ def _dados_json() -> dict:
     if not isinstance(dados, dict):
         raise ValueError("Envie os dados em JSON.")
     return dados
+
+
+@app.post("/api/chamados")
+def abrir_chamado():
+    """Formulário da página Suporte. Funciona sem login; logado, o chamado fica ligado à conta."""
+    dados = _dados_json()
+    token = _token_da_requisicao()
+    cliente = ClienteService.buscar_por_token(token) if token else None
+    chamado = ChamadoService.criar(
+        # Logado, vale o nome e o e-mail da conta, e não o que veio no formulário
+        nome=cliente.nome if cliente else dados.get("nome"),
+        email=cliente.email if cliente else dados.get("email"),
+        tipo=dados.get("tipo"),
+        mensagem=dados.get("mensagem"),
+        cliente_id=cliente.id if cliente else None,
+    )
+    return jsonify(_serializar(chamado)), 201
+
+
+@app.get("/api/clientes/me/chamados")
+def chamados_do_cliente():
+    cliente = ClienteService.buscar_por_token(_token_da_requisicao())
+    return jsonify(_serializar(ChamadoService.listar_do_cliente(cliente.id)))
+
+
+def _administrador_logado():
+    """Só clientes marcados como administrador no banco entram no painel de suporte."""
+    cliente = ClienteService.buscar_por_token(_token_da_requisicao())
+    if not cliente.administrador:
+        raise ErroPermissao("Esta área é só para a equipe de suporte.")
+    return cliente
+
+
+@app.get("/api/suporte/chamados")
+def chamados_do_suporte():
+    _administrador_logado()
+    chamados = ChamadoService.listar(request.args.get("status") or None, request.args.get("tipo") or None)
+    return jsonify(_serializar(chamados))
+
+
+@app.post("/api/suporte/chamados/<int:chamado_id>/resposta")
+def responder_chamado(chamado_id):
+    administrador = _administrador_logado()
+    chamado = ChamadoService.responder(chamado_id, _dados_json().get("resposta"), administrador.id)
+    return jsonify(_serializar(chamado))
+
+
+@app.post("/api/suporte/chamados/<int:chamado_id>/status")
+def situacao_do_chamado(chamado_id):
+    _administrador_logado()
+    return jsonify(_serializar(ChamadoService.alterar_status(chamado_id, _dados_json().get("status"))))
 
 
 def _sessao_do_cliente(sessao: dict) -> dict:

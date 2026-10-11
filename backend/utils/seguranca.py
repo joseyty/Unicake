@@ -13,6 +13,10 @@ class ErroAutenticacao(ValueError):
     """Login inválido ou sessão ausente/expirada."""
 
 
+class ErroPermissao(ValueError):
+    """A pessoa está logada, mas não pode fazer isso (ex.: painel de suporte sem ser administrador)."""
+
+
 def novo_salt() -> str:
     return secrets.token_hex(16)
 

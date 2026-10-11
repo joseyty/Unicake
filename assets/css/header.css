@@ -487,3 +487,9 @@
   background: var(--gold);
   color: var(--brown-dark);
 }
+
+/* Atalho do painel de suporte, só para administradores */
+.user-dropdown .user-switch.user-admin {
+  border-color: var(--gold);
+  background: rgba(255, 216, 75, 0.2);
+}

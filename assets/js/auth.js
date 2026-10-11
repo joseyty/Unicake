@@ -65,6 +65,7 @@
       picture: picture || null,
       provider,
       hasPassword: Boolean(session.cliente.tem_senha),
+      isAdmin: Boolean(session.cliente.administrador),
       loginTime: new Date().toISOString(),
     };
     localStorage.setItem(TOKEN_STORAGE_KEY, session.token);
@@ -212,12 +213,27 @@
       // Só a tela de login tem o botão do Google
       if (!googleButton) return;
 
+      const wrapper = googleButton.closest(".google-login");
+      if (wrapper && !wrapper.dataset.bound) {
+        wrapper.dataset.bound = "true";
+        // O Google só desenha o botão dele se o script carregou e se o endereço do site está autorizado
+        // no Google Cloud; sem isso, o clique avisa em vez de não fazer nada
+        wrapper.addEventListener("click", () => {
+          const oficial = googleButton.querySelector("iframe");
+          if (!oficial || !oficial.offsetWidth) {
+            showStatus("O login com Google não está disponível neste endereço. Entre com e-mail e senha.", false);
+          }
+        });
+      }
+
       if (
         !window.google ||
         !window.google.accounts ||
         !window.google.accounts.id
       ) {
-        console.error("❌ Google Identity Services não carregou.");
+        // O script do Google pode demorar; tenta mais algumas vezes
+        this._googleTries = (this._googleTries || 0) + 1;
+        if (this._googleTries < 10) setTimeout(() => this.initGoogleSignIn(), 500);
         return;
       }
 
@@ -232,10 +248,12 @@
       // Limpa o conteúdo atual antes de renderizar
       googleButton.innerHTML = "";
 
+      // O botão oficial fica invisível por cima do visual da UniCake e ocupa a mesma largura (o Google aceita de 200 a 400 px)
+      const width = Math.max(200, Math.min(400, Math.round(wrapper ? wrapper.clientWidth : 300)));
       window.google.accounts.id.renderButton(googleButton, {
         theme: "outline",
         size: "large",
-        width: 300,
+        width,
         text: "signin_with",
         shape: "rectangular",
       });
@@ -254,6 +272,22 @@
     const user = window.UniCakeAuth.getUser();
 
     if (user) {
+      // Confere no servidor se a sessão ainda vale e se a conta virou (ou deixou de ser) administradora,
+      // já que isso é ligado direto no banco; se algo mudou, recarrega para o menu acompanhar
+      api("/api/clientes/me")
+        .then((conta) => {
+          const isAdmin = Boolean(conta.administrador);
+          if (Boolean(user.isAdmin) === isAdmin && user.name === conta.nome) return;
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ ...user, name: conta.nome, isAdmin }));
+          window.location.reload();
+        })
+        .catch((error) => {
+          if (error.status === 401) {
+            clearSession();
+            window.location.reload();
+          }
+        });
+
       document.dispatchEvent(
         new CustomEvent("unicake:session-restored", {
           detail: user,

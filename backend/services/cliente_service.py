@@ -6,7 +6,7 @@ from utils.seguranca import ErroAutenticacao, SESSAO_DIAS, hash_senha, hash_toke
 from utils.validacoes import validar_email, validar_nome, validar_senha, validar_telefone
 
 # Colunas públicas: nunca devolve senha_hash/senha_salt
-COLUNAS = "id, nome, email, telefone, data_cadastro, CASE WHEN senha_hash IS NULL THEN 0 ELSE 1 END AS tem_senha"
+COLUNAS = "id, nome, email, telefone, data_cadastro, administrador, CASE WHEN senha_hash IS NULL THEN 0 ELSE 1 END AS tem_senha"
 
 
 class ClienteService:
@@ -133,7 +133,7 @@ class ClienteService:
         if not token:
             raise ErroAutenticacao("Entre na sua conta para continuar.")
 
-        colunas = COLUNAS.replace("id, nome, email, telefone, data_cadastro", "c.id, c.nome, c.email, c.telefone, c.data_cadastro")
+        colunas = COLUNAS.replace("id, nome, email, telefone, data_cadastro, administrador", "c.id, c.nome, c.email, c.telefone, c.data_cadastro, c.administrador")
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
@@ -191,6 +191,11 @@ class ClienteService:
                     (cliente_id,),
                 )
                 cursor.execute("DELETE FROM carrinho WHERE cliente_id = ?", (cliente_id,))
+                # Os chamados de suporte ficam, mas sem o nome e o e-mail de quem saiu
+                cursor.execute(
+                    "UPDATE chamado SET nome = N'Cliente removido', email = ? WHERE cliente_id = ?",
+                    (f"removido-{cliente_id}@unicake.invalid", cliente_id),
+                )
 
                 cursor.execute("SELECT TOP 1 1 AS tem FROM pedido WHERE cliente_id = ?", (cliente_id,))
                 if cursor.fetchone() is None:
@@ -199,7 +204,7 @@ class ClienteService:
                 else:
                     cursor.execute(
                         "UPDATE cliente SET nome = N'Cliente removido', email = ?, telefone = NULL, "
-                        "senha_hash = NULL, senha_salt = NULL, google_sub = NULL WHERE id = ?",
+                        "senha_hash = NULL, senha_salt = NULL, google_sub = NULL, administrador = 0 WHERE id = ?",
                         (f"removido-{cliente_id}@unicake.invalid", cliente_id),
                     )
                     resultado = "anonimizada"

@@ -41,6 +41,7 @@
             <small>Acessando como cliente · Conta ${client.provider === "google" ? "Google" : "UniCake"}</small>
             <a class="user-switch" href="MinhaConta.html">Minha conta</a>
             <a class="user-switch" href="${baker ? "MinhaLoja.html" : "Confeiteiro.html"}" data-switch-mode="confeiteiro">Acessar como confeiteiro</a>
+            ${client.isAdmin ? `<a class="user-switch user-admin" href="PainelSuporte.html">Painel</a>` : ""}
             <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
           </div>
         </div>

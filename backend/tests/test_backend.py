@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from database.conexao import get_connection
 from services.categoria_service import CategoriaService
+from services.chamado_service import ChamadoService
 from services.cliente_service import ClienteService
 from services.endereco_service import EnderecoService
 from services.produto_service import ProdutoService
@@ -91,6 +92,7 @@ class TestBackendDoces(unittest.TestCase):
             with conn.cursor() as cursor:
                 # Limpa por prefixo para remover também o que os testes criaram, mesmo se algum falhar no meio.
                 p = (len(cls.prefixo), cls.prefixo)
+                cursor.execute("DELETE FROM chamado WHERE LEFT(email, ?) = ? OR mensagem LIKE ?", (*p, cls.prefixo + "%"))
                 cursor.execute("DELETE FROM pedido WHERE cliente_id IN (SELECT id FROM cliente WHERE LEFT(email, ?) = ?)", p)
                 cursor.execute("DELETE FROM cliente WHERE LEFT(email, ?) = ?", p)
                 # Contas anonimizadas pelos testes perdem o e-mail com prefixo; saem pelo id
@@ -573,6 +575,58 @@ class TestBackendDoces(unittest.TestCase):
         self.assertEqual((historico.status, historico.confeiteiro_id, historico.imagem), ("INATIVO", None, None))
         # O e-mail e o CNPJ ficam livres para um novo cadastro
         ConfeiteiroService.cadastrar("Edu Doceiro", "Doces do Edu", cnpj, email, "SenhaForte123")
+
+    def test_14_chamados_de_suporte(self):
+        with self.assertRaises(ValueError):
+            ChamadoService.criar("Ana", self.prefixo + "ana@email.com", "INVALIDO", self.prefixo + "oi")
+        with self.assertRaises(ValueError):
+            ChamadoService.criar("Ana", self.prefixo + "ana@email.com", "BUG", "   ")
+        with self.assertRaises(ValueError):
+            ChamadoService.criar("Ana", self.prefixo + "ana@email.com", "BUG", "x" * 2001)
+
+        # Sem login: fica só com o nome e o e-mail informados
+        avulso = ChamadoService.criar("Ana Visitante", self.prefixo + "ana@email.com", "bug", self.prefixo + "o botão não funciona")
+        self.assertEqual((avulso['tipo'], avulso['status'], avulso['cliente_id'], avulso['resposta']), ("BUG", "ABERTO", None, None))
+
+        # Logado: fica ligado à conta e aparece em "meus chamados"
+        sessao = ClienteService.cadastrar("Rui Cliente", self.prefixo + "rui@email.com", "SenhaForte123")
+        cliente = sessao['cliente']
+        self.assertFalse(cliente.administrador)
+        dele = ChamadoService.criar(cliente.nome, cliente.email, "RECLAMACAO", self.prefixo + "pedido atrasou", cliente_id=cliente.id)
+        self.assertEqual([c['id'] for c in ChamadoService.listar_do_cliente(cliente.id)], [dele['id']])
+
+        abertos = [c['id'] for c in ChamadoService.listar(status="ABERTO")]
+        self.assertIn(avulso['id'], abertos)
+        self.assertIn(dele['id'], abertos)
+        self.assertNotIn(avulso['id'], [c['id'] for c in ChamadoService.listar(tipo="RECLAMACAO")])
+
+        # Administrador é ligado direto no banco; a conta passa a enxergar o painel
+        conn = get_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("UPDATE cliente SET administrador = 1 WHERE id = ?", (cliente.id,))
+                conn.commit()
+        finally:
+            conn.close()
+        self.assertTrue(ClienteService.buscar_por_token(sessao['token']).administrador)
+
+        with self.assertRaises(ValueError):
+            ChamadoService.responder(dele['id'], "", cliente.id)
+        respondido = ChamadoService.responder(dele['id'], "Desculpe o atraso, já resolvemos.", cliente.id)
+        self.assertEqual((respondido['status'], respondido['resposta']), ("RESPONDIDO", "Desculpe o atraso, já resolvemos."))
+        self.assertIsNotNone(respondido['data_resposta'])
+        self.assertNotIn(dele['id'], [c['id'] for c in ChamadoService.listar(status="ABERTO")])
+        self.assertEqual(ChamadoService.alterar_status(dele['id'], "resolvido")['status'], "RESOLVIDO")
+        with self.assertRaises(ValueError):
+            ChamadoService.alterar_status(dele['id'], "FECHADO")
+        with self.assertRaises(ValueError):
+            ChamadoService.responder(999999999, "oi", cliente.id)
+
+        # Excluir a conta tira o nome e o e-mail do chamado, mas mantém o registro
+        ClienteService.excluir_conta(cliente.id, "SenhaForte123")
+        restante = [c for c in ChamadoService.listar(tipo="RECLAMACAO") if c['id'] == dele['id']][0]
+        self.assertEqual((restante['nome'], restante['cliente_id']), ("Cliente removido", None))
+        self.assertNotIn("rui", restante['email'])
 
 
 if __name__ == "__main__":

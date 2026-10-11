@@ -1174,3 +1174,231 @@ a.store-card {
 .login-card .excluir-conta .botao-perigo:hover {
   background: #7f1d17;
 }
+
+/* Botão "Entrar com Google" com o visual da UniCake */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.google-login {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 2.9rem;
+  margin: 0 auto;
+  border: 1px solid rgba(92, 50, 32, 0.22);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  box-shadow: 0 6px 14px rgba(47, 27, 19, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.google-login:hover {
+  border-color: var(--rose-dark);
+  box-shadow: 0 10px 20px rgba(47, 27, 19, 0.14);
+  transform: translateY(-1px);
+}
+
+.google-login:focus-within {
+  outline: 2px solid var(--rose-dark);
+  outline-offset: 2px;
+}
+
+.google-visual {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  color: var(--brown-dark);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.google-visual svg {
+  flex: 0 0 auto;
+}
+
+.login-card .google-login .google-button {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+/* Chamados de suporte: painel da equipe e "Meus chamados" */
+.login-card.painel-chamados {
+  width: min(100%, 56rem);
+}
+
+.chamados-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0.6rem 0 0.4rem;
+}
+
+.chamados-filtros label {
+  flex: 1 1 12rem;
+}
+
+.chamados-filtros select,
+.chamado-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--cream-strong);
+  color: var(--ink);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  font-weight: 500;
+}
+
+.chamado-form textarea {
+  resize: vertical;
+}
+
+.login-card .meus-chamados-title {
+  margin: 1.6rem 0 0.7rem;
+  color: var(--brown-dark);
+  font-family: var(--font-round);
+  font-size: 1.25rem;
+}
+
+.chamados-lista {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.chamado {
+  display: grid;
+  gap: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--cream-strong);
+  padding: 0.9rem;
+}
+
+.chamado-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.chamado-tipo,
+.chamado-status {
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.chamado-tipo {
+  background: rgba(92, 50, 32, 0.12);
+  color: var(--brown-dark);
+}
+
+.chamado-status.is-aberto {
+  background: rgba(224, 123, 154, 0.2);
+  color: #8f2748;
+}
+
+.chamado-status.is-respondido {
+  background: rgba(255, 216, 75, 0.35);
+  color: #5c4500;
+}
+
+.chamado-status.is-resolvido {
+  background: rgba(60, 140, 90, 0.18);
+  color: #1f5c3a;
+}
+
+.chamado-data {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.login-card .chamado p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.login-card .chamado .chamado-autor {
+  color: var(--brown);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.chamado-mensagem,
+.chamado-resposta p {
+  white-space: pre-wrap;
+}
+
+.chamado-resposta {
+  display: grid;
+  gap: 0.3rem;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: rgba(255, 216, 75, 0.14);
+  padding: 0.6rem 0.8rem;
+}
+
+.chamado-resposta strong {
+  color: var(--brown-dark);
+  font-size: 0.78rem;
+}
+
+.chamado-form {
+  display: grid;
+  gap: 0.6rem;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.7rem;
+}
+
+.chamado-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.login-card .chamado-acoes button {
+  width: auto;
+  min-height: 2.3rem;
+  padding: 0.4rem 0.95rem;
+  font-size: 0.82rem;
+}
+
+.login-card .chamado-acoes .chamado-secundario {
+  border: 1px solid rgba(92, 50, 32, 0.22);
+  background: transparent;
+  color: var(--brown);
+}

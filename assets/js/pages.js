@@ -362,18 +362,68 @@
         .join("");
     }
 
-    form?.addEventListener("submit", (event) => {
+    if (!form) return;
+    const Auth = window.UniCakeAuth;
+    const status = document.getElementById("supportFormStatus");
+    const submit = form.querySelector('[type="submit"]');
+
+    // Logado, o chamado vai no nome da conta e a resposta aparece em "Minha conta"
+    function fillAccount() {
+      const user = Auth?.getUser();
+      if (!user) return;
+      form.elements.name.value = user.name || "";
+      form.elements.email.value = user.email || "";
+      form.elements.name.readOnly = true;
+      form.elements.email.readOnly = true;
+    }
+    fillAccount();
+
+    // Grava o chamado no banco pela API do backend (backend/api.py)
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const status = document.getElementById("supportFormStatus");
-      if (status) status.textContent = "Solicitação registrada. Nossa equipe retornará pelo e-mail informado.";
-      form.reset();
+      const user = Auth?.getUser();
+      const headers = { "Content-Type": "application/json" };
+      if (user) headers.Authorization = "Bearer " + Auth.getToken();
+
+      submit.disabled = true;
+      status.textContent = "Enviando...";
+      try {
+        const response = await fetch(U.apiBase + "/api/chamados", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            nome: form.elements.name.value,
+            email: form.elements.email.value,
+            tipo: form.elements.subject.value,
+            mensagem: form.elements.message.value,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          Auth?.clearSession();
+          status.textContent = "Sua sessão expirou. Entre na sua conta de novo ou recarregue a página para enviar sem login.";
+          return;
+        }
+        if (!response.ok) {
+          status.textContent = result.erro || "Não foi possível enviar. Tente novamente.";
+          return;
+        }
+        status.textContent = user
+          ? `Solicitação nº ${result.id} registrada. A resposta vai aparecer em "Minha conta".`
+          : `Solicitação nº ${result.id} registrada. Para acompanhar a resposta pelo site, envie logado na sua conta.`;
+        form.reset();
+        fillAccount();
+      } catch (error) {
+        status.textContent = "Não foi possível conectar ao servidor. Tente novamente em instantes.";
+      } finally {
+        submit.disabled = false;
+      }
     });
   }
 
   function renderLogin() {
     const form = document.getElementById("loginForm");
     if (!form) return;
-    const googleButton = document.querySelector(".google-button");
     const Auth = window.UniCakeAuth;
     const nameField = form?.elements.namedItem("name");
     const identifierField = form?.elements.namedItem("email");
@@ -459,23 +509,7 @@
 
     setRegisterMode(false);
 
-    // Handle Google Sign-In
-    if (googleButton && window.google && window.google.accounts) {
-      window.google.accounts.id.initialize({
-        client_id: "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.com",
-        // O próprio Auth confere a credencial no servidor, mostra o aviso e redireciona
-        callback: (response) => {
-          Auth?.handleGoogleCallback(response);
-        },
-      });
-
-      // Render Google Sign-In button
-      window.google.accounts.id.renderButton(googleButton, {
-        theme: "outline",
-        size: "large",
-        width: "100%",
-      });
-    }
+    // O botão do Google é montado em auth.js (initGoogleSignIn)
   }
 
   function initReveal() {

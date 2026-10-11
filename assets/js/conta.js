@@ -5,6 +5,32 @@
 
   const LOGIN_PAGE = "Entrar.html";
 
+  // Chamados que o cliente abriu na página Suporte, com a resposta da equipe quando houver
+  async function carregarChamados() {
+    const lista = document.getElementById("meusChamados");
+    const Chamados = window.UniCakeChamados;
+    if (!lista || !Chamados) return;
+    try {
+      const response = await fetch(U.apiBase + "/api/clientes/me/chamados", {
+        headers: { Authorization: "Bearer " + Auth.getToken() },
+      });
+      if (!response.ok) throw new Error();
+      const chamados = await response.json();
+      lista.innerHTML = "";
+      if (!chamados.length) {
+        const vazio = Chamados.el("p", "empty-state", "Você ainda não abriu nenhum chamado. ");
+        const link = Chamados.el("a", "", "Falar com o suporte");
+        link.href = "Suporte.html";
+        vazio.appendChild(link);
+        lista.appendChild(vazio);
+        return;
+      }
+      chamados.forEach((chamado) => lista.appendChild(Chamados.card(chamado)));
+    } catch (error) {
+      lista.textContent = "Não foi possível carregar seus chamados agora.";
+    }
+  }
+
   // Página "Minha conta" do cliente (MinhaConta.html): dados do cadastro e exclusão da conta
   async function initConta() {
     const card = document.getElementById("contaCard");
@@ -42,6 +68,7 @@
     });
     status.hidden = true;
     document.getElementById("contaConteudo").hidden = false;
+    carregarChamados();
 
     document.getElementById("contaSair").addEventListener("click", () => {
       Auth.logout();

@@ -59,26 +59,28 @@
             <form class="support-page-form" id="supportForm">
               <label>
                 Nome
-                <input type="text" name="name" placeholder="Seu nome" required />
+                <input type="text" name="name" maxlength="150" placeholder="Seu nome" required />
               </label>
               <label>
                 E-mail
-                <input type="email" name="email" placeholder="voce@email.com" required />
+                <input type="email" name="email" maxlength="150" placeholder="voce@email.com" required />
               </label>
               <label>
                 Assunto
                 <select name="subject" required>
                   <option value="">Selecione</option>
-                  <option>Pedido</option>
-                  <option>Produto</option>
-                  <option>Reclamação</option>
-                  <option>Empresas</option>
-                  <option>Outro</option>
+                  <option value="PEDIDO">Pedido</option>
+                  <option value="PRODUTO">Produto</option>
+                  <option value="RECLAMACAO">Reclamação</option>
+                  <option value="BUG">Bug ou erro no site</option>
+                  <option value="FEEDBACK">Sugestão ou elogio</option>
+                  <option value="EMPRESAS">Empresas</option>
+                  <option value="OUTRO">Outro</option>
                 </select>
               </label>
               <label>
                 Mensagem
-                <textarea name="message" placeholder="Conte como podemos ajudar" required></textarea>
+                <textarea name="message" maxlength="2000" placeholder="Conte como podemos ajudar" required></textarea>
               </label>
               <button type="submit">Enviar solicitação</button>
               <p class="form-status" id="supportFormStatus" role="status"></p>

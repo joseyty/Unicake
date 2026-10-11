@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UniCake | Minha conta</title>
+    <title>UniCake | Painel de suporte</title>
     <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
-    <meta name="description" content="Veja os dados da sua conta UniCake ou exclua seu cadastro." />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Painel da equipe UniCake para responder chamados de suporte." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,43 +31,31 @@
     <script defer src="../assets/js/accessibility.js"></script>
     <script defer src="../assets/js/pages.js"></script>
     <script defer src="../assets/js/chamados.js"></script>
-    <script defer src="../assets/js/conta.js"></script>
+    <script defer src="../assets/js/painel-chamados.js"></script>
   </head>
-  <body data-page="minha-conta">
+  <body data-page="painel-suporte">
     <div class="page-shell">
       <div id="site-header"></div>
 
       <main id="conteudo" class="auth-layout">
-        <section class="login-card" id="contaCard" aria-labelledby="conta-title">
-          <span class="eyebrow">Conta UniCake</span>
-          <h1 id="conta-title">Minha conta</h1>
-          <p class="form-status" id="contaStatus" role="status">Carregando sua conta...</p>
-          <div id="contaConteudo" hidden>
-            <dl class="confeiteiro-dados">
-              <div><dt>Nome</dt><dd data-conta="nome"></dd></div>
-              <div><dt>E-mail</dt><dd data-conta="email"></dd></div>
-              <div><dt>Forma de login</dt><dd data-conta="login"></dd></div>
-              <div><dt>Cliente desde</dt><dd data-conta="data_cadastro"></dd></div>
-            </dl>
-            <div class="confeiteiro-acoes">
-              <a class="btn-secondary" href="ParaVoce.html">Ver produtos</a>
-              <button type="button" class="logout-button" id="contaSair">Sair</button>
+        <section class="login-card painel-chamados" aria-labelledby="painel-suporte-title">
+          <span class="eyebrow">Equipe UniCake</span>
+          <h1 id="painel-suporte-title">Painel de suporte</h1>
+          <p>Feedbacks, reclamações, bugs e dúvidas enviados pela página Suporte. A resposta aparece para o cliente em "Minha conta".</p>
+          <div id="painelChamados" hidden>
+            <div class="chamados-filtros">
+              <label>
+                Assunto
+                <select id="filtroTipo"><option value="">Todos</option></select>
+              </label>
+              <label>
+                Situação
+                <select id="filtroStatus"><option value="">Todas</option></select>
+              </label>
             </div>
-            <h2 class="meus-chamados-title">Meus chamados de suporte</h2>
-            <div class="chamados-lista" id="meusChamados"></div>
-            <details class="excluir-conta">
-              <summary>Excluir minha conta</summary>
-              <p>Apaga seu cadastro e seus dados pessoais. Não dá para desfazer.</p>
-              <form id="excluirContaForm">
-                <label>
-                  Confirme sua senha
-                  <input type="password" name="senha" autocomplete="current-password" maxlength="200" placeholder="Digite sua senha" required />
-                </label>
-                <button type="submit" class="botao-perigo">Excluir conta definitivamente</button>
-              </form>
-              <p class="form-status" id="excluirContaStatus" role="status"></p>
-            </details>
           </div>
+          <p class="form-status" id="painelChamadosStatus" role="status">Carregando chamados...</p>
+          <div class="chamados-lista" id="chamadosLista"></div>
         </section>
       </main>
 
