@@ -13,6 +13,15 @@ class ErroAutenticacao(ValueError):
     """Login inválido ou sessão ausente/expirada."""
 
 
+class ErroBloqueio(ErroAutenticacao):
+    """Senhas erradas demais: o login da conta fica travado por alguns segundos."""
+
+    def __init__(self, segundos: int):
+        self.segundos = max(1, int(segundos))
+        minutos, resto = divmod(self.segundos, 60)
+        super().__init__(f"Muitas tentativas com senha errada. Tente de novo em {minutos}:{resto:02d}.")
+
+
 class ErroPermissao(ValueError):
     """A pessoa está logada, mas não pode fazer isso (ex.: painel de suporte sem ser administrador)."""
 

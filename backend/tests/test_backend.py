@@ -20,7 +20,8 @@ from services.carrinho_service import CarrinhoService
 from services.pedido_service import PedidoService
 from services.pagamento_service import PagamentoService
 from services.confeiteiro_service import ConfeiteiroService
-from utils.seguranca import ErroAutenticacao
+from services.controle_acesso_service import ControleAcesso, LIMITE_FALHAS
+from utils.seguranca import ErroAutenticacao, ErroBloqueio
 from utils.validacoes import calcular_dv_cnpj, validar_cnpj
 
 
@@ -93,6 +94,7 @@ class TestBackendDoces(unittest.TestCase):
                 # Limpa por prefixo para remover também o que os testes criaram, mesmo se algum falhar no meio.
                 p = (len(cls.prefixo), cls.prefixo)
                 cursor.execute("DELETE FROM chamado WHERE LEFT(email, ?) = ? OR mensagem LIKE ?", (*p, cls.prefixo + "%"))
+                cursor.execute("DELETE FROM tentativa_login WHERE LEFT(email, ?) = ?", p)
                 cursor.execute("DELETE FROM pedido WHERE cliente_id IN (SELECT id FROM cliente WHERE LEFT(email, ?) = ?)", p)
                 cursor.execute("DELETE FROM cliente WHERE LEFT(email, ?) = ?", p)
                 # Contas anonimizadas pelos testes perdem o e-mail com prefixo; saem pelo id
@@ -627,6 +629,74 @@ class TestBackendDoces(unittest.TestCase):
         restante = [c for c in ChamadoService.listar(tipo="RECLAMACAO") if c['id'] == dele['id']][0]
         self.assertEqual((restante['nome'], restante['cliente_id']), ("Cliente removido", None))
         self.assertNotIn("rui", restante['email'])
+
+    def _liberar_bloqueio(self, tipo, email):
+        """Simula a passagem dos 2 minutos, adiantando o fim do bloqueio no banco."""
+        conn = get_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE tentativa_login SET bloqueado_ate = DATEADD(SECOND, -1, SYSDATETIME()) WHERE tipo = ? AND email = ?",
+                    (tipo, email),
+                )
+                conn.commit()
+        finally:
+            conn.close()
+
+    def test_15_bloqueio_apos_senhas_erradas(self):
+        email = self.prefixo + "trava@email.com"
+        ClienteService.cadastrar("Téo Cliente", email, "SenhaForte123")
+
+        # As 4 primeiras senhas erradas avisam quantas tentativas restam
+        for restantes in range(LIMITE_FALHAS - 1, 0, -1):
+            with self.assertRaises(ErroAutenticacao) as erro:
+                ClienteService.autenticar(email, "senha-errada")
+            self.assertNotIsInstance(erro.exception, ErroBloqueio)
+            self.assertIn(str(restantes), str(erro.exception))
+
+        # A 5ª trava a conta por 2 minutos, e nem a senha certa passa enquanto isso
+        with self.assertRaises(ErroBloqueio) as erro:
+            ClienteService.autenticar(email, "senha-errada")
+        self.assertEqual(erro.exception.segundos, 120)
+        with self.assertRaises(ErroBloqueio) as erro:
+            ClienteService.autenticar(email, "SenhaForte123")
+        self.assertTrue(0 < erro.exception.segundos <= 120)
+        self.assertIn("Tente de novo em", str(erro.exception))
+
+        # O bloqueio é por conta: outro e-mail e o login de confeiteiro seguem livres
+        outro = self.prefixo + "livre@email.com"
+        ClienteService.cadastrar("Lu Cliente", outro, "SenhaForte123")
+        ClienteService.autenticar(outro, "SenhaForte123")
+        ControleAcesso.conferir("CONFEITEIRO", email)
+
+        # Passado o tempo, a senha certa entra e a contagem recomeça do zero
+        self._liberar_bloqueio("CLIENTE", email)
+        ClienteService.autenticar(email, "SenhaForte123")
+        with self.assertRaises(ErroAutenticacao) as erro:
+            ClienteService.autenticar(email, "senha-errada")
+        self.assertIn(str(LIMITE_FALHAS - 1), str(erro.exception))
+
+        # E-mail sem cadastro também trava, para não revelar quais contas existem
+        fantasma = self.prefixo + "fantasma@email.com"
+        for _ in range(LIMITE_FALHAS - 1):
+            with self.assertRaises(ErroAutenticacao):
+                ClienteService.autenticar(fantasma, "qualquer")
+        with self.assertRaises(ErroBloqueio):
+            ClienteService.autenticar(fantasma, "qualquer")
+
+        # O login de confeiteiro tem a mesma trava
+        base = "".join(random.choice(string.digits) for _ in range(8))
+        conf = self.prefixo + "trava-conf@email.com"
+        ConfeiteiroService.cadastrar("Ivo Doceiro", "Doces do Ivo", base + "0006" + calcular_dv_cnpj(base + "0006"), conf, "SenhaForte123")
+        for _ in range(LIMITE_FALHAS - 1):
+            with self.assertRaises(ErroAutenticacao):
+                ConfeiteiroService.autenticar(conf, "senha-errada")
+        with self.assertRaises(ErroBloqueio):
+            ConfeiteiroService.autenticar(conf, "senha-errada")
+        with self.assertRaises(ErroBloqueio):
+            ConfeiteiroService.autenticar(conf, "SenhaForte123")
+        self._liberar_bloqueio("CONFEITEIRO", conf)
+        self.assertEqual(ConfeiteiroService.autenticar(conf, "SenhaForte123")['confeiteiro'].email, conf)
 
 
 if __name__ == "__main__":

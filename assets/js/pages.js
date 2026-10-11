@@ -480,7 +480,11 @@
           user = await Auth?.handleTraditionalLogin(email, password);
         }
       } catch (error) {
-        console.error("Erro na autenticação tradicional:", error);
+        // 5 senhas erradas: o servidor trava o login por 2 minutos e o site mostra o cronômetro
+        if (error.waitSeconds && status) {
+          U.lockCountdown({ seconds: error.waitSeconds, status, button: form.querySelector('[type="submit"]') });
+          return;
+        }
         if (status) {
           status.textContent = error.message || "Não foi possível concluir a autenticação.";
           status.style.color = "red";

@@ -138,6 +138,29 @@
       });
   }
 
+  // Cronômetro do bloqueio de login: trava o botão e mostra o tempo que falta, de segundo em segundo
+  function lockCountdown({ seconds, status, button }) {
+    const end = Date.now() + seconds * 1000;
+    window.clearInterval(status._lockTimer);
+    if (button) button.disabled = true;
+    status.style.color = "";
+
+    function tick() {
+      const left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+      if (left <= 0) {
+        window.clearInterval(status._lockTimer);
+        status.textContent = "Pronto, você já pode tentar de novo.";
+        if (button) button.disabled = false;
+        return;
+      }
+      const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+      status.textContent = `Muitas tentativas com senha errada. Tente de novo em ${clock}.`;
+    }
+
+    tick();
+    status._lockTimer = window.setInterval(tick, 1000);
+  }
+
   window.UniCake = {
     data,
     icons,
@@ -152,6 +175,7 @@
     stars,
     escapeHtml,
     toast,
+    lockCountdown,
   };
 
   window.UniCake.ready(() => {

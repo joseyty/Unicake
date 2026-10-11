@@ -23,7 +23,7 @@ from services.cliente_service import ClienteService
 from services.confeiteiro_service import ConfeiteiroService
 from services.pedido_service import PedidoService
 from services.produto_service import ProdutoService
-from utils.seguranca import ErroAutenticacao, ErroPermissao
+from utils.seguranca import ErroAutenticacao, ErroBloqueio, ErroPermissao
 
 app = Flask(__name__)
 
@@ -73,6 +73,14 @@ def erro_de_validacao(exc):
 @app.errorhandler(ErroAutenticacao)
 def erro_de_autenticacao(exc):
     return jsonify({"erro": str(exc)}), 401
+
+
+@app.errorhandler(ErroBloqueio)
+def erro_de_bloqueio(exc):
+    # O site usa aguarde_segundos para mostrar o cronômetro
+    resposta = jsonify({"erro": str(exc), "aguarde_segundos": exc.segundos})
+    resposta.headers["Retry-After"] = str(exc.segundos)
+    return resposta, 429
 
 
 @app.errorhandler(ErroPermissao)

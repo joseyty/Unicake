@@ -259,6 +259,21 @@ BEGIN
 END
 GO
 
+-- Controle de acesso: senhas erradas por conta; na 5ª seguida o login trava por 2 minutos
+IF OBJECT_ID(N'dbo.tentativa_login', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.tentativa_login (
+        tipo VARCHAR(12) NOT NULL,
+        email NVARCHAR(150) NOT NULL,
+        falhas INT NOT NULL CONSTRAINT df_tentativa_falhas DEFAULT 0,
+        ultima_falha DATETIME2(0) NOT NULL CONSTRAINT df_tentativa_ultima DEFAULT SYSDATETIME(),
+        bloqueado_ate DATETIME2(0) NULL,
+        CONSTRAINT pk_tentativa_login PRIMARY KEY (tipo, email),
+        CONSTRAINT ck_tentativa_tipo CHECK (tipo IN ('CLIENTE', 'CONFEITEIRO'))
+    );
+END
+GO
+
 -- Suporte: quem pode abrir o painel de chamados. Para liberar alguém (que já tenha conta de cliente):
 --   UPDATE dbo.cliente SET administrador = 1 WHERE email = 'pessoa@email.com';
 IF COL_LENGTH(N'dbo.cliente', N'administrador') IS NULL

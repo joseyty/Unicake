@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from database.conexao import get_connection
 from models.confeiteiro import Confeiteiro
+from services.controle_acesso_service import ControleAcesso
 from utils.seguranca import ErroAutenticacao, SESSAO_DIAS, hash_senha, hash_token, novo_salt, novo_token, senha_confere
 from utils.validacoes import validar_cnpj, validar_email, validar_nome, validar_senha
 
@@ -54,6 +55,8 @@ class ConfeiteiroService:
         senha = str(senha or "")
         if len(senha) > 200:
             raise ErroAutenticacao("E-mail ou senha incorretos.")
+        # Conta travada por senhas erradas nem chega a conferir a senha
+        ControleAcesso.conferir("CONFEITEIRO", email)
 
         conn = get_connection()
         try:
@@ -66,7 +69,9 @@ class ConfeiteiroService:
 
                 confere = senha_confere(senha, row['senha_salt'] if row else None, row['senha_hash'] if row else None)
                 if row is None or not confere:
-                    raise ErroAutenticacao("E-mail ou senha incorretos.")
+                    restantes = ControleAcesso.registrar_falha("CONFEITEIRO", email)
+                    raise ErroAutenticacao(ControleAcesso.mensagem_de_erro(restantes))
+                ControleAcesso.limpar("CONFEITEIRO", email)
                 if not row['ativo']:
                     raise ErroAutenticacao("Este cadastro está desativado.")
 

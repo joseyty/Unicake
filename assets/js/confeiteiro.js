@@ -74,6 +74,8 @@
     if (!response.ok) {
       const error = new Error(data.erro || "Não foi possível concluir. Tente novamente.");
       error.status = response.status;
+      // Login travado por senhas erradas: quantos segundos faltam
+      error.waitSeconds = data.aguarde_segundos || 0;
       throw error;
     }
     return data;
@@ -156,6 +158,11 @@
         // Já entra como confeiteiro e segue para a página da loja, onde cadastra os produtos
         window.location.href = PAINEL_PAGE + (isRegisterMode ? "?novo=1" : "");
       } catch (error) {
+        // 5 senhas erradas: o servidor trava o login por 2 minutos e o site mostra o cronômetro
+        if (error.waitSeconds) {
+          U.lockCountdown({ seconds: error.waitSeconds, status, button: submit });
+          return;
+        }
         status.textContent = errorMessage(error);
         submit.disabled = false;
       }

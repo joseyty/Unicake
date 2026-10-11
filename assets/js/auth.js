@@ -45,6 +45,8 @@
     if (!response.ok) {
       const error = new Error(data.erro || "Não foi possível concluir. Tente novamente.");
       error.status = response.status;
+      // Login travado por senhas erradas: quantos segundos faltam
+      error.waitSeconds = data.aguarde_segundos || 0;
       throw error;
     }
     return data;
@@ -174,22 +176,18 @@
       }
     },
 
-    // Devolve o usuário, ou null se o e-mail ou a senha estiverem errados
+    // Devolve o usuário. Senha errada ou conta travada chegam como erro, com a mensagem do servidor
+    // (e error.waitSeconds quando o login está bloqueado).
     async handleTraditionalLogin(email, password) {
       if (!email || !password) {
         return null;
       }
 
-      try {
-        const session = await api("/api/clientes/login", {
-          method: "POST",
-          body: { email, senha: password },
-        });
-        return saveSession(session, "traditional");
-      } catch (error) {
-        if (error.status === 401) return null;
-        throw error;
-      }
+      const session = await api("/api/clientes/login", {
+        method: "POST",
+        body: { email, senha: password },
+      });
+      return saveSession(session, "traditional");
     },
 
     // Confere no servidor se a sessão ainda vale e devolve os dados atuais da conta

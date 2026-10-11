@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from database.conexao import get_connection
 from models.cliente import Cliente
+from services.controle_acesso_service import ControleAcesso
 from utils.seguranca import ErroAutenticacao, SESSAO_DIAS, hash_senha, hash_token, novo_salt, novo_token, senha_confere
 from utils.validacoes import validar_email, validar_nome, validar_senha, validar_telefone
 
@@ -75,6 +76,8 @@ class ClienteService:
         senha = str(senha or "")
         if len(senha) > 200:
             raise ErroAutenticacao("E-mail ou senha incorretos.")
+        # Conta travada por senhas erradas nem chega a conferir a senha
+        ControleAcesso.conferir("CLIENTE", email)
 
         conn = get_connection()
         try:
@@ -83,9 +86,12 @@ class ClienteService:
                 row = cursor.fetchone()
                 confere = senha_confere(senha, row['senha_salt'] if row else None, row['senha_hash'] if row else None)
                 if row is None or row['senha_hash'] is None or not confere:
-                    raise ErroAutenticacao("E-mail ou senha incorretos.")
+                    # Conta também para e-mails sem cadastro, para a resposta não revelar se a conta existe
+                    restantes = ControleAcesso.registrar_falha("CLIENTE", email)
+                    raise ErroAutenticacao(ControleAcesso.mensagem_de_erro(restantes))
                 token = ClienteService._abrir_sessao(cursor, row['id'])
                 conn.commit()
+                ControleAcesso.limpar("CLIENTE", email)
                 return {"token": token, "cliente": ClienteService._carregar(cursor, row['id'])}
         except Exception:
             conn.rollback()
