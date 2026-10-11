@@ -4,7 +4,11 @@ Executar com: python api.py
 """
 from __future__ import annotations
 
+import json
 import os
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
@@ -14,9 +18,11 @@ from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import RequestEntityTooLarge
 
 from services.categoria_service import CategoriaService
-from services.confeiteiro_service import ConfeiteiroService, ErroAutenticacao
+from services.cliente_service import ClienteService
+from services.confeiteiro_service import ConfeiteiroService
 from services.pedido_service import PedidoService
 from services.produto_service import ProdutoService
+from utils.seguranca import ErroAutenticacao
 
 app = Flask(__name__)
 
@@ -24,6 +30,9 @@ app = Flask(__name__)
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 TAMANHO_MAXIMO_FOTO_MB = 4
 app.config["MAX_CONTENT_LENGTH"] = TAMANHO_MAXIMO_FOTO_MB * 1024 * 1024 + 64 * 1024
+
+# Mesmo ID usado pelo botão "Entrar com Google" do site (assets/js/auth.js)
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.com")
 
 ORIGENS_PERMITIDAS = {
     origem.strip()
@@ -92,16 +101,14 @@ def criar_pedido():
     if request.method == "OPTIONS":
         return "", 204
 
+    # O pedido é sempre do cliente logado: quem compra vem da sessão, não do que o navegador informa
+    cliente = ClienteService.buscar_por_token(_token_da_requisicao())
     dados = request.get_json(silent=True)
     if not isinstance(dados, dict):
         raise ValueError("Envie os dados do pedido em JSON.")
-    cliente = dados.get("cliente")
-    if not isinstance(cliente, dict):
-        raise ValueError("Dados do cliente são obrigatórios.")
 
     compra = PedidoService.registrar_compra(
-        nome=cliente.get("nome"),
-        email=cliente.get("email"),
+        cliente_id=cliente.id,
         itens=dados.get("itens"),
         metodo_pagamento=dados.get("metodo_pagamento"),
         cupom=dados.get("cupom"),
@@ -120,6 +127,70 @@ def _dados_json() -> dict:
     if not isinstance(dados, dict):
         raise ValueError("Envie os dados em JSON.")
     return dados
+
+
+def _sessao_do_cliente(sessao: dict) -> dict:
+    return _serializar({"token": sessao["token"], "cliente": sessao["cliente"].to_dict()})
+
+
+def _conferir_google(credencial) -> dict:
+    """Pede ao Google para validar a credencial (assinatura e validade) e confere se é deste site."""
+    if not isinstance(credencial, str) or not credencial or len(credencial) > 4096:
+        raise ErroAutenticacao("Login do Google inválido.")
+    url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + urllib.parse.quote(credencial, safe="")
+    try:
+        with urllib.request.urlopen(url, timeout=6) as resposta:
+            dados = json.load(resposta)
+    except urllib.error.HTTPError:
+        raise ErroAutenticacao("Login do Google inválido ou expirado.")
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        raise ValueError("Não foi possível validar o login do Google. Tente novamente.")
+
+    if (
+        not isinstance(dados, dict)
+        or dados.get("aud") != GOOGLE_CLIENT_ID
+        or dados.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}
+        or str(dados.get("email_verified")).lower() != "true"
+        or not dados.get("sub")
+    ):
+        raise ErroAutenticacao("Login do Google inválido.")
+    return dados
+
+
+@app.post("/api/clientes")
+def cadastrar_cliente():
+    dados = _dados_json()
+    sessao = ClienteService.cadastrar(dados.get("nome"), dados.get("email"), dados.get("senha"))
+    return jsonify(_sessao_do_cliente(sessao)), 201
+
+
+@app.post("/api/clientes/login")
+def login_cliente():
+    dados = _dados_json()
+    return jsonify(_sessao_do_cliente(ClienteService.autenticar(dados.get("email"), dados.get("senha"))))
+
+
+@app.post("/api/clientes/google")
+def login_cliente_google():
+    google = _conferir_google(_dados_json().get("credential"))
+    sessao = ClienteService.entrar_com_google(google["sub"], google.get("name"), google.get("email"))
+    return jsonify(_sessao_do_cliente(sessao))
+
+
+@app.route("/api/clientes/me", methods=["GET", "DELETE"])
+def cliente_atual():
+    cliente = ClienteService.buscar_por_token(_token_da_requisicao())
+    if request.method == "DELETE":
+        dados = request.get_json(silent=True)
+        senha = dados.get("senha") if isinstance(dados, dict) else None
+        return jsonify({"resultado": ClienteService.excluir_conta(cliente.id, senha)})
+    return jsonify(_serializar(cliente.to_dict()))
+
+
+@app.post("/api/clientes/logout")
+def logout_cliente():
+    ClienteService.encerrar_sessao(_token_da_requisicao())
+    return "", 204
 
 
 @app.post("/api/confeiteiros")
@@ -145,9 +216,14 @@ def login_confeiteiro():
     return jsonify(_serializar({"token": sessao["token"], "confeiteiro": sessao["confeiteiro"].to_dict()}))
 
 
-@app.get("/api/confeiteiros/me")
+@app.route("/api/confeiteiros/me", methods=["GET", "DELETE"])
 def confeiteiro_atual():
     confeiteiro = ConfeiteiroService.buscar_por_token(_token_da_requisicao())
+    if request.method == "DELETE":
+        # Apaga o cadastro, os produtos e, depois que o banco confirmar, as fotos
+        for foto in ConfeiteiroService.excluir_conta(confeiteiro.id, _dados_json().get("senha")):
+            _apagar_foto(foto)
+        return jsonify({"resultado": "excluida"})
     return jsonify(_serializar(confeiteiro.to_dict()))
 
 

@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UniCake | Entrar</title>
+    <title>UniCake | Minha conta</title>
     <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
-    <meta name="description" content="Acesse sua conta UniCake." />
+    <meta name="description" content="Veja os dados da sua conta UniCake ou exclua seu cadastro." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -24,45 +24,46 @@
     <link rel="stylesheet" href="../assets/css/responsive.css" />
     <script defer src="../assets/js/data.js"></script>
     <script defer src="../assets/js/core.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
     <script defer src="../assets/js/header-footer.js"></script>
     <script defer src="../assets/js/cart.js"></script>
     <script defer src="../assets/js/accessibility.js"></script>
-    <!-- Google Sign-In -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script defer src="../assets/js/auth.js"></script>
     <script defer src="../assets/js/pages.js"></script>
-    
-    <link rel="stylesheet" href="../assets/css/chat-assistant.css" />
-    <script defer src="../assets/js/chat-assistant.js"></script>
+    <script defer src="../assets/js/conta.js"></script>
   </head>
-  <body data-page="entrar">
+  <body data-page="minha-conta">
     <div class="page-shell">
       <div id="site-header"></div>
 
       <main id="conteudo" class="auth-layout">
-        <section class="login-card" aria-labelledby="login-title">
+        <section class="login-card" id="contaCard" aria-labelledby="conta-title">
           <span class="eyebrow">Conta UniCake</span>
-          <h1 id="login-title">Entrar</h1>
-          <p>Acesse sua conta para acompanhar pedidos, salvar lojas e revisar compras.</p>
-          <form id="loginForm">
-            <label hidden>
-              Nome completo
-              <input type="text" name="name" autocomplete="name" maxlength="100" placeholder="Seu nome" />
-            </label>
-            <label>
-              <span id="authIdentifierLabel">E-mail</span>
-              <input type="email" name="email" autocomplete="username" maxlength="150" placeholder="voce@email.com" required />
-            </label>
-            <label>
-              Senha
-              <input type="password" name="password" autocomplete="current-password" maxlength="200" placeholder="Digite sua senha" required />
-            </label>
-            <button type="submit">Entrar</button>
-          </form>
-          <button class="google-button" type="button">Entrar com Google</button>
-          <p class="form-status" id="loginStatus" role="status"></p>
-          <p class="register"><a href="#" id="authModeToggle">Ainda não tem conta? Cadastre-se</a></p>
-          <p class="register"><a href="Confeiteiro.html">É confeiteiro? Acesse a área do confeiteiro</a></p>
+          <h1 id="conta-title">Minha conta</h1>
+          <p class="form-status" id="contaStatus" role="status">Carregando sua conta...</p>
+          <div id="contaConteudo" hidden>
+            <dl class="confeiteiro-dados">
+              <div><dt>Nome</dt><dd data-conta="nome"></dd></div>
+              <div><dt>E-mail</dt><dd data-conta="email"></dd></div>
+              <div><dt>Forma de login</dt><dd data-conta="login"></dd></div>
+              <div><dt>Cliente desde</dt><dd data-conta="data_cadastro"></dd></div>
+            </dl>
+            <div class="confeiteiro-acoes">
+              <a class="btn-secondary" href="ParaVoce.html">Ver produtos</a>
+              <button type="button" class="logout-button" id="contaSair">Sair</button>
+            </div>
+            <details class="excluir-conta">
+              <summary>Excluir minha conta</summary>
+              <p>Apaga seu cadastro e seus dados pessoais. Não dá para desfazer.</p>
+              <form id="excluirContaForm">
+                <label>
+                  Confirme sua senha
+                  <input type="password" name="senha" autocomplete="current-password" maxlength="200" placeholder="Digite sua senha" required />
+                </label>
+                <button type="submit" class="botao-perigo">Excluir conta definitivamente</button>
+              </form>
+              <p class="form-status" id="excluirContaStatus" role="status"></p>
+            </details>
+          </div>
         </section>
       </main>
 
@@ -72,4 +73,3 @@
     <div id="site-accessibility"></div>
   </body>
 </html>
-

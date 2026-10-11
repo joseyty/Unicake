@@ -1,29 +1,12 @@
 from __future__ import annotations
 
-import hashlib
-import hmac
-import secrets
-
 from database.conexao import get_connection
 from models.confeiteiro import Confeiteiro
+from utils.seguranca import ErroAutenticacao, SESSAO_DIAS, hash_senha, hash_token, novo_salt, novo_token, senha_confere
 from utils.validacoes import validar_cnpj, validar_email, validar_nome, validar_senha
 
-PBKDF2_ITERACOES = 600_000
-SESSAO_DIAS = 7
 # Colunas públicas: nunca devolve senha_hash/senha_salt
 COLUNAS = "id, nome, nome_loja, cnpj, email, telefone, ativo, data_cadastro"
-
-
-class ErroAutenticacao(ValueError):
-    """Login inválido ou sessão ausente/expirada."""
-
-
-def _hash_senha(senha: str, salt_hex: str) -> str:
-    return hashlib.pbkdf2_hmac("sha256", senha.encode("utf-8"), bytes.fromhex(salt_hex), PBKDF2_ITERACOES).hex()
-
-
-def _hash_token(token: str) -> str:
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 class ConfeiteiroService:
@@ -36,8 +19,8 @@ class ConfeiteiroService:
         senha = validar_senha(senha)
         telefone = str(telefone or "").strip() or None
 
-        salt = secrets.token_hex(16)
-        senha_hash = _hash_senha(senha, salt)
+        salt = novo_salt()
+        senha_hash = hash_senha(senha, salt)
 
         conn = get_connection()
         try:
@@ -81,18 +64,16 @@ class ConfeiteiroService:
                 )
                 row = cursor.fetchone()
 
-                # Calcula o hash mesmo sem cadastro, para a resposta não revelar se o e-mail existe
-                salt = row['senha_salt'] if row else "00" * 16
-                senha_confere = hmac.compare_digest(_hash_senha(senha, salt), row['senha_hash'] if row else "")
-                if row is None or not senha_confere:
+                confere = senha_confere(senha, row['senha_salt'] if row else None, row['senha_hash'] if row else None)
+                if row is None or not confere:
                     raise ErroAutenticacao("E-mail ou senha incorretos.")
                 if not row['ativo']:
                     raise ErroAutenticacao("Este cadastro está desativado.")
 
-                token = secrets.token_urlsafe(32)
+                token = novo_token()
                 cursor.execute(
                     "INSERT INTO sessao_confeiteiro (confeiteiro_id, token_hash, data_expiracao) VALUES (?, ?, DATEADD(DAY, ?, SYSDATETIME()))",
-                    (row['id'], _hash_token(token), SESSAO_DIAS),
+                    (row['id'], hash_token(token), SESSAO_DIAS),
                 )
                 cursor.execute("DELETE FROM sessao_confeiteiro WHERE data_expiracao <= SYSDATETIME()")
                 conn.commit()
@@ -118,7 +99,7 @@ class ConfeiteiroService:
                     f"SELECT {colunas} FROM sessao_confeiteiro s "
                     "INNER JOIN confeiteiro c ON c.id = s.confeiteiro_id "
                     "WHERE s.token_hash = ? AND s.data_expiracao > SYSDATETIME() AND c.ativo = 1",
-                    (_hash_token(token),),
+                    (hash_token(token),),
                 )
                 row = cursor.fetchone()
             if row is None:
@@ -134,8 +115,54 @@ class ConfeiteiroService:
         conn = get_connection()
         try:
             with conn.cursor() as cursor:
-                cursor.execute("DELETE FROM sessao_confeiteiro WHERE token_hash = ?", (_hash_token(token),))
+                cursor.execute("DELETE FROM sessao_confeiteiro WHERE token_hash = ?", (hash_token(token),))
                 conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+
+    @staticmethod
+    def excluir_conta(confeiteiro_id: int, senha: str) -> list[str]:
+        """Exclui a conta do confeiteiro depois de conferir a senha. Retorna as fotos a apagar do disco.
+
+        Produtos que já foram comprados ficam no banco, desativados e sem dono, para manter o
+        histórico dos pedidos; os demais são apagados junto com a conta.
+        """
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute(
+                    "SELECT id, senha_hash, senha_salt FROM confeiteiro WITH (UPDLOCK, ROWLOCK) WHERE id = ?",
+                    (confeiteiro_id,),
+                )
+                row = cursor.fetchone()
+                if row is None:
+                    raise ValueError("Confeiteiro não encontrado.")
+                if not senha_confere(senha, row['senha_salt'], row['senha_hash']):
+                    raise ValueError("Senha incorreta.")
+
+                cursor.execute(
+                    "SELECT imagem FROM produto WITH (UPDLOCK) WHERE confeiteiro_id = ? AND imagem IS NOT NULL",
+                    (confeiteiro_id,),
+                )
+                fotos = [produto['imagem'] for produto in cursor.fetchall()]
+
+                cursor.execute(
+                    "DELETE FROM item_carrinho WHERE produto_id IN (SELECT id FROM produto WHERE confeiteiro_id = ?)",
+                    (confeiteiro_id,),
+                )
+                cursor.execute(
+                    "UPDATE produto SET status = 'INATIVO', fidelidade = 0, imagem = NULL, confeiteiro_id = NULL "
+                    "WHERE confeiteiro_id = ? AND id IN (SELECT produto_id FROM item_pedido)",
+                    (confeiteiro_id,),
+                )
+                cursor.execute("DELETE FROM produto WHERE confeiteiro_id = ?", (confeiteiro_id,))
+                # As sessões saem junto (ON DELETE CASCADE)
+                cursor.execute("DELETE FROM confeiteiro WHERE id = ?", (confeiteiro_id,))
+                conn.commit()
+            return fotos
         except Exception:
             conn.rollback()
             raise

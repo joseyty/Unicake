@@ -210,9 +210,33 @@
       window.location.href = LOGIN_PAGE;
     });
 
+    // Excluir conta: o servidor confere a senha e apaga cadastro, produtos e fotos
+    const excluirForm = document.getElementById("excluirLojaForm");
+    const excluirStatus = document.getElementById("excluirLojaStatus");
+    excluirForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!confirm("Excluir sua conta de confeiteiro e todos os seus produtos? Não dá para desfazer.")) return;
+      const botao = excluirForm.querySelector('[type="submit"]');
+      botao.disabled = true;
+      excluirStatus.textContent = "Excluindo sua conta...";
+      try {
+        await api("/api/confeiteiros/me", { method: "DELETE", body: { senha: excluirForm.elements.senha.value } });
+        clearSession();
+        window.location.href = LOGIN_PAGE;
+      } catch (error) {
+        if (error.status === 401) {
+          clearSession();
+          window.location.href = LOGIN_PAGE;
+          return;
+        }
+        excluirStatus.textContent = errorMessage(error);
+        botao.disabled = false;
+      }
+    });
+
     // "Acessar como cliente": vai para a loja se já houver login de cliente; senão, para a tela de login
     const comoCliente = document.getElementById("confeiteiroComoCliente");
-    comoCliente.href = localStorage.getItem("unicake.auth") ? "index.html" : "Entrar.html";
+    comoCliente.href = window.UniCakeAuth?.getUser() ? "index.html" : "Entrar.html";
     comoCliente.addEventListener("click", () => {
       localStorage.setItem(MODE_STORAGE_KEY, "cliente");
     });

@@ -221,15 +221,20 @@
     try {
       const response = await fetch(API_BASE + "/api/pedidos", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // Quem está comprando é identificado no servidor pela sessão, não por dados enviados daqui
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + window.UniCakeAuth.getToken() },
         body: JSON.stringify({
-          cliente: { nome: user.name || user.email, email: user.email },
           itens: cart.map((item) => ({ codigo: item.id, quantidade: item.qty })),
           metodo_pagamento: metodo,
           cupom: getCouponCode() || null,
         }),
       });
       const result = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        window.UniCakeAuth.clearSession();
+        U.toast("Sua sessão expirou. Entre na sua conta de novo para finalizar o pedido.");
+        return;
+      }
       if (!response.ok) {
         U.toast(result.erro || "Não foi possível registrar o pedido. Tente novamente.");
         return;

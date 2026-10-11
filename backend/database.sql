@@ -232,6 +232,33 @@ BEGIN
 END
 GO
 
+-- Conta de cliente no servidor: senha com hash (NULL para quem entra só com Google) e sessões
+IF COL_LENGTH(N'dbo.cliente', N'senha_hash') IS NULL
+    ALTER TABLE dbo.cliente ADD
+        senha_hash CHAR(64) NULL,
+        senha_salt CHAR(32) NULL,
+        google_sub NVARCHAR(64) NULL;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'uk_cliente_google' AND object_id = OBJECT_ID(N'dbo.cliente'))
+    CREATE UNIQUE INDEX uk_cliente_google ON dbo.cliente (google_sub) WHERE google_sub IS NOT NULL;
+GO
+
+IF OBJECT_ID(N'dbo.sessao_cliente', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.sessao_cliente (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_sessao_cliente PRIMARY KEY,
+        cliente_id INT NOT NULL,
+        -- SHA-256 do token entregue ao navegador; o token em si não é gravado
+        token_hash CHAR(64) NOT NULL CONSTRAINT uk_sessao_cliente_token UNIQUE,
+        data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_sessao_cliente_criacao DEFAULT SYSDATETIME(),
+        data_expiracao DATETIME2(0) NOT NULL,
+        CONSTRAINT fk_sessao_cliente FOREIGN KEY (cliente_id) REFERENCES dbo.cliente(id) ON DELETE CASCADE
+    );
+    CREATE INDEX idx_sessao_cliente ON dbo.sessao_cliente (cliente_id);
+END
+GO
+
 -- Cartão fidelidade: o confeiteiro escolhe até 10 dos seus produtos para participar
 IF COL_LENGTH(N'dbo.produto', N'fidelidade') IS NULL
     ALTER TABLE dbo.produto ADD fidelidade BIT NOT NULL CONSTRAINT df_produto_fidelidade DEFAULT 0;

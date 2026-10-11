@@ -18,12 +18,14 @@ from services.produto_service import ProdutoService
 from services.carrinho_service import CarrinhoService
 from services.pedido_service import PedidoService
 from services.pagamento_service import PagamentoService
-from services.confeiteiro_service import ConfeiteiroService, ErroAutenticacao
+from services.confeiteiro_service import ConfeiteiroService
+from utils.seguranca import ErroAutenticacao
 from utils.validacoes import calcular_dv_cnpj, validar_cnpj
 
 
 class TestBackendDoces(unittest.TestCase):
     prefixo: str = "tst_"
+    _clientes_anonimos: List[int] = []
     categoria_id: Optional[int] = None
     produto_id: Optional[int] = None
     cliente_id: Optional[int] = None
@@ -91,6 +93,10 @@ class TestBackendDoces(unittest.TestCase):
                 p = (len(cls.prefixo), cls.prefixo)
                 cursor.execute("DELETE FROM pedido WHERE cliente_id IN (SELECT id FROM cliente WHERE LEFT(email, ?) = ?)", p)
                 cursor.execute("DELETE FROM cliente WHERE LEFT(email, ?) = ?", p)
+                # Contas anonimizadas pelos testes perdem o e-mail com prefixo; saem pelo id
+                for cliente_id in cls._clientes_anonimos:
+                    cursor.execute("DELETE FROM pedido WHERE cliente_id = ?", (cliente_id,))
+                    cursor.execute("DELETE FROM cliente WHERE id = ?", (cliente_id,))
                 cursor.execute("DELETE FROM produto WHERE LEFT(nome, ?) = ?", p)
                 cursor.execute("DELETE FROM categoria WHERE LEFT(nome, ?) = ?", p)
                 cursor.execute("DELETE FROM confeiteiro WHERE LEFT(email, ?) = ?", p)
@@ -475,6 +481,98 @@ class TestBackendDoces(unittest.TestCase):
         ConfeiteiroService.encerrar_sessao(sessao['token'])
         with self.assertRaises(ErroAutenticacao):
             ConfeiteiroService.buscar_por_token(sessao['token'])
+
+    def test_12_conta_de_cliente_login_e_exclusao(self):
+        email = self.prefixo + "conta@email.com"
+
+        with self.assertRaises(ValueError):
+            ClienteService.cadastrar("Lia Cliente", email, "curta")
+        sessao = ClienteService.cadastrar("Lia Cliente", email.upper(), "SenhaForte123")
+        cliente = sessao['cliente']
+        self.assertEqual(cliente.email, email)
+        self.assertTrue(cliente.tem_senha)
+        self.assertNotIn("senha_hash", cliente.to_dict())
+        self.assertEqual(ClienteService.buscar_por_token(sessao['token']).id, cliente.id)
+        with self.assertRaises(ValueError):
+            ClienteService.cadastrar("Outra Lia", email, "SenhaForte123")
+
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.autenticar(email, "senha-errada")
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.autenticar(self.prefixo + "ninguem@email.com", "SenhaForte123")
+        outra = ClienteService.autenticar(email, "SenhaForte123")
+        ClienteService.encerrar_sessao(outra['token'])
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.buscar_por_token(outra['token'])
+
+        # A senha e o token não ficam gravados em texto puro
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute("SELECT senha_hash FROM cliente WHERE id = ?", (cliente.id,))
+                self.assertNotIn("SenhaForte123", cursor.fetchone()['senha_hash'])
+                cursor.execute("SELECT token_hash FROM sessao_cliente WHERE cliente_id = ?", (cliente.id,))
+                self.assertNotEqual(cursor.fetchone()['token_hash'], sessao['token'])
+        finally:
+            conn.close()
+
+        # Sem pedidos, excluir a conta apaga o cadastro (e exige a senha certa)
+        with self.assertRaises(ValueError):
+            ClienteService.excluir_conta(cliente.id, "senha-errada")
+        self.assertEqual(ClienteService.excluir_conta(cliente.id, "SenhaForte123"), "excluida")
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.buscar_por_token(sessao['token'])
+        with self.assertRaises(ValueError):
+            ClienteService.buscar_por_id(cliente.id)
+
+        # Conta só com Google não tem senha; entrar de novo cai na mesma conta
+        google = ClienteService.entrar_com_google(self.prefixo + "sub", "Gil Google", self.prefixo + "gil@email.com")
+        self._clientes_anonimos.append(google['cliente'].id)
+        self.assertFalse(google['cliente'].tem_senha)
+        self.assertEqual(ClienteService.entrar_com_google(self.prefixo + "sub", "Gil Google", self.prefixo + "gil@email.com")['cliente'].id, google['cliente'].id)
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.autenticar(self.prefixo + "gil@email.com", "")
+        with self.assertRaises(ValueError):
+            ClienteService.cadastrar("Gil Google", self.prefixo + "gil@email.com", "SenhaForte123")
+
+        # Com pedido, a conta é anonimizada: os dados pessoais somem e o pedido continua
+        produto = ProdutoService.criar(self.categoria_id, self.prefixo + "bala", "Bala", 2.00, 5, "ATIVO", codigo=self.prefixo + "bala")
+        compra = PedidoService.registrar_compra(cliente_id=google['cliente'].id, itens=[{"codigo": produto.codigo, "quantidade": 1}], metodo_pagamento="Pix")
+        self.assertEqual(compra['pedido']['cliente_id'], google['cliente'].id)
+        self.assertEqual(ClienteService.excluir_conta(google['cliente'].id), "anonimizada")
+        anonimo = ClienteService.buscar_por_id(google['cliente'].id)
+        self.assertEqual(anonimo.nome, "Cliente removido")
+        self.assertNotIn("gil", anonimo.email)
+        with self.assertRaises(ErroAutenticacao):
+            ClienteService.buscar_por_token(google['token'])
+        self.assertEqual(PedidoService.buscar_por_id(compra['pedido']['id'])['pedido']['cliente_id'], google['cliente'].id)
+
+    def test_13_exclusao_da_conta_do_confeiteiro(self):
+        base = "".join(random.choice(string.digits) for _ in range(8))
+        cnpj = base + "0005" + calcular_dv_cnpj(base + "0005")
+        email = self.prefixo + "sai@email.com"
+        dono = ConfeiteiroService.cadastrar("Edu Doceiro", "Doces do Edu", cnpj, email, "SenhaForte123")
+        sessao = ConfeiteiroService.autenticar(email, "SenhaForte123")
+        vendido = ProdutoService.criar(self.categoria_id, self.prefixo + "torta_edu", "Torta", 20, 3, "ATIVO", loja=dono.nome_loja, confeiteiro_id=dono.id, imagem="produtos/edu1.jpg")
+        parado = ProdutoService.criar(self.categoria_id, self.prefixo + "bolo_edu", "Bolo", 30, 3, "ATIVO", loja=dono.nome_loja, confeiteiro_id=dono.id, imagem="produtos/edu2.jpg")
+        PedidoService.registrar_compra(nome=self.prefixo + "Cliente Edu", email=self.prefixo + "edu-cli@email.com", itens=[{"codigo": vendido.codigo, "quantidade": 1}], metodo_pagamento="Pix")
+
+        with self.assertRaises(ValueError):
+            ConfeiteiroService.excluir_conta(dono.id, "senha-errada")
+        fotos = ConfeiteiroService.excluir_conta(dono.id, "SenhaForte123")
+        self.assertEqual(sorted(fotos), ["produtos/edu1.jpg", "produtos/edu2.jpg"])
+
+        with self.assertRaises(ErroAutenticacao):
+            ConfeiteiroService.buscar_por_token(sessao['token'])
+        with self.assertRaises(ErroAutenticacao):
+            ConfeiteiroService.autenticar(email, "SenhaForte123")
+        # Produto sem venda some; o vendido fica só como histórico, desativado e sem dono
+        with self.assertRaises(ValueError):
+            ProdutoService.buscar_por_id(parado.id)
+        historico = ProdutoService.buscar_por_id(vendido.id)
+        self.assertEqual((historico.status, historico.confeiteiro_id, historico.imagem), ("INATIVO", None, None))
+        # O e-mail e o CNPJ ficam livres para um novo cadastro
+        ConfeiteiroService.cadastrar("Edu Doceiro", "Doces do Edu", cnpj, email, "SenhaForte123")
 
 
 if __name__ == "__main__":

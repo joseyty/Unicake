@@ -54,6 +54,18 @@
               <a class="btn-secondary" id="confeiteiroComoCliente" href="Entrar.html">Acessar como cliente</a>
               <button type="button" class="logout-button" id="confeiteiroSair">Sair</button>
             </div>
+            <details class="excluir-conta">
+              <summary>Excluir minha conta</summary>
+              <p>Apaga seu cadastro, seus produtos e as fotos. Não dá para desfazer.</p>
+              <form id="excluirLojaForm">
+                <label>
+                  Confirme sua senha
+                  <input type="password" name="senha" autocomplete="current-password" maxlength="200" placeholder="Digite sua senha" required />
+                </label>
+                <button type="submit" class="botao-perigo">Excluir conta definitivamente</button>
+              </form>
+              <p class="form-status" id="excluirLojaStatus" role="status"></p>
+            </details>
           </section>
 
           <section class="login-card confeiteiro-produtos" aria-labelledby="produtos-title">

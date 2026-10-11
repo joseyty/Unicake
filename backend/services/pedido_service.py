@@ -74,14 +74,16 @@ class PedidoService:
             conn.close()
 
     @staticmethod
-    def registrar_compra(nome: str, email: str, itens: list[dict], metodo_pagamento: str, cupom: str = None, observacoes: str = None) -> dict:
+    def registrar_compra(nome: str = None, email: str = None, itens: list[dict] = None, metodo_pagamento: str = None, cupom: str = None, observacoes: str = None, cliente_id: int = None) -> dict:
         """Grava uma compra feita pelo site: cliente, pedido, itens e pagamento em uma única transação.
 
         Cada item é {"codigo": <id do produto no site>, "quantidade": <int>}. Preços, cupom e
         entrega são calculados aqui, a partir do banco, e não dos valores enviados pelo navegador.
+        O site informa cliente_id (o cliente logado); sem ele, o cliente é localizado ou criado pelo e-mail.
         """
-        nome = validar_nome(nome, "nome do cliente")
-        email = validar_email(email).lower()
+        if cliente_id is None:
+            nome = validar_nome(nome, "nome do cliente")
+            email = validar_email(email).lower()
         metodo = validar_metodo_pagamento(metodo_pagamento)
 
         quantidades: dict[str, int] = {}
@@ -98,12 +100,17 @@ class PedidoService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT id FROM cliente WITH (UPDLOCK, HOLDLOCK) WHERE email = ?", (email,))
-                cliente = cursor.fetchone()
-                if cliente is None:
-                    cursor.execute("INSERT INTO cliente (nome, email) OUTPUT INSERTED.id VALUES (?, ?)", (nome, email))
+                if cliente_id is not None:
+                    cursor.execute("SELECT id FROM cliente WITH (UPDLOCK, ROWLOCK) WHERE id = ?", (cliente_id,))
+                    if cursor.fetchone() is None:
+                        raise ValueError("Cliente não encontrado.")
+                else:
+                    cursor.execute("SELECT id FROM cliente WITH (UPDLOCK, HOLDLOCK) WHERE email = ?", (email,))
                     cliente = cursor.fetchone()
-                cliente_id = cliente['id']
+                    if cliente is None:
+                        cursor.execute("INSERT INTO cliente (nome, email) OUTPUT INSERTED.id VALUES (?, ?)", (nome, email))
+                        cliente = cursor.fetchone()
+                    cliente_id = cliente['id']
 
                 itens_pedido = []
                 for codigo in sorted(quantidades):

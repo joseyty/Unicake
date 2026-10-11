@@ -1145,3 +1145,32 @@ a.store-card {
   font-size: 0.7rem;
   font-weight: 800;
 }
+
+/* Excluir conta (cliente e confeiteiro) */
+.excluir-conta {
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.9rem;
+}
+
+.excluir-conta summary {
+  color: #a3261e;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-card .excluir-conta p {
+  margin: 0.6rem 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.login-card .excluir-conta .botao-perigo {
+  background: #a3261e;
+  color: #fff;
+}
+
+.login-card .excluir-conta .botao-perigo:hover {
+  background: #7f1d17;
+}

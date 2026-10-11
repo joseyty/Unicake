@@ -16,7 +16,8 @@
 
   // Quem está logado (cliente e/ou confeiteiro) e com qual dos dois perfis a pessoa está navegando
   function activeSession() {
-    const client = readJson("unicake.auth");
+    // Cliente só conta como logado se tiver a sessão aberta no servidor
+    const client = localStorage.getItem("unicake.cliente.token") ? readJson("unicake.auth") : null;
     const baker = localStorage.getItem(BAKER_TOKEN_KEY) ? readJson(BAKER_PROFILE_KEY) : null;
     let mode = localStorage.getItem(MODE_STORAGE_KEY);
     if ((mode === "confeiteiro" && !baker) || (mode === "cliente" && !client)) mode = null;
@@ -38,6 +39,7 @@
             <strong>${e(client.name)}</strong>
             <span>${e(client.email)}</span>
             <small>Acessando como cliente · Conta ${client.provider === "google" ? "Google" : "UniCake"}</small>
+            <a class="user-switch" href="MinhaConta.html">Minha conta</a>
             <a class="user-switch" href="${baker ? "MinhaLoja.html" : "Confeiteiro.html"}" data-switch-mode="confeiteiro">Acessar como confeiteiro</a>
             <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
           </div>
@@ -390,7 +392,7 @@
           return;
         }
 
-        localStorage.removeItem("unicake.auth");
+        window.UniCakeAuth?.logout();
         localStorage.removeItem(MODE_STORAGE_KEY);
         window.location.href = "Entrar.html";
       });

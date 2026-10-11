@@ -385,10 +385,11 @@
       isRegisterMode = enabled;
       nameField.closest("label").hidden = !enabled;
       nameField.required = enabled;
-      identifierField.type = enabled ? "email" : "text";
+      // O login é sempre pelo e-mail, que é o que identifica a conta no servidor
+      identifierField.type = "email";
       identifierField.autocomplete = enabled ? "email" : "username";
-      identifierField.placeholder = enabled ? "voce@email.com" : "Seu nome ou e-mail";
-      identifierLabel.textContent = enabled ? "E-mail" : "Nome ou e-mail";
+      identifierField.placeholder = "voce@email.com";
+      identifierLabel.textContent = "E-mail";
       form.elements.password.minLength = enabled ? 8 : 0;
       form.elements.password.autocomplete = enabled ? "new-password" : "current-password";
       form.querySelector('[type="submit"]').textContent = enabled ? "Criar conta" : "Entrar";
@@ -450,7 +451,7 @@
         }, 1500);
       } else {
         if (status) {
-          status.textContent = "Nome/e-mail ou senha incorretos.";
+          status.textContent = "E-mail ou senha incorretos.";
           status.style.color = "red";
         }
       }
@@ -462,19 +463,9 @@
     if (googleButton && window.google && window.google.accounts) {
       window.google.accounts.id.initialize({
         client_id: "621954972061-afec0snf9b2hukkudnrb8a4hkpsr6rpc.apps.googleusercontent.com",
+        // O próprio Auth confere a credencial no servidor, mostra o aviso e redireciona
         callback: (response) => {
-          const user = Auth?.handleGoogleCallback(response);
-          if (user) {
-            const status = document.getElementById("loginStatus");
-            if (status) {
-              status.textContent = `Bem-vindo, ${user.name}! Você foi autenticado com Google.`;
-              status.style.color = "green";
-            }
-            // Redirecionar após login bem-sucedido
-            setTimeout(() => {
-              window.location.href = "../index.html";
-            }, 1500);
-          }
+          Auth?.handleGoogleCallback(response);
         },
       });
 
