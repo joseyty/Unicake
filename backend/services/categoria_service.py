@@ -13,12 +13,12 @@ class CategoriaService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "INSERT INTO categoria (nome, descricao, ativo) VALUES (%s, %s, %s)",
+                    "INSERT INTO categoria (nome, descricao, ativo) OUTPUT INSERTED.id VALUES (?, ?, ?)",
                     (nome, descricao, int(bool(ativo))),
                 )
+                categoria_id = cursor.fetchone()['id']
                 conn.commit()
-                categoria_id = cursor.lastrowid
-                cursor.execute("SELECT * FROM categoria WHERE id = %s", (categoria_id,))
+                cursor.execute("SELECT * FROM categoria WHERE id = ?", (categoria_id,))
                 result = cursor.fetchone()
             if not result:
                 raise ValueError("Categoria não foi criada.")
@@ -45,7 +45,7 @@ class CategoriaService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT * FROM categoria WHERE id = %s", (categoria_id,))
+                cursor.execute("SELECT * FROM categoria WHERE id = ?", (categoria_id,))
                 row = cursor.fetchone()
             if not row:
                 raise ValueError("Categoria não encontrada.")
@@ -64,11 +64,11 @@ class CategoriaService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "UPDATE categoria SET nome = %s, descricao = %s, ativo = %s WHERE id = %s",
+                    "UPDATE categoria SET nome = ?, descricao = ?, ativo = ? WHERE id = ?",
                     (novo_nome, nova_descricao, novo_ativo, categoria_id),
                 )
                 conn.commit()
-                cursor.execute("SELECT * FROM categoria WHERE id = %s", (categoria_id,))
+                cursor.execute("SELECT * FROM categoria WHERE id = ?", (categoria_id,))
                 row = cursor.fetchone()
             if not row:
                 raise ValueError("Categoria não encontrada após atualização.")
@@ -84,7 +84,7 @@ class CategoriaService:
         conn = get_connection()
         try:
             with conn.cursor() as cursor:
-                cursor.execute("DELETE FROM categoria WHERE id = %s", (categoria_id,))
+                cursor.execute("DELETE FROM categoria WHERE id = ?", (categoria_id,))
                 conn.commit()
         except Exception:
             conn.rollback()

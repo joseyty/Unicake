@@ -1,7 +1,9 @@
 class Produto:
-    def __init__(self, id=None, categoria_id=None, nome=None, descricao=None, preco=None, estoque=0, status='ATIVO', data_cadastro=None):
+    def __init__(self, id=None, categoria_id=None, codigo=None, loja=None, nome=None, descricao=None, preco=None, estoque=0, status='ATIVO', data_cadastro=None):
         self.id = id
         self.categoria_id = categoria_id
+        self.codigo = codigo
+        self.loja = loja
         self.nome = nome
         self.descricao = descricao
         self.preco = preco
@@ -13,6 +15,8 @@ class Produto:
         return {
             "id": self.id,
             "categoria_id": self.categoria_id,
+            "codigo": self.codigo,
+            "loja": self.loja,
             "nome": self.nome,
             "descricao": self.descricao,
             "preco": self.preco,

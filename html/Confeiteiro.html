@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Área do confeiteiro</title>
+    <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
+    <meta name="description" content="Cadastre sua confeitaria na UniCake ou acesse sua conta de confeiteiro." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/header.css" />
+    <link rel="stylesheet" href="../assets/css/home.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <link rel="stylesheet" href="../assets/css/cards.css" />
+    <link rel="stylesheet" href="../assets/css/cart.css" />
+    <link rel="stylesheet" href="../assets/css/widgets.css" />
+    <link rel="stylesheet" href="../assets/css/footer.css" />
+    <link rel="stylesheet" href="../assets/css/accessibility.css" />
+    <link rel="stylesheet" href="../assets/css/responsive.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/core.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/header-footer.js"></script>
+    <script defer src="../assets/js/cart.js"></script>
+    <script defer src="../assets/js/accessibility.js"></script>
+    <script defer src="../assets/js/pages.js"></script>
+    <script defer src="../assets/js/confeiteiro.js"></script>
+  </head>
+  <body data-page="confeiteiro">
+    <div class="page-shell">
+      <div id="site-header"></div>
+
+      <main id="conteudo" class="auth-layout">
+        <section class="login-card" id="confeiteiroAuth" aria-labelledby="confeiteiro-title">
+          <span class="eyebrow">Área do confeiteiro</span>
+          <h1 id="confeiteiro-title">Entrar</h1>
+          <p id="confeiteiroIntro">Acesse sua conta de confeiteiro para gerenciar sua loja na UniCake.</p>
+          <form id="confeiteiroForm">
+            <label hidden>
+              Seu nome
+              <input type="text" name="nome" autocomplete="name" maxlength="150" placeholder="Seu nome completo" />
+            </label>
+            <label hidden>
+              Nome da loja
+              <input type="text" name="nome_loja" autocomplete="organization" maxlength="150" placeholder="Ex.: Confeitaria da Maria" />
+            </label>
+            <label hidden>
+              CNPJ
+              <input type="text" name="cnpj" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" />
+            </label>
+            <label hidden>
+              Telefone (opcional)
+              <input type="tel" name="telefone" autocomplete="tel" maxlength="30" placeholder="(11) 99999-9999" />
+            </label>
+            <label>
+              E-mail
+              <input type="email" name="email" autocomplete="email" maxlength="150" placeholder="voce@email.com" required />
+            </label>
+            <label>
+              Senha
+              <input type="password" name="senha" autocomplete="current-password" maxlength="200" placeholder="Digite sua senha" required />
+            </label>
+            <button type="submit">Entrar</button>
+          </form>
+          <p class="form-status" id="confeiteiroStatus" role="status"></p>
+          <p class="register"><a href="#" id="confeiteiroModeToggle">Ainda não é parceiro? Cadastre sua confeitaria</a></p>
+          <p class="register"><a href="Entrar.html">É cliente? Entre na sua conta</a></p>
+        </section>
+
+        <section class="login-card" id="confeiteiroPainel" aria-labelledby="painel-title" hidden>
+          <span class="eyebrow">Área do confeiteiro</span>
+          <h1 id="painel-title">Olá!</h1>
+          <p>Estes são os dados da sua conta de confeiteiro.</p>
+          <dl class="confeiteiro-dados">
+            <div><dt>Loja</dt><dd data-confeiteiro="nome_loja"></dd></div>
+            <div><dt>CNPJ</dt><dd data-confeiteiro="cnpj"></dd></div>
+            <div><dt>Responsável</dt><dd data-confeiteiro="nome"></dd></div>
+            <div><dt>E-mail</dt><dd data-confeiteiro="email"></dd></div>
+            <div><dt>Telefone</dt><dd data-confeiteiro="telefone"></dd></div>
+            <div><dt>Parceiro desde</dt><dd data-confeiteiro="data_cadastro"></dd></div>
+          </dl>
+          <button type="button" class="logout-button" id="confeiteiroSair">Sair</button>
+        </section>
+      </main>
+
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-accessibility"></div>
+  </body>
+</html>

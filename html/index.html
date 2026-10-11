@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UniCake | Doces, bolos e confeitarias perto de você</title>
+    <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
     <meta
       name="description"
       content="Peça bolos, cupcakes, tortas, doces gourmet e kits festa em confeitarias locais pela UniCake."
@@ -136,10 +137,15 @@
             <div class="section-title">
               <span class="section-kicker">Clientes</span>
               <h2>O que dizem da UniCake</h2>
-              <p>Experiências reais de quem comprou para casa, trabalho e eventos.</p>
+              <p>Experiências de quem comprou para casa, trabalho e eventos.</p>
             </div>
           </div>
-          <div class="testimonials-grid" id="testimonialsGrid"></div>
+          <div class="carousel" aria-roledescription="carrossel" aria-label="Depoimentos de clientes">
+            <button class="carousel-arrow" type="button" data-carousel-prev aria-label="Depoimentos anteriores">&#8249;</button>
+            <div class="carousel-track" id="testimonialsGrid" tabindex="0"></div>
+            <button class="carousel-arrow" type="button" data-carousel-next aria-label="Próximos depoimentos">&#8250;</button>
+            <div class="carousel-dots" data-carousel-dots></div>
+          </div>
         </section>
 
         <section class="content-section">

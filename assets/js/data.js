@@ -11,6 +11,7 @@ window.UniCakeData = {
   stores: [
     {
       id: "confeitaria-maria",
+      image: "../assets/img/lojas/confeitaria-maria.jpg",
       name: "Confeitaria da Maria",
       initials: "CM",
       rating: 5,
@@ -21,6 +22,7 @@ window.UniCakeData = {
     },
     {
       id: "cupcake-cia",
+      image: "../assets/img/lojas/cupcake-cia.jpg",
       name: "Cupcake & Cia",
       initials: "CC",
       rating: 4.9,
@@ -31,6 +33,7 @@ window.UniCakeData = {
     },
     {
       id: "bomboniere-bolos",
+      image: "../assets/img/lojas/bomboniere-bolos.jpg",
       name: "Bomboniere Bolos",
       initials: "BB",
       rating: 4.8,
@@ -41,6 +44,7 @@ window.UniCakeData = {
     },
     {
       id: "doce-encanto",
+      image: "../assets/img/lojas/doce-encanto.jpg",
       name: "Doce Encanto",
       initials: "DE",
       rating: 4.7,
@@ -53,6 +57,7 @@ window.UniCakeData = {
   products: [
     {
       id: "bolo-chocolate",
+      image: "../assets/img/produtos/bolo-chocolate.jpg",
       name: "Bolo de chocolate trufado",
       store: "Confeitaria da Maria",
       category: "bolos",
@@ -66,6 +71,7 @@ window.UniCakeData = {
     },
     {
       id: "cupcake-red",
+      image: "../assets/img/produtos/cupcake-red.jpg",
       name: "Cupcake red velvet",
       store: "Cupcake & Cia",
       category: "cupcakes",
@@ -79,6 +85,7 @@ window.UniCakeData = {
     },
     {
       id: "torta-limao",
+      image: "../assets/img/produtos/torta-limao.jpg",
       name: "Torta de limao",
       store: "Bomboniere Bolos",
       category: "tortas",
@@ -92,6 +99,7 @@ window.UniCakeData = {
     },
     {
       id: "brigadeiros",
+      image: "../assets/img/produtos/brigadeiros.jpg",
       name: "Caixa de brigadeiros gourmet",
       store: "Doce Encanto",
       category: "doces",
@@ -105,6 +113,7 @@ window.UniCakeData = {
     },
     {
       id: "brownie-nozes",
+      image: "../assets/img/produtos/brownie-nozes.jpg",
       name: "Brownie com nozes",
       store: "Cupcake & Cia",
       category: "cookies",
@@ -118,6 +127,7 @@ window.UniCakeData = {
     },
     {
       id: "kit-infantil",
+      image: "../assets/img/produtos/kit-infantil.jpg",
       name: "Kit festa infantil",
       store: "Doce Encanto",
       category: "kits",
@@ -131,6 +141,7 @@ window.UniCakeData = {
     },
     {
       id: "bolo-foto",
+      image: "../assets/img/produtos/bolo-foto.jpg",
       name: "Bolo personalizado com foto",
       store: "Confeitaria da Maria",
       category: "personalizados",
@@ -144,6 +155,7 @@ window.UniCakeData = {
     },
     {
       id: "cookies-recheados",
+      image: "../assets/img/produtos/cookies-recheados.jpg",
       name: "Cookies recheados",
       store: "Cupcake & Cia",
       category: "cookies",
@@ -240,18 +252,47 @@ window.UniCakeData = {
       minSubtotal: 150,
     },
   ],
+  // Depoimentos fictícios, para demonstração
   testimonials: [
     {
       name: "Larissa Souza",
-      text: "O bolo chegou perfeito, muito bem embalado e exatamente como combinamos. Virou meu pedido oficial de aniversario.",
+      detail: "Bolo de aniversário · Centro",
+      text: "O bolo chegou perfeito, muito bem embalado e exatamente como combinamos. Virou meu pedido oficial de aniversário.",
     },
     {
       name: "Rafael Lima",
-      text: "Os brigadeiros gourmet fizeram sucesso na reuniao da empresa. Entrega rapida e atendimento muito atencioso.",
+      detail: "Pedido para a empresa · Vila Nova",
+      text: "Os brigadeiros gourmet fizeram sucesso na reunião da empresa. Entrega rápida e atendimento muito atencioso.",
     },
     {
       name: "Camila Rocha",
-      text: "Comprei um kit festa infantil e foi pratico demais. Tudo bonito, gostoso e organizado.",
+      detail: "Kit festa infantil · Santa Luzia",
+      text: "Comprei um kit festa infantil e foi prático demais. Tudo bonito, gostoso e organizado.",
+    },
+    {
+      name: "Juliana Martins",
+      detail: "Torta de limão · Jardim Primavera",
+      text: "A torta de limão é a melhor que já provei: merengue no ponto e a base bem crocante. Já pedi três vezes neste mês.",
+    },
+    {
+      name: "Bruno Carvalho",
+      detail: "Cupcakes · Centro",
+      text: "Pedi cupcakes de última hora para o aniversário da minha filha e chegaram antes do horário combinado. Salvou a festa!",
+    },
+    {
+      name: "Fernanda Alves",
+      detail: "Bolo personalizado · Vila Nova",
+      text: "Mandei a foto e o bolo personalizado veio idêntico ao que pedi. Todo mundo quis saber onde encomendei.",
+    },
+    {
+      name: "Marcos Oliveira",
+      detail: "Brownies e cookies · Jardim Primavera",
+      text: "Gostei de poder comparar as lojas e os prazos antes de escolher. O brownie com nozes virou a sobremesa oficial lá de casa.",
+    },
+    {
+      name: "Patrícia Nunes",
+      detail: "Cliente desde 2025 · Santa Luzia",
+      text: "Uso o cupom do meu plano todo mês e o frete grátis faz diferença. Os pedidos sempre chegam fresquinhos.",
     },
   ],
   faqs: [

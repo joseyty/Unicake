@@ -32,7 +32,7 @@ def testar_conexao() -> None:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1")
             resultado = cursor.fetchone()
-        print("Conexão com MySQL/MariaDB OK:", resultado)
+        print("Conexão com SQL Server OK:", resultado)
         conn.close()
     except Exception as exc:
         print(f"Não foi possível conectar ao banco: {exc}")
@@ -53,9 +53,9 @@ def main() -> None:
     exemplo_basico()
 
     print("\nObservações:")
-    print("- O banco deve estar em MySQL/MariaDB externo.")
+    print("- O banco deve estar em um Microsoft SQL Server (ver database.sql).")
     print("- Ajuste as credenciais em .env antes de operar em dados reais.")
-    print("- Este arquivo serve como ponto de teste do backend em terminal.")
+    print("- Este arquivo serve como ponto de teste do backend em terminal; a API do site é o api.py.")
 
 
 if __name__ == "__main__":

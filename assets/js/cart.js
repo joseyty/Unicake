@@ -3,6 +3,7 @@
   if (!U) return;
 
   const COUPON_STORAGE_KEY = "unicake.coupon";
+  const API_BASE = (window.UniCakeConfig && window.UniCakeConfig.apiBase) || "http://127.0.0.1:5000";
 
   function normalizeCouponCode(code) {
     return String(code ?? "")
@@ -204,6 +205,48 @@
     document.body.classList.remove("cart-open");
   }
 
+  // Grava a compra e o pagamento no banco pela API do backend (backend/api.py)
+  async function finalizarPedido(button) {
+    const user = window.UniCakeAuth?.getUser?.();
+    if (!user || !user.email) {
+      U.toast("Entre na sua conta para finalizar o pedido.");
+      return;
+    }
+
+    const cart = cartState();
+    const metodo = document.querySelector(".pay-options .is-selected")?.dataset.pay;
+    if (!cart.length || !metodo) return;
+
+    button.disabled = true;
+    try {
+      const response = await fetch(API_BASE + "/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cliente: { nome: user.name || user.email, email: user.email },
+          itens: cart.map((item) => ({ codigo: item.id, quantidade: item.qty })),
+          metodo_pagamento: metodo,
+          cupom: getCouponCode() || null,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        U.toast(result.erro || "Não foi possível registrar o pedido. Tente novamente.");
+        return;
+      }
+
+      saveCart([]);
+      setCouponCode("");
+      closeCart();
+      U.toast(`Pedido confirmado. Seu número é #${result.pedido.id}`);
+    } catch (error) {
+      console.error("Erro ao registrar pedido:", error);
+      U.toast("Não foi possível conectar ao servidor. Seu carrinho foi mantido.");
+    } finally {
+      syncCart();
+    }
+  }
+
   function initCart() {
     document.addEventListener("click", (event) => {
       const add = event.target.closest("[data-add-cart]");
@@ -251,13 +294,7 @@
         if (feedback) feedback.textContent = "";
         syncCart();
       }
-      if (checkout) {
-        saveCart([]);
-        setCouponCode("");
-        syncCart();
-        closeCart();
-        U.toast("Pedido confirmado. Seu número é #" + Math.floor(100000 + Math.random() * 899999));
-      }
+      if (checkout) finalizarPedido(checkout);
     });
 
     window.UniCakeCart = { add: addToCart, open: openCart, close: closeCart, sync: syncCart };

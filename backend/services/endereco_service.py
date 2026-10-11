@@ -22,17 +22,17 @@ class EnderecoService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT id FROM cliente WHERE id = %s", (cliente_id,))
+                cursor.execute("SELECT id FROM cliente WHERE id = ?", (cliente_id,))
                 if cursor.fetchone() is None:
                     raise ValueError("Cliente não encontrado.")
 
                 cursor.execute(
-                    "INSERT INTO endereco (cliente_id, cep, estado, cidade, bairro, rua, numero, complemento, referencia) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    "INSERT INTO endereco (cliente_id, cep, estado, cidade, bairro, rua, numero, complemento, referencia) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (cliente_id, cep, estado, cidade, bairro, rua, numero, complemento, referencia),
                 )
+                endereco_id = cursor.fetchone()['id']
                 conn.commit()
-                endereco_id = cursor.lastrowid
-                cursor.execute("SELECT * FROM endereco WHERE id = %s", (endereco_id,))
+                cursor.execute("SELECT * FROM endereco WHERE id = ?", (endereco_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Endereço não foi criado.")
@@ -48,7 +48,7 @@ class EnderecoService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT * FROM endereco WHERE cliente_id = %s ORDER BY id ASC", (cliente_id,))
+                cursor.execute("SELECT * FROM endereco WHERE cliente_id = ? ORDER BY id ASC", (cliente_id,))
                 rows = cursor.fetchall()
             return [Endereco(**row) for row in rows]
         finally:
@@ -59,7 +59,7 @@ class EnderecoService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT * FROM endereco WHERE id = %s", (endereco_id,))
+                cursor.execute("SELECT * FROM endereco WHERE id = ?", (endereco_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Endereço não encontrado.")
@@ -86,11 +86,11 @@ class EnderecoService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "UPDATE endereco SET cep = %s, estado = %s, cidade = %s, bairro = %s, rua = %s, numero = %s, complemento = %s, referencia = %s WHERE id = %s",
+                    "UPDATE endereco SET cep = ?, estado = ?, cidade = ?, bairro = ?, rua = ?, numero = ?, complemento = ?, referencia = ? WHERE id = ?",
                     (novo_cep, novo_estado, nova_cidade, novo_bairro, nova_rua, novo_numero, novo_complemento, nova_referencia, endereco_id),
                 )
                 conn.commit()
-                cursor.execute("SELECT * FROM endereco WHERE id = %s", (endereco_id,))
+                cursor.execute("SELECT * FROM endereco WHERE id = ?", (endereco_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Endereço não encontrado após atualização.")
@@ -106,7 +106,7 @@ class EnderecoService:
         conn = get_connection()
         try:
             with conn.cursor() as cursor:
-                cursor.execute("DELETE FROM endereco WHERE id = %s", (endereco_id,))
+                cursor.execute("DELETE FROM endereco WHERE id = ?", (endereco_id,))
                 conn.commit()
         except Exception:
             conn.rollback()

@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UniCake | Promoções</title>
+    <title>UniCake | Loja</title>
     <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
-    <meta name="description" content="Promoções e ofertas de doces, bolos e kits festa na UniCake." />
+    <meta name="description" content="Produtos em destaque e promoções da loja na UniCake." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,33 +34,37 @@
     <link rel="stylesheet" href="../assets/css/chat-assistant.css" />
     <script defer src="../assets/js/chat-assistant.js"></script>
   </head>
-  <body data-page="promocoes">
+  <body data-page="lojas">
     <div class="page-shell">
       <div id="site-header"></div>
 
       <main id="conteudo">
         <section class="page-hero">
-          <div class="page-hero-inner">
-            <div>
-              <span class="eyebrow">Promoções</span>
-              <h1>Ofertas para adoçar o dia.</h1>
-              <p>Produtos selecionados com condições especiais para você testar o carrinho e finalizar pedidos.</p>
-            </div>
-            <aside class="hero-card">
-              <strong>10%</strong>
-              <p>Digite UNICAKE10 no cupom do carrinho.</p>
-            </aside>
-          </div>
+          <div class="page-hero-inner" id="storeHero"></div>
         </section>
 
-        <section class="content-section">
+        <section class="content-section" id="storeFeaturedSection">
           <div class="section-head">
             <div class="section-title">
-              <span class="section-kicker">Selecionadas</span>
-              <h2>Promoções disponíveis</h2>
+              <span class="section-kicker">Os mais pedidos</span>
+              <h2>Produtos em destaque</h2>
+              <p>Os produtos mais procurados desta loja.</p>
             </div>
+            <a class="section-link" id="storeAllProducts" href="ParaVoce.html">Ver todos os produtos</a>
           </div>
-          <div class="promo-grid" id="promoGrid"></div>
+          <div class="product-grid" id="storeFeatured"></div>
+        </section>
+
+        <section class="content-section" id="storePromosSection">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Ofertas</span>
+              <h2>Promoções da loja</h2>
+              <p>Produtos desta loja com oferta ativa.</p>
+            </div>
+            <a class="section-link" href="promocoes.html">Ver todas as promoções</a>
+          </div>
+          <div class="promo-grid" id="storePromos"></div>
         </section>
       </main>
 
@@ -71,4 +75,3 @@
     <div id="site-accessibility"></div>
   </body>
 </html>
-

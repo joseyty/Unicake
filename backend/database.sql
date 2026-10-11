@@ -1,140 +1,270 @@
-CREATE DATABASE IF NOT EXISTS unicake_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Banco da Unicake para Microsoft SQL Server.
+-- Executar com: sqlcmd -S .\SQLEXPRESS -E -C -f 65001 -i database.sql
+
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
+GO
+
+IF DB_ID(N'unicake_db') IS NULL
+    CREATE DATABASE unicake_db;
+GO
+
 USE unicake_db;
+GO
 
-CREATE TABLE IF NOT EXISTS categoria (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL UNIQUE,
-    descricao TEXT,
-    ativo TINYINT(1) NOT NULL DEFAULT 1,
-    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_categoria_nome (nome)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.categoria', N'U') IS NULL
+CREATE TABLE dbo.categoria (
+    id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_categoria PRIMARY KEY,
+    nome NVARCHAR(100) NOT NULL CONSTRAINT uk_categoria_nome UNIQUE,
+    descricao NVARCHAR(MAX) NULL,
+    ativo BIT NOT NULL CONSTRAINT df_categoria_ativo DEFAULT 1,
+    data_cadastro DATETIME2(0) NOT NULL CONSTRAINT df_categoria_data DEFAULT SYSDATETIME()
+);
+GO
 
-CREATE TABLE IF NOT EXISTS produto (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    categoria_id INT NOT NULL,
-    nome VARCHAR(150) NOT NULL,
-    descricao TEXT,
-    preco DECIMAL(10,2) NOT NULL,
-    estoque INT NOT NULL DEFAULT 0,
-    status VARCHAR(20) NOT NULL DEFAULT 'ATIVO' CHECK (status IN ('ATIVO', 'INATIVO')),
-    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_produto_categoria
-        FOREIGN KEY (categoria_id) REFERENCES categoria(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    INDEX idx_produto_categoria (categoria_id),
-    INDEX idx_produto_nome (nome),
-    INDEX idx_produto_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.produto', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.produto (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_produto PRIMARY KEY,
+        categoria_id INT NOT NULL,
+        -- codigo: identificador usado pelo site (assets/js/data.js), ex.: 'bolo-chocolate'
+        codigo NVARCHAR(60) NULL,
+        loja NVARCHAR(150) NULL,
+        nome NVARCHAR(150) NOT NULL,
+        descricao NVARCHAR(MAX) NULL,
+        preco DECIMAL(10,2) NOT NULL,
+        estoque INT NOT NULL CONSTRAINT df_produto_estoque DEFAULT 0,
+        status NVARCHAR(20) NOT NULL CONSTRAINT df_produto_status DEFAULT 'ATIVO',
+        data_cadastro DATETIME2(0) NOT NULL CONSTRAINT df_produto_data DEFAULT SYSDATETIME(),
+        CONSTRAINT fk_produto_categoria FOREIGN KEY (categoria_id) REFERENCES dbo.categoria(id),
+        CONSTRAINT chk_produto_status CHECK (status IN ('ATIVO', 'INATIVO')),
+        CONSTRAINT chk_produto_preco CHECK (preco >= 0),
+        CONSTRAINT chk_produto_estoque CHECK (estoque >= 0)
+    );
+    CREATE INDEX idx_produto_categoria ON dbo.produto (categoria_id);
+    CREATE INDEX idx_produto_nome ON dbo.produto (nome);
+    CREATE INDEX idx_produto_status ON dbo.produto (status);
+    CREATE UNIQUE INDEX uk_produto_codigo ON dbo.produto (codigo) WHERE codigo IS NOT NULL;
+END
+GO
 
-CREATE TABLE IF NOT EXISTS cliente (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    telefone VARCHAR(30) NOT NULL,
-    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_cliente_email (email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.cliente', N'U') IS NULL
+CREATE TABLE dbo.cliente (
+    id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_cliente PRIMARY KEY,
+    nome NVARCHAR(150) NOT NULL,
+    email NVARCHAR(150) NOT NULL CONSTRAINT uk_cliente_email UNIQUE,
+    telefone NVARCHAR(30) NULL,
+    data_cadastro DATETIME2(0) NOT NULL CONSTRAINT df_cliente_data DEFAULT SYSDATETIME()
+);
+GO
 
-CREATE TABLE IF NOT EXISTS endereco (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT NOT NULL,
-    cep VARCHAR(20) NOT NULL,
-    estado VARCHAR(100) NOT NULL,
-    cidade VARCHAR(150) NOT NULL,
-    bairro VARCHAR(150) NOT NULL,
-    rua VARCHAR(200) NOT NULL,
-    numero VARCHAR(20) NOT NULL,
-    complemento VARCHAR(200) DEFAULT NULL,
-    referencia VARCHAR(200) DEFAULT NULL,
-    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_endereco_cliente
-        FOREIGN KEY (cliente_id) REFERENCES cliente(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    INDEX idx_endereco_cliente (cliente_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.endereco', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.endereco (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_endereco PRIMARY KEY,
+        cliente_id INT NOT NULL,
+        cep NVARCHAR(20) NOT NULL,
+        estado NVARCHAR(100) NOT NULL,
+        cidade NVARCHAR(150) NOT NULL,
+        bairro NVARCHAR(150) NOT NULL,
+        rua NVARCHAR(200) NOT NULL,
+        numero NVARCHAR(20) NOT NULL,
+        complemento NVARCHAR(200) NULL,
+        referencia NVARCHAR(200) NULL,
+        data_cadastro DATETIME2(0) NOT NULL CONSTRAINT df_endereco_data DEFAULT SYSDATETIME(),
+        CONSTRAINT fk_endereco_cliente FOREIGN KEY (cliente_id) REFERENCES dbo.cliente(id) ON DELETE CASCADE
+    );
+    CREATE INDEX idx_endereco_cliente ON dbo.endereco (cliente_id);
+END
+GO
 
-CREATE TABLE IF NOT EXISTS carrinho (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT NOT NULL UNIQUE,
-    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_carrinho_cliente
-        FOREIGN KEY (cliente_id) REFERENCES cliente(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    INDEX idx_carrinho_cliente (cliente_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.carrinho', N'U') IS NULL
+CREATE TABLE dbo.carrinho (
+    id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_carrinho PRIMARY KEY,
+    cliente_id INT NOT NULL CONSTRAINT uk_carrinho_cliente UNIQUE,
+    data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_carrinho_criacao DEFAULT SYSDATETIME(),
+    data_atualizacao DATETIME2(0) NOT NULL CONSTRAINT df_carrinho_atualizacao DEFAULT SYSDATETIME(),
+    CONSTRAINT fk_carrinho_cliente FOREIGN KEY (cliente_id) REFERENCES dbo.cliente(id) ON DELETE CASCADE
+);
+GO
 
-CREATE TABLE IF NOT EXISTS item_carrinho (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    carrinho_id INT NOT NULL,
-    produto_id INT NOT NULL,
-    quantidade INT NOT NULL,
-    preco_unitario DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
-    data_atualizacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_item_carrinho_carrinho
-        FOREIGN KEY (carrinho_id) REFERENCES carrinho(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT fk_item_carrinho_produto
-        FOREIGN KEY (produto_id) REFERENCES produto(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    UNIQUE KEY uk_item_carrinho (carrinho_id, produto_id),
-    INDEX idx_item_carrinho_produto (produto_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.item_carrinho', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.item_carrinho (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_item_carrinho PRIMARY KEY,
+        carrinho_id INT NOT NULL,
+        produto_id INT NOT NULL,
+        quantidade INT NOT NULL,
+        preco_unitario DECIMAL(10,2) NOT NULL,
+        subtotal DECIMAL(10,2) NOT NULL,
+        data_atualizacao DATETIME2(0) NOT NULL CONSTRAINT df_item_carrinho_atualizacao DEFAULT SYSDATETIME(),
+        CONSTRAINT fk_item_carrinho_carrinho FOREIGN KEY (carrinho_id) REFERENCES dbo.carrinho(id) ON DELETE CASCADE,
+        CONSTRAINT fk_item_carrinho_produto FOREIGN KEY (produto_id) REFERENCES dbo.produto(id),
+        CONSTRAINT chk_item_carrinho_quantidade CHECK (quantidade > 0),
+        CONSTRAINT uk_item_carrinho UNIQUE (carrinho_id, produto_id)
+    );
+    CREATE INDEX idx_item_carrinho_produto ON dbo.item_carrinho (produto_id);
+END
+GO
 
-CREATE TABLE IF NOT EXISTS pedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT NOT NULL,
-    endereco_id INT NOT NULL,
-    valor_total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    status VARCHAR(30) NOT NULL DEFAULT 'PENDENTE',
-    observacoes TEXT,
-    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_pedido_cliente
-        FOREIGN KEY (cliente_id) REFERENCES cliente(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    CONSTRAINT fk_pedido_endereco
-        FOREIGN KEY (endereco_id) REFERENCES endereco(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    INDEX idx_pedido_cliente (cliente_id),
-    INDEX idx_pedido_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.cupom', N'U') IS NULL
+CREATE TABLE dbo.cupom (
+    -- codigo sem hífens/espaços, como o site normaliza (ex.: 'UNICAKEESSENCIAL')
+    codigo NVARCHAR(40) NOT NULL CONSTRAINT pk_cupom PRIMARY KEY,
+    descricao NVARCHAR(200) NULL,
+    tipo NVARCHAR(20) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL CONSTRAINT df_cupom_valor DEFAULT 0,
+    frete_gratis BIT NOT NULL CONSTRAINT df_cupom_frete DEFAULT 0,
+    subtotal_minimo DECIMAL(10,2) NOT NULL CONSTRAINT df_cupom_minimo DEFAULT 0,
+    ativo BIT NOT NULL CONSTRAINT df_cupom_ativo DEFAULT 1,
+    CONSTRAINT chk_cupom_tipo CHECK (tipo IN ('PERCENTUAL', 'FIXO', 'FRETE_GRATIS')),
+    CONSTRAINT chk_cupom_valor CHECK (valor >= 0)
+);
+GO
 
-CREATE TABLE IF NOT EXISTS item_pedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT NOT NULL,
-    produto_id INT NOT NULL,
-    quantidade INT NOT NULL,
-    preco_unitario DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
-    CONSTRAINT fk_item_pedido_pedido
-        FOREIGN KEY (pedido_id) REFERENCES pedido(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT fk_item_pedido_produto
-        FOREIGN KEY (produto_id) REFERENCES produto(id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    INDEX idx_item_pedido_pedido (pedido_id),
-    INDEX idx_item_pedido_produto (produto_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+IF OBJECT_ID(N'dbo.pedido', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.pedido (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_pedido PRIMARY KEY,
+        cliente_id INT NOT NULL,
+        -- NULL nas compras feitas pelo site, que ainda não coleta endereço
+        endereco_id INT NULL,
+        subtotal DECIMAL(10,2) NOT NULL CONSTRAINT df_pedido_subtotal DEFAULT 0,
+        desconto DECIMAL(10,2) NOT NULL CONSTRAINT df_pedido_desconto DEFAULT 0,
+        taxa_entrega DECIMAL(10,2) NOT NULL CONSTRAINT df_pedido_taxa DEFAULT 0,
+        cupom_codigo NVARCHAR(40) NULL,
+        valor_total DECIMAL(10,2) NOT NULL CONSTRAINT df_pedido_total DEFAULT 0,
+        status NVARCHAR(30) NOT NULL CONSTRAINT df_pedido_status DEFAULT 'PENDENTE',
+        observacoes NVARCHAR(MAX) NULL,
+        data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_pedido_criacao DEFAULT SYSDATETIME(),
+        data_atualizacao DATETIME2(0) NOT NULL CONSTRAINT df_pedido_atualizacao DEFAULT SYSDATETIME(),
+        CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES dbo.cliente(id),
+        CONSTRAINT fk_pedido_endereco FOREIGN KEY (endereco_id) REFERENCES dbo.endereco(id),
+        CONSTRAINT fk_pedido_cupom FOREIGN KEY (cupom_codigo) REFERENCES dbo.cupom(codigo),
+        CONSTRAINT chk_pedido_status CHECK (status IN ('PENDENTE', 'CONFIRMADO', 'EM_PREPARACAO', 'PRONTO', 'SAIU_PARA_ENTREGA', 'ENTREGUE', 'CANCELADO')),
+        CONSTRAINT chk_pedido_valores CHECK (subtotal >= 0 AND desconto >= 0 AND taxa_entrega >= 0 AND valor_total >= 0)
+    );
+    CREATE INDEX idx_pedido_cliente ON dbo.pedido (cliente_id);
+    CREATE INDEX idx_pedido_status ON dbo.pedido (status);
+END
+GO
 
-INSERT INTO categoria (nome, descricao, ativo) VALUES
-    ('Bolos', 'Bolos artesanais', 1),
-    ('Doces', 'Doces variados', 1),
-    ('Brigadeiros', 'Brigadeiros tradicionais', 1),
-    ('Brownies', 'Brownies e sobremesas', 1),
-    ('Cupcakes', 'Cupcakes decorados', 1),
-    ('Kits', 'Kits para festas e eventos', 1)
-ON DUPLICATE KEY UPDATE nome = nome;
+IF OBJECT_ID(N'dbo.item_pedido', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.item_pedido (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_item_pedido PRIMARY KEY,
+        pedido_id INT NOT NULL,
+        produto_id INT NOT NULL,
+        -- cópia do nome no momento da compra, para o histórico não mudar se o produto for editado
+        nome_produto NVARCHAR(150) NOT NULL,
+        quantidade INT NOT NULL,
+        preco_unitario DECIMAL(10,2) NOT NULL,
+        subtotal DECIMAL(10,2) NOT NULL,
+        CONSTRAINT fk_item_pedido_pedido FOREIGN KEY (pedido_id) REFERENCES dbo.pedido(id) ON DELETE CASCADE,
+        CONSTRAINT fk_item_pedido_produto FOREIGN KEY (produto_id) REFERENCES dbo.produto(id),
+        CONSTRAINT chk_item_pedido_quantidade CHECK (quantidade > 0)
+    );
+    CREATE INDEX idx_item_pedido_pedido ON dbo.item_pedido (pedido_id);
+    CREATE INDEX idx_item_pedido_produto ON dbo.item_pedido (produto_id);
+END
+GO
+
+IF OBJECT_ID(N'dbo.pagamento', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.pagamento (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_pagamento PRIMARY KEY,
+        pedido_id INT NOT NULL,
+        metodo NVARCHAR(20) NOT NULL,
+        valor DECIMAL(10,2) NOT NULL,
+        status NVARCHAR(20) NOT NULL CONSTRAINT df_pagamento_status DEFAULT 'PENDENTE',
+        codigo_transacao NVARCHAR(100) NULL,
+        data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_pagamento_criacao DEFAULT SYSDATETIME(),
+        data_pagamento DATETIME2(0) NULL,
+        data_atualizacao DATETIME2(0) NOT NULL CONSTRAINT df_pagamento_atualizacao DEFAULT SYSDATETIME(),
+        CONSTRAINT fk_pagamento_pedido FOREIGN KEY (pedido_id) REFERENCES dbo.pedido(id) ON DELETE CASCADE,
+        CONSTRAINT chk_pagamento_metodo CHECK (metodo IN ('PIX', 'CARTAO', 'DINHEIRO')),
+        CONSTRAINT chk_pagamento_status CHECK (status IN ('PENDENTE', 'APROVADO', 'RECUSADO', 'ESTORNADO', 'CANCELADO')),
+        CONSTRAINT chk_pagamento_valor CHECK (valor >= 0)
+    );
+    CREATE INDEX idx_pagamento_pedido ON dbo.pagamento (pedido_id);
+    CREATE INDEX idx_pagamento_status ON dbo.pagamento (status);
+END
+GO
+
+IF OBJECT_ID(N'dbo.confeiteiro', N'U') IS NULL
+CREATE TABLE dbo.confeiteiro (
+    id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_confeiteiro PRIMARY KEY,
+    nome NVARCHAR(150) NOT NULL,
+    nome_loja NVARCHAR(150) NOT NULL,
+    -- 14 caracteres sem pontuação; aceita o CNPJ alfanumérico
+    cnpj CHAR(14) NOT NULL CONSTRAINT uk_confeiteiro_cnpj UNIQUE,
+    email NVARCHAR(150) NOT NULL CONSTRAINT uk_confeiteiro_email UNIQUE,
+    telefone NVARCHAR(30) NULL,
+    -- senha guardada apenas como hash PBKDF2-SHA256 (hex) com salt próprio
+    senha_hash CHAR(64) NOT NULL,
+    senha_salt CHAR(32) NOT NULL,
+    ativo BIT NOT NULL CONSTRAINT df_confeiteiro_ativo DEFAULT 1,
+    data_cadastro DATETIME2(0) NOT NULL CONSTRAINT df_confeiteiro_data DEFAULT SYSDATETIME()
+);
+GO
+
+IF OBJECT_ID(N'dbo.sessao_confeiteiro', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.sessao_confeiteiro (
+        id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_sessao_confeiteiro PRIMARY KEY,
+        confeiteiro_id INT NOT NULL,
+        -- SHA-256 do token entregue ao navegador; o token em si não é gravado
+        token_hash CHAR(64) NOT NULL CONSTRAINT uk_sessao_confeiteiro_token UNIQUE,
+        data_criacao DATETIME2(0) NOT NULL CONSTRAINT df_sessao_confeiteiro_criacao DEFAULT SYSDATETIME(),
+        data_expiracao DATETIME2(0) NOT NULL,
+        CONSTRAINT fk_sessao_confeiteiro FOREIGN KEY (confeiteiro_id) REFERENCES dbo.confeiteiro(id) ON DELETE CASCADE
+    );
+    CREATE INDEX idx_sessao_confeiteiro ON dbo.sessao_confeiteiro (confeiteiro_id);
+END
+GO
+
+-- Dados iniciais: espelham o catálogo e os cupons do site (assets/js/data.js)
+
+INSERT INTO dbo.categoria (nome, descricao)
+SELECT v.nome, v.descricao
+FROM (VALUES
+    (N'Bolos', N'Bolos artesanais'),
+    (N'Cupcakes', N'Cupcakes decorados'),
+    (N'Tortas', N'Tortas e sobremesas'),
+    (N'Doces gourmet', N'Doces variados'),
+    (N'Cookies e brownies', N'Cookies e brownies'),
+    (N'Kits festa', N'Kits para festas e eventos'),
+    (N'Personalizados', N'Produtos personalizados')
+) AS v (nome, descricao)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.categoria c WHERE c.nome = v.nome);
+GO
+
+INSERT INTO dbo.produto (categoria_id, codigo, loja, nome, descricao, preco, estoque)
+SELECT c.id, v.codigo, v.loja, v.nome, v.descricao, v.preco, 100
+FROM (VALUES
+    (N'bolo-chocolate', N'Bolos', N'Confeitaria da Maria', N'Bolo de chocolate trufado', N'Massa fofinha, brigadeiro cremoso e cobertura de chocolate.', 68.90),
+    (N'cupcake-red', N'Cupcakes', N'Cupcake & Cia', N'Cupcake red velvet', N'Massa red velvet com cream cheese suave.', 12.90),
+    (N'torta-limao', N'Tortas', N'Bomboniere Bolos', N'Torta de limao', N'Creme de limao, merengue tostado e base crocante.', 54.50),
+    (N'brigadeiros', N'Doces gourmet', N'Doce Encanto', N'Caixa de brigadeiros gourmet', N'Sabores variados com confeitos artesanais.', 39.90),
+    (N'brownie-nozes', N'Cookies e brownies', N'Cupcake & Cia', N'Brownie com nozes', N'Brownie intenso com nozes e calda de chocolate.', 16.50),
+    (N'kit-infantil', N'Kits festa', N'Doce Encanto', N'Kit festa infantil', N'Bolo, docinhos e cupcakes para ate 15 pessoas.', 149.90),
+    (N'bolo-foto', N'Personalizados', N'Confeitaria da Maria', N'Bolo personalizado com foto', N'Arte comestivel, recheio a escolha e acabamento premium.', 119.90),
+    (N'cookies-recheados', N'Cookies e brownies', N'Cupcake & Cia', N'Cookies recheados', N'Cookies macios com recheios de chocolate, doce de leite e baunilha.', 24.90)
+) AS v (codigo, categoria, loja, nome, descricao, preco)
+INNER JOIN dbo.categoria c ON c.nome = v.categoria
+WHERE NOT EXISTS (SELECT 1 FROM dbo.produto p WHERE p.codigo = v.codigo);
+GO
+
+INSERT INTO dbo.cupom (codigo, descricao, tipo, valor, frete_gratis, subtotal_minimo)
+SELECT v.codigo, v.descricao, v.tipo, v.valor, v.frete_gratis, v.subtotal_minimo
+FROM (VALUES
+    (N'UNICAKE10', N'10% de desconto em qualquer pedido.', N'PERCENTUAL', 10, 0, 0),
+    (N'UNICAKEESSENCIAL', N'Frete grátis para assinantes do plano Essencial.', N'FRETE_GRATIS', 0, 1, 50),
+    (N'UNICAKEEMPRESARIAL', N'15% de desconto e frete grátis para o plano Empresarial.', N'PERCENTUAL', 15, 1, 100),
+    (N'UNICAKEPROFISSIONAL', N'20% de desconto e frete grátis para o plano Profissional.', N'PERCENTUAL', 20, 1, 150)
+) AS v (codigo, descricao, tipo, valor, frete_gratis, subtotal_minimo)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.cupom c WHERE c.codigo = v.codigo);
+GO
 
 SELECT 'Banco e tabelas criados com sucesso.' AS status;
+GO

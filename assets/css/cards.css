@@ -22,6 +22,20 @@ details {
   padding: 0.9rem;
 }
 
+a.store-card {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+a.store-card:hover,
+a.store-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(224, 123, 154, 0.7);
+  box-shadow: var(--shadow);
+}
+
 .store-logo {
   width: 3.1rem;
   height: 3.1rem;
@@ -569,6 +583,30 @@ details p {
   padding: 1.6rem;
 }
 
+/* Sem isto, o display dos campos sobrescreve o atributo hidden */
+.login-card [hidden] {
+  display: none;
+}
+
+.confeiteiro-dados {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.confeiteiro-dados dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.confeiteiro-dados dd {
+  margin: 0.1rem 0 0;
+  color: var(--brown-dark);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
 .login-card h1 {
   margin: 0 0 0.35rem;
   color: var(--brown-dark);
@@ -601,3 +639,197 @@ details p {
   text-decoration: none;
 }
 
+
+/* Fotos de produtos e lojas */
+.product-art.has-image {
+  height: 10rem;
+  min-height: 0;
+  background: var(--beige);
+}
+
+.product-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+img.store-logo {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  background: var(--beige);
+}
+
+img.store-logo-lg {
+  width: 7rem;
+  height: 7rem;
+  border-radius: var(--radius);
+}
+
+.store-photo {
+  width: 100%;
+  height: 11rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.credits-panel {
+  padding: 1.25rem 1.5rem;
+}
+
+.credits-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.credits-list strong {
+  color: var(--brown-dark);
+}
+
+.credits-list a {
+  color: var(--rose-dark);
+  overflow-wrap: anywhere;
+}
+
+/* Carrossel de depoimentos */
+.carousel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.15rem 0.9rem;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .testimonial-card {
+  flex: 0 0 calc((100% - 2rem) / 3);
+  scroll-snap-align: start;
+}
+
+.testimonial-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.testimonial-head .avatar {
+  flex: 0 0 auto;
+}
+
+.testimonial-head small {
+  color: var(--brown-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.carousel-arrow {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(92, 50, 32, 0.22);
+  border-radius: 50%;
+  background: var(--cream-strong);
+  color: var(--brown);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.carousel-arrow:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+.carousel-dots {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.carousel-dots button {
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(92, 50, 32, 0.25);
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.carousel-dots button.is-active {
+  width: 1.5rem;
+  border-radius: 999px;
+  background: var(--rose-dark);
+}
+
+@media (max-width: 900px) {
+  .carousel-track .testimonial-card {
+    flex-basis: calc((100% - 1rem) / 2);
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+
+  .carousel-track .testimonial-card {
+    flex-basis: 100%;
+  }
+
+  img.store-logo-lg {
+    width: 5rem;
+    height: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    scroll-behavior: auto;
+  }
+}
+
+/* A foto preenche a área do cartão sem empurrar o texto */
+.product-art.has-image {
+  display: block;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.product-art.has-image img {
+  display: block;
+}
+
+a.store-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 245, 0.78);
+  box-shadow: var(--soft-shadow);
+}

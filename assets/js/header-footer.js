@@ -22,7 +22,7 @@
       <header class="site-header">
         <div class="header-inner">
           <a class="brand" href="index.html" aria-label="Página inicial da UniCake">
-            <span class="brand-mark" aria-hidden="true">U</span>
+            <span class="brand-mark" aria-hidden="true"><img src="../assets/img/logo-bolo.png" alt="" /></span>
             <span class="brand-name">UniCake</span>
           </a>
           <button class="icon-button menu-toggle" type="button" aria-expanded="false" aria-controls="primaryMenu" title="Abrir menu">
@@ -40,10 +40,36 @@
             <div class="search-box" role="search">
               ${U.icons.search}
               <input id="siteSearch" type="search" autocomplete="off" placeholder="Busque por item ou loja" aria-label="Buscar por item ou loja" />
-              <button class="icon-button search-filter" type="button" title="Buscar promoções" data-search-promo>
+              <button class="icon-button search-filter" type="button" title="Filtrar busca" aria-label="Filtrar busca" aria-expanded="false" aria-controls="siteSearchFilters" data-search-filter>
                 ${U.icons.filter}
               </button>
               <div class="search-results" id="siteSearchResults"></div>
+              <form class="search-filters" id="siteSearchFilters" aria-label="Filtros da busca" hidden>
+                <label>
+                  Categoria
+                  <select name="cat">
+                    <option value="">Todas</option>
+                    ${(U.data.categories || []).map((category) => `<option value="${category.id}">${category.label}</option>`).join("")}
+                  </select>
+                </label>
+                <label>
+                  Ordenar por
+                  <select name="sort">
+                    <option value="">Relevância</option>
+                    <option value="menor">Menor preço</option>
+                    <option value="maior">Maior preço</option>
+                    <option value="avaliacao">Melhor avaliação</option>
+                  </select>
+                </label>
+                <label class="search-filters-check">
+                  <input type="checkbox" name="promo" value="1" />
+                  Somente promoções
+                </label>
+                <div class="search-filters-actions">
+                  <button type="button" data-filter-clear>Limpar</button>
+                  <button type="submit">Aplicar</button>
+                </div>
+              </form>
             </div>
             <div class="user-section">
               ${
@@ -112,11 +138,13 @@
             <a href="Suporte.html">Suporte</a>
             <a href="Suporte.html#faq">Central de ajuda</a>
             <a href="Entrar.html">Entrar na conta</a>
+            <a href="Confeiteiro.html">Área do confeiteiro</a>
             <a href="ParaEmpresas.html">Planos para empresas</a>
           </nav>
         </div>
         <div class="footer-bottom">
           <span>&copy; 2026 UniCake. Todos os direitos reservados.</span>
+          <a href="Creditos.html">Créditos das imagens</a>
         </div>
       </footer>
     `;
@@ -142,24 +170,61 @@
 
     const input = document.getElementById("siteSearch");
     results = document.getElementById("siteSearchResults");
+    const filters = document.getElementById("siteSearchFilters");
+    const filterToggle = document.querySelector("[data-search-filter]");
+
+    const filterState = () => ({
+      cat: filters?.elements.cat.value || "",
+      sort: filters?.elements.sort.value || "",
+      promo: Boolean(filters?.elements.promo.checked),
+    });
+    const hasFilters = () => {
+      const state = filterState();
+      return Boolean(state.cat || state.sort || state.promo);
+    };
+    // Monta o link da página de produtos com o termo e os filtros escolhidos
+    const searchUrl = (term) => {
+      const state = filterState();
+      const query = new URLSearchParams();
+      if (term) query.set("q", term);
+      if (state.cat) query.set("cat", state.cat);
+      if (state.sort) query.set("sort", state.sort);
+      if (state.promo) query.set("promo", "1");
+      const text = query.toString();
+      return "ParaVoce.html" + (text ? "?" + text : "");
+    };
+    const closeFilters = () => {
+      if (!filters) return;
+      filters.hidden = true;
+      filterToggle?.setAttribute("aria-expanded", "false");
+    };
+
     if (input && results) {
       const showResults = () => {
         const term = input.value.trim().toLowerCase();
+        const state = filterState();
         if (!term) {
           results.classList.remove("is-open");
           results.innerHTML = "";
           return;
         }
 
-        const products = (U.data.products || []).filter((product) =>
+        let products = (U.data.products || []).filter((product) =>
           [product.name, product.store, product.category].join(" ").toLowerCase().includes(term)
         );
-        const stores = (U.data.stores || []).filter((store) => store.name.toLowerCase().includes(term));
+        if (state.cat) products = products.filter((product) => product.category === state.cat);
+        if (state.promo) products = products.filter((product) => product.promo);
+        if (state.sort === "menor") products.sort((a, b) => a.price - b.price);
+        if (state.sort === "maior") products.sort((a, b) => b.price - a.price);
+        if (state.sort === "avaliacao") products.sort((a, b) => b.rating - a.rating);
+
+        // Categoria e promoção são filtros de produto, então as lojas só aparecem sem eles
+        const stores = state.cat || state.promo ? [] : (U.data.stores || []).filter((store) => store.name.toLowerCase().includes(term));
         const productHtml = products
           .slice(0, 5)
           .map(
             (product) => `
-              <a href="ParaVoce.html?q=${encodeURIComponent(term)}">
+              <a href="${searchUrl(term)}">
                 <span>${product.name}</span>
                 <strong>${U.money.format(product.price)}</strong>
               </a>
@@ -175,15 +240,52 @@
         results.classList.add("is-open");
       };
 
-      input.addEventListener("input", showResults);
+      input.addEventListener("input", () => {
+        closeFilters();
+        showResults();
+      });
       input.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && input.value.trim()) {
-          window.location.href = `ParaVoce.html?q=${encodeURIComponent(input.value.trim())}`;
+        if (event.key === "Enter" && (input.value.trim() || hasFilters())) {
+          window.location.href = searchUrl(input.value.trim());
         }
       });
       document.addEventListener("click", (event) => {
-        if (!event.target.closest(".search-box")) results.classList.remove("is-open");
+        if (!event.target.closest(".search-box")) {
+          results.classList.remove("is-open");
+          closeFilters();
+        }
       });
+
+      if (filters && filterToggle) {
+        const syncFilterToggle = () => filterToggle.classList.toggle("has-filters", hasFilters());
+
+        // Mantém os filtros da URL ao navegar (ex.: ParaVoce.html?cat=bolos&promo=1)
+        const pageParams = new URLSearchParams(window.location.search);
+        ["cat", "sort"].forEach((name) => {
+          const value = pageParams.get(name) || "";
+          const select = filters.elements[name];
+          if ([...select.options].some((option) => option.value === value)) select.value = value;
+        });
+        filters.elements.promo.checked = pageParams.get("promo") === "1";
+        if (pageParams.get("q")) input.value = pageParams.get("q");
+        syncFilterToggle();
+
+        filterToggle.addEventListener("click", () => {
+          const open = filters.hidden;
+          filters.hidden = !open;
+          filterToggle.setAttribute("aria-expanded", String(open));
+          if (open) results.classList.remove("is-open");
+        });
+        filters.addEventListener("change", syncFilterToggle);
+        filters.addEventListener("submit", (event) => {
+          event.preventDefault();
+          window.location.href = searchUrl(input.value.trim());
+        });
+        filters.querySelector("[data-filter-clear]").addEventListener("click", () => {
+          filters.reset();
+          syncFilterToggle();
+        });
+      }
     }
 
     document.addEventListener("keydown", (event) => {
@@ -191,6 +293,7 @@
         nav?.classList.remove("is-open");
         menuToggle?.setAttribute("aria-expanded", "false");
         results?.classList.remove("is-open");
+        closeFilters();
         const userToggle = document.querySelector("[data-user-menu-toggle]");
         const userDropdown = document.querySelector("[data-user-dropdown]");
         userDropdown?.setAttribute("hidden", "");
@@ -211,10 +314,6 @@
         userDropdown?.setAttribute("hidden", "");
         userToggle?.setAttribute("aria-expanded", "false");
       }
-    });
-
-    document.querySelector("[data-search-promo]")?.addEventListener("click", () => {
-      window.location.href = "promocoes.html";
     });
   }
 

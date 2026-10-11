@@ -13,15 +13,15 @@ class CarrinhoService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT * FROM carrinho WHERE cliente_id = %s", (cliente_id,))
+                cursor.execute("SELECT * FROM carrinho WHERE cliente_id = ?", (cliente_id,))
                 row = cursor.fetchone()
                 if row:
                     return Carrinho(**row)
 
-                cursor.execute("INSERT INTO carrinho (cliente_id) VALUES (%s)", (cliente_id,))
+                cursor.execute("INSERT INTO carrinho (cliente_id) OUTPUT INSERTED.id VALUES (?)", (cliente_id,))
+                carrinho_id = cursor.fetchone()['id']
                 conn.commit()
-                carrinho_id = cursor.lastrowid
-                cursor.execute("SELECT * FROM carrinho WHERE id = %s", (carrinho_id,))
+                cursor.execute("SELECT * FROM carrinho WHERE id = ?", (carrinho_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Carrinho não foi criado.")
@@ -43,7 +43,7 @@ class CarrinhoService:
                     FROM item_carrinho ic
                     INNER JOIN carrinho c ON c.id = ic.carrinho_id
                     INNER JOIN produto p ON p.id = ic.produto_id
-                    WHERE c.cliente_id = %s
+                    WHERE c.cliente_id = ?
                     ORDER BY ic.id ASC
                     """,
                     (cliente_id,),
@@ -67,29 +67,29 @@ class CarrinhoService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "SELECT * FROM item_carrinho WHERE carrinho_id = %s AND produto_id = %s",
+                    "SELECT * FROM item_carrinho WHERE carrinho_id = ? AND produto_id = ?",
                     (carrinho.id, produto_id),
                 )
                 item = cursor.fetchone()
 
                 if item is None:
-                    subtotal = float(produto.preco) * quantidade
+                    subtotal = produto.preco * quantidade
                     cursor.execute(
-                        "INSERT INTO item_carrinho (carrinho_id, produto_id, quantidade, preco_unitario, subtotal) VALUES (%s, %s, %s, %s, %s)",
+                        "INSERT INTO item_carrinho (carrinho_id, produto_id, quantidade, preco_unitario, subtotal) VALUES (?, ?, ?, ?, ?)",
                         (carrinho.id, produto_id, quantidade, produto.preco, subtotal),
                     )
                 else:
                     nova_quantidade = int(item['quantidade']) + quantidade
                     if produto.estoque < nova_quantidade:
                         raise ValueError("Quantidade total no carrinho excede o estoque disponível.")
-                    novo_subtotal = float(produto.preco) * nova_quantidade
+                    novo_subtotal = produto.preco * nova_quantidade
                     cursor.execute(
-                        "UPDATE item_carrinho SET quantidade = %s, preco_unitario = %s, subtotal = %s WHERE id = %s",
+                        "UPDATE item_carrinho SET quantidade = ?, preco_unitario = ?, subtotal = ?, data_atualizacao = SYSDATETIME() WHERE id = ?",
                         (nova_quantidade, produto.preco, novo_subtotal, item['id']),
                     )
                 conn.commit()
                 cursor.execute(
-                    "SELECT * FROM item_carrinho WHERE carrinho_id = %s AND produto_id = %s",
+                    "SELECT * FROM item_carrinho WHERE carrinho_id = ? AND produto_id = ?",
                     (carrinho.id, produto_id),
                 )
                 result = cursor.fetchone()
@@ -108,7 +108,7 @@ class CarrinhoService:
         try:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    "DELETE ic FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = %s AND ic.produto_id = %s",
+                    "DELETE ic FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = ? AND ic.produto_id = ?",
                     (cliente_id, produto_id),
                 )
                 conn.commit()
@@ -129,7 +129,7 @@ class CarrinhoService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "SELECT ic.* FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = %s AND ic.produto_id = %s",
+                    "SELECT ic.* FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = ? AND ic.produto_id = ?",
                     (cliente_id, produto_id),
                 )
                 item = cursor.fetchone()
@@ -137,13 +137,13 @@ class CarrinhoService:
                     raise ValueError("Produto não encontrado no carrinho.")
                 if produto.estoque < quantidade:
                     raise ValueError("Quantidade maior do que o estoque disponível.")
-                subtotal = float(produto.preco) * quantidade
+                subtotal = produto.preco * quantidade
                 cursor.execute(
-                    "UPDATE item_carrinho SET quantidade = %s, preco_unitario = %s, subtotal = %s WHERE id = %s",
+                    "UPDATE item_carrinho SET quantidade = ?, preco_unitario = ?, subtotal = ?, data_atualizacao = SYSDATETIME() WHERE id = ?",
                     (quantidade, produto.preco, subtotal, item['id']),
                 )
                 conn.commit()
-                cursor.execute("SELECT * FROM item_carrinho WHERE id = %s", (item['id'],))
+                cursor.execute("SELECT * FROM item_carrinho WHERE id = ?", (item['id'],))
                 result = cursor.fetchone()
             return result
         except Exception:
@@ -158,7 +158,7 @@ class CarrinhoService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "SELECT COALESCE(SUM(subtotal), 0) AS total FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = %s",
+                    "SELECT COALESCE(SUM(subtotal), 0) AS total FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = ?",
                     (cliente_id,),
                 )
                 row = cursor.fetchone()
@@ -176,7 +176,7 @@ class CarrinhoService:
         try:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    "DELETE ic FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = %s",
+                    "DELETE ic FROM item_carrinho ic INNER JOIN carrinho c ON c.id = ic.carrinho_id WHERE c.cliente_id = ?",
                     (cliente_id,),
                 )
                 conn.commit()

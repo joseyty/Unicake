@@ -5,8 +5,8 @@
   function productCard(product) {
     return `
       <article class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
-        <div class="product-art" aria-hidden="true">
-          <span>${U.initials(product.name)}</span>
+        <div class="product-art ${product.image ? "has-image" : ""}" aria-hidden="true">
+          ${product.image ? `<img src="${product.image}" alt="" loading="lazy" />` : `<span>${U.initials(product.name)}</span>`}
         </div>
         <div class="product-body">
           <div class="product-meta">
@@ -25,16 +25,36 @@
     `;
   }
 
+  function promoCard(product) {
+    return `
+      <article class="promo-card">
+        <span class="promo-badge">Oferta</span>
+        ${productCard(product)}
+      </article>
+    `;
+  }
+
+  function storeUrl(store) {
+    return `Loja.html?id=${encodeURIComponent(store.id)}`;
+  }
+
+  // Foto da loja; sem foto cadastrada, mostra as iniciais
+  function storeLogo(store, extraClass = "") {
+    return store.image
+      ? `<img class="store-logo ${extraClass}" src="${store.image}" alt="" loading="lazy" />`
+      : `<div class="store-logo ${extraClass}" aria-hidden="true">${store.initials}</div>`;
+  }
+
   function storeCard(store) {
     return `
-      <article class="store-card">
-        <div class="store-logo" aria-hidden="true">${store.initials}</div>
+      <a class="store-card" href="${storeUrl(store)}" aria-label="Ver destaques e promoções de ${store.name}">
+        ${storeLogo(store)}
         <div>
           <h3>${store.name}</h3>
           <p>${store.specialty}</p>
           <span>${U.stars(store.rating)} · ${store.time}</span>
         </div>
-      </article>
+      </a>
     `;
   }
 
@@ -51,16 +71,84 @@
       testimonials.innerHTML = (U.data.testimonials || [])
         .map(
           (item) => `
-            <article class="testimonial-card reveal">
-              <div class="avatar" aria-hidden="true">${U.initials(item.name)}</div>
-              <h3>${item.name}</h3>
-              <div class="stars">★★★★★</div>
+            <article class="testimonial-card">
+              <div class="testimonial-head">
+                <div class="avatar" aria-hidden="true">${U.initials(item.name)}</div>
+                <div>
+                  <h3>${item.name}</h3>
+                  ${item.detail ? `<small>${item.detail}</small>` : ""}
+                </div>
+              </div>
+              <div class="stars" aria-label="Avaliação 5 de 5">★★★★★</div>
               <p>${item.text}</p>
             </article>
           `
         )
         .join("");
+      const carousel = testimonials.closest(".carousel");
+      if (carousel) initCarousel(carousel);
     }
+  }
+
+  // Carrossel horizontal: setas, bolinhas de página e avanço automático
+  function initCarousel(root) {
+    const track = root.querySelector(".carousel-track");
+    const dots = root.querySelector("[data-carousel-dots]");
+    const cards = [...track.children];
+    if (!cards.length) return;
+
+    const perView = () => Math.max(1, Math.round(track.clientWidth / cards[0].getBoundingClientRect().width));
+    const pageCount = () => Math.ceil(cards.length / perView());
+    const currentPage = () => {
+      if (track.scrollLeft >= track.scrollWidth - track.clientWidth - 2) return pageCount() - 1;
+      const step = cards[Math.min(perView(), cards.length - 1)].offsetLeft - cards[0].offsetLeft || track.clientWidth;
+      return Math.round(track.scrollLeft / step);
+    };
+    const goTo = (page) => {
+      const total = pageCount();
+      const target = ((page % total) + total) % total;
+      track.scrollTo({ left: cards[target * perView()].offsetLeft - cards[0].offsetLeft });
+    };
+    const syncDots = () => {
+      const page = currentPage();
+      dots.querySelectorAll("button").forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === page);
+        dot.setAttribute("aria-current", index === page ? "true" : "false");
+      });
+    };
+    const buildDots = () => {
+      dots.innerHTML = Array.from(
+        { length: pageCount() },
+        (_, index) => `<button type="button" data-carousel-dot="${index}" aria-label="Ir para o grupo ${index + 1} de depoimentos"></button>`
+      ).join("");
+      syncDots();
+    };
+
+    root.querySelector("[data-carousel-prev]").addEventListener("click", () => goTo(currentPage() - 1));
+    root.querySelector("[data-carousel-next]").addEventListener("click", () => goTo(currentPage() + 1));
+    dots.addEventListener("click", (event) => {
+      const dot = event.target.closest("[data-carousel-dot]");
+      if (dot) goTo(Number(dot.dataset.carouselDot));
+    });
+    track.addEventListener("scroll", syncDots, { passive: true });
+    window.addEventListener("resize", buildDots);
+    buildDots();
+
+    // Avança sozinho, mas pausa com o mouse ou o foco em cima e respeita "reduzir movimento"
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let timer = null;
+    const start = () => {
+      if (!timer) timer = window.setInterval(() => goTo(currentPage() + 1), 5000);
+    };
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = null;
+    };
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+    start();
   }
 
   function renderProductPage() {
@@ -70,15 +158,18 @@
     const sort = document.getElementById("productSort");
     const params = new URLSearchParams(window.location.search);
     let activeCategory = params.get("cat") || "todos";
+    let promoOnly = params.get("promo") === "1";
 
     if (!grid || !chips) return;
 
     chips.innerHTML = [
       '<button type="button" data-category-filter="todos">Todos</button>',
       ...(U.data.categories || []).map((category) => `<button type="button" data-category-filter="${category.id}">${category.label}</button>`),
+      '<button type="button" data-promo-filter>Promoções</button>',
     ].join("");
 
     if (search && params.get("q")) search.value = params.get("q");
+    if (sort && [...sort.options].some((option) => option.value === params.get("sort"))) sort.value = params.get("sort");
 
     function applyFilters() {
       const term = (search?.value || "").trim().toLowerCase();
@@ -86,6 +177,7 @@
       let products = [...(U.data.products || [])];
 
       if (activeCategory !== "todos") products = products.filter((product) => product.category === activeCategory);
+      if (promoOnly) products = products.filter((product) => product.promo);
       if (term) {
         products = products.filter((product) =>
           [product.name, product.store, product.description, product.category].join(" ").toLowerCase().includes(term)
@@ -96,10 +188,16 @@
       if (sortValue === "avaliacao") products.sort((a, b) => b.rating - a.rating);
 
       grid.innerHTML = products.length ? products.map(productCard).join("") : '<p class="empty-state">Nenhum produto encontrado.</p>';
-      chips.querySelectorAll("button").forEach((button) => button.classList.toggle("is-active", button.dataset.categoryFilter === activeCategory));
+      chips.querySelectorAll("[data-category-filter]").forEach((button) => button.classList.toggle("is-active", button.dataset.categoryFilter === activeCategory));
+      chips.querySelector("[data-promo-filter]").classList.toggle("is-active", promoOnly);
     }
 
     chips.addEventListener("click", (event) => {
+      if (event.target.closest("[data-promo-filter]")) {
+        promoOnly = !promoOnly;
+        applyFilters();
+        return;
+      }
       const button = event.target.closest("[data-category-filter]");
       if (!button) return;
       activeCategory = button.dataset.categoryFilter;
@@ -115,15 +213,64 @@
     if (!grid) return;
     grid.innerHTML = (U.data.products || [])
       .filter((product) => product.promo)
-      .map(
-        (product) => `
-          <article class="promo-card">
-            <span class="promo-badge">Oferta</span>
-            ${productCard(product)}
-          </article>
-        `
-      )
+      .map(promoCard)
       .join("");
+  }
+
+  // Página de uma loja (Loja.html?id=...): destaques e promoções dos produtos dela
+  function renderStorePage() {
+    const hero = document.getElementById("storeHero");
+    const featuredGrid = document.getElementById("storeFeatured");
+    const promoGrid = document.getElementById("storePromos");
+    if (!hero || !featuredGrid || !promoGrid) return;
+
+    const storeId = new URLSearchParams(window.location.search).get("id");
+    const store = (U.data.stores || []).find((item) => item.id === storeId);
+    if (!store) {
+      hero.innerHTML = `
+        <div>
+          <span class="eyebrow">Lojas cadastradas</span>
+          <h1>Loja não encontrada.</h1>
+          <p>Não encontramos esta loja. <a href="paginalojas.html">Ver todas as lojas</a></p>
+        </div>
+      `;
+      document.getElementById("storeFeaturedSection").hidden = true;
+      document.getElementById("storePromosSection").hidden = true;
+      return;
+    }
+
+    const products = (U.data.products || []).filter((product) => product.store === store.name);
+    // Destaques: os marcados como populares; se a loja não tiver nenhum, o mais bem avaliado
+    let featured = products.filter((product) => product.popular);
+    if (!featured.length) featured = [...products].sort((a, b) => b.rating - a.rating).slice(0, 1);
+    const promos = products.filter((product) => product.promo);
+
+    document.title = `UniCake | ${store.name}`;
+    hero.innerHTML = `
+      <div>
+        <span class="eyebrow">${store.specialty}</span>
+        <h1>${store.name}</h1>
+        <p>${store.description}</p>
+        <div class="store-tags">
+          <span>${store.neighborhood}</span>
+          <span>${store.time}</span>
+          <span>${U.stars(store.rating)}</span>
+        </div>
+      </div>
+      <aside class="hero-card">
+        ${store.image ? `<img class="store-photo" src="${store.image}" alt="" />` : ""}
+        <strong>${products.length}</strong>
+        <p>${products.length === 1 ? "produto" : "produtos"} no catálogo, ${promos.length} em promoção.</p>
+      </aside>
+    `;
+    document.getElementById("storeAllProducts").href = `ParaVoce.html?q=${encodeURIComponent(store.name)}`;
+
+    featuredGrid.innerHTML = featured.length
+      ? featured.map(productCard).join("")
+      : '<p class="empty-state">Esta loja ainda não tem produtos cadastrados.</p>';
+    promoGrid.innerHTML = promos.length
+      ? promos.map(promoCard).join("")
+      : '<p class="empty-state">Esta loja não tem promoções no momento.</p>';
   }
 
   function renderStores() {
@@ -143,7 +290,7 @@
         .map(
           (store) => `
             <article class="store-detail">
-              <div class="store-logo store-logo-lg" aria-hidden="true">${store.initials}</div>
+              ${storeLogo(store, "store-logo-lg")}
               <div>
                 <h2>${store.name}</h2>
                 <p>${store.description}</p>
@@ -153,7 +300,7 @@
                   <span>${store.time}</span>
                   <span>${U.stars(store.rating)}</span>
                 </div>
-                <a href="ParaVoce.html?q=${encodeURIComponent(store.name)}">Ver produtos</a>
+                <a href="${storeUrl(store)}">Ver destaques e promoções</a>
               </div>
             </article>
           `
@@ -224,6 +371,7 @@
 
   function renderLogin() {
     const form = document.getElementById("loginForm");
+    if (!form) return;
     const googleButton = document.querySelector(".google-button");
     const Auth = window.UniCakeAuth;
     const nameField = form?.elements.namedItem("name");
@@ -357,6 +505,7 @@
     renderProductPage();
     renderPromotions();
     renderStores();
+    renderStorePage();
     renderCompanies();
     renderSupportPage();
     renderLogin();

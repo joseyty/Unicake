@@ -16,12 +16,12 @@ class ClienteService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "INSERT INTO cliente (nome, email, telefone) VALUES (%s, %s, %s)",
+                    "INSERT INTO cliente (nome, email, telefone) OUTPUT INSERTED.id VALUES (?, ?, ?)",
                     (nome, email, telefone),
                 )
+                cliente_id = cursor.fetchone()['id']
                 conn.commit()
-                cliente_id = cursor.lastrowid
-                cursor.execute("SELECT * FROM cliente WHERE id = %s", (cliente_id,))
+                cursor.execute("SELECT * FROM cliente WHERE id = ?", (cliente_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Cliente não foi criado.")
@@ -48,7 +48,7 @@ class ClienteService:
         conn = get_connection()
         try:
             with conn.cursor(dictionary=True) as cursor:
-                cursor.execute("SELECT * FROM cliente WHERE id = %s", (cliente_id,))
+                cursor.execute("SELECT * FROM cliente WHERE id = ?", (cliente_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Cliente não encontrado.")
@@ -67,11 +67,11 @@ class ClienteService:
         try:
             with conn.cursor(dictionary=True) as cursor:
                 cursor.execute(
-                    "UPDATE cliente SET nome = %s, email = %s, telefone = %s WHERE id = %s",
+                    "UPDATE cliente SET nome = ?, email = ?, telefone = ? WHERE id = ?",
                     (novo_nome, novo_email, novo_telefone, cliente_id),
                 )
                 conn.commit()
-                cursor.execute("SELECT * FROM cliente WHERE id = %s", (cliente_id,))
+                cursor.execute("SELECT * FROM cliente WHERE id = ?", (cliente_id,))
                 row = cursor.fetchone()
             if row is None:
                 raise ValueError("Cliente não encontrado após atualização.")
@@ -87,7 +87,7 @@ class ClienteService:
         conn = get_connection()
         try:
             with conn.cursor() as cursor:
-                cursor.execute("DELETE FROM cliente WHERE id = %s", (cliente_id,))
+                cursor.execute("DELETE FROM cliente WHERE id = ?", (cliente_id,))
                 conn.commit()
         except Exception:
             conn.rollback()
