@@ -223,6 +223,24 @@ BEGIN
 END
 GO
 
+-- Produtos cadastrados pelos confeiteiros: dono do produto e caminho da foto enviada
+IF COL_LENGTH(N'dbo.produto', N'confeiteiro_id') IS NULL
+BEGIN
+    ALTER TABLE dbo.produto ADD
+        confeiteiro_id INT NULL CONSTRAINT fk_produto_confeiteiro FOREIGN KEY REFERENCES dbo.confeiteiro(id),
+        imagem NVARCHAR(200) NULL;
+END
+GO
+
+-- Cartão fidelidade: o confeiteiro escolhe até 10 dos seus produtos para participar
+IF COL_LENGTH(N'dbo.produto', N'fidelidade') IS NULL
+    ALTER TABLE dbo.produto ADD fidelidade BIT NOT NULL CONSTRAINT df_produto_fidelidade DEFAULT 0;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'idx_produto_confeiteiro' AND object_id = OBJECT_ID(N'dbo.produto'))
+    CREATE INDEX idx_produto_confeiteiro ON dbo.produto (confeiteiro_id);
+GO
+
 -- Dados iniciais: espelham o catálogo e os cupons do site (assets/js/data.js)
 
 INSERT INTO dbo.categoria (nome, descricao)

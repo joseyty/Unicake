@@ -4,21 +4,22 @@
 
   function productCard(product) {
     return `
-      <article class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
+      <article class="product-card" data-category="${U.escapeHtml(product.category)}" data-name="${U.escapeHtml(product.name.toLowerCase())}">
         <div class="product-art ${product.image ? "has-image" : ""}" aria-hidden="true">
-          ${product.image ? `<img src="${product.image}" alt="" loading="lazy" />` : `<span>${U.initials(product.name)}</span>`}
+          ${product.image ? `<img src="${U.escapeHtml(product.image)}" alt="" loading="lazy" />` : `<span>${U.escapeHtml(U.initials(product.name))}</span>`}
         </div>
         <div class="product-body">
           <div class="product-meta">
-            <span>${product.badge}</span>
-            <span>${U.stars(product.rating)}</span>
+            <span>${U.escapeHtml(product.badge)}</span>
+            <span>${product.rating ? U.stars(product.rating) : "Sem avaliações"}</span>
           </div>
-          <h3>${product.name}</h3>
-          <p>${product.description}</p>
-          <small>${product.store}</small>
+          <h3>${U.escapeHtml(product.name)}</h3>
+          <p>${U.escapeHtml(product.description)}</p>
+          <small>${U.escapeHtml(product.store)}</small>
+          ${product.loyalty ? `<span class="product-loyalty">★ Cartão fidelidade</span>` : ""}
           <div class="product-footer">
             <strong>${U.money.format(product.price)}</strong>
-            <button type="button" data-add-cart="${product.id}">Adicionar</button>
+            <button type="button" data-add-cart="${U.escapeHtml(product.id)}">Adicionar</button>
           </div>
         </div>
       </article>
@@ -500,7 +501,9 @@
     items.forEach((item) => observer.observe(item));
   }
 
-  U.ready(() => {
+  // Espera os produtos dos confeiteiros (ou o tempo limite) para desenhar o catálogo completo
+  U.ready(async () => {
+    await U.catalogReady;
     renderHome();
     renderProductPage();
     renderPromotions();

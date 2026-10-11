@@ -2,6 +2,75 @@
   const U = window.UniCake;
   if (!U) return;
 
+  const MODE_STORAGE_KEY = "unicake.modo";
+  const BAKER_TOKEN_KEY = "unicake.confeiteiro.token";
+  const BAKER_PROFILE_KEY = "unicake.confeiteiro.perfil";
+
+  function readJson(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Quem está logado (cliente e/ou confeiteiro) e com qual dos dois perfis a pessoa está navegando
+  function activeSession() {
+    const client = readJson("unicake.auth");
+    const baker = localStorage.getItem(BAKER_TOKEN_KEY) ? readJson(BAKER_PROFILE_KEY) : null;
+    let mode = localStorage.getItem(MODE_STORAGE_KEY);
+    if ((mode === "confeiteiro" && !baker) || (mode === "cliente" && !client)) mode = null;
+    if (!mode) mode = client ? "cliente" : baker ? "confeiteiro" : null;
+    return { mode, client, baker };
+  }
+
+  function renderUserSection() {
+    const { mode, client, baker } = activeSession();
+    const e = U.escapeHtml;
+
+    if (mode === "cliente") {
+      return `
+        <div class="user-menu">
+          <button class="user-button" type="button" aria-label="Abrir informações da conta" aria-expanded="false" data-user-menu-toggle>
+            ${client.picture ? `<img src="${e(client.picture)}" alt="Foto de ${e(client.name)}" class="user-avatar">` : `<div class="user-avatar-initials" aria-hidden="true">${e(U.initials(client.name || "?"))}</div>`}
+          </button>
+          <div class="user-dropdown" data-user-dropdown hidden>
+            <strong>${e(client.name)}</strong>
+            <span>${e(client.email)}</span>
+            <small>Acessando como cliente · Conta ${client.provider === "google" ? "Google" : "UniCake"}</small>
+            <a class="user-switch" href="${baker ? "MinhaLoja.html" : "Confeiteiro.html"}" data-switch-mode="confeiteiro">Acessar como confeiteiro</a>
+            <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if (mode === "confeiteiro") {
+      return `
+        <div class="user-menu">
+          <button class="user-button" type="button" aria-label="Abrir informações da conta" aria-expanded="false" data-user-menu-toggle>
+            <div class="user-avatar-initials is-baker" aria-hidden="true">${e(U.initials(baker.nome_loja || baker.nome || "?"))}</div>
+          </button>
+          <div class="user-dropdown" data-user-dropdown hidden>
+            <strong>${e(baker.nome)}</strong>
+            <span>${e(baker.email)}</span>
+            <small>Acessando como confeiteiro · ${e(baker.nome_loja)}</small>
+            <a class="user-switch" href="MinhaLoja.html">Minha loja (produtos)</a>
+            <a class="user-switch" href="${client ? "index.html" : "Entrar.html"}" data-switch-mode="cliente">Acessar como cliente</a>
+            <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <a class="login-link" href="Entrar.html" aria-label="Entrar">
+        ${U.icons.user}
+        <span>Entrar</span>
+      </a>
+    `;
+  }
+
   function renderHeader() {
     const target = document.getElementById("site-header");
     if (!target) return;
@@ -72,29 +141,7 @@
               </form>
             </div>
             <div class="user-section">
-              ${
-                window.UniCakeAuth?.isLoggedIn()
-                  ? (() => {
-                      const user = window.UniCakeAuth.getUser();
-                      return `
-                        <div class="user-menu">
-                          <button class="user-button" type="button" aria-label="Abrir informações da conta" aria-expanded="false" data-user-menu-toggle>
-                            ${user.picture ? `<img src="${user.picture}" alt="Foto de ${user.name}" class="user-avatar">` : `<div class="user-avatar-initials" aria-hidden="true">${U.initials(user.name)}</div>`}
-                          </button>
-                          <div class="user-dropdown" data-user-dropdown hidden>
-                            <strong>${user.name}</strong>
-                            <span>${user.email}</span>
-                            <small>Conta ${user.provider === "google" ? "Google" : "UniCake"}</small>
-                            <button class="logout-button" type="button" data-logout aria-label="Sair">Sair</button>
-                          </div>
-                        </div>
-                      `;
-                    })()
-                  : `<a class="login-link" href="Entrar.html" aria-label="Entrar">
-                      ${U.icons.user}
-                      <span>Entrar</span>
-                    </a>`
-              }
+              ${renderUserSection()}
             </div>
             <button class="cart-button" type="button" data-cart-open aria-label="Abrir carrinho">
               ${U.icons.cart}
@@ -225,7 +272,7 @@
           .map(
             (product) => `
               <a href="${searchUrl(term)}">
-                <span>${product.name}</span>
+                <span>${U.escapeHtml(product.name)}</span>
                 <strong>${U.money.format(product.price)}</strong>
               </a>
             `
@@ -326,12 +373,35 @@
     const logoutButton = document.querySelector("[data-logout]");
     if (logoutButton) {
       logoutButton.addEventListener("click", () => {
-        if (confirm("Tem certeza que deseja sair?")) {
-          window.UniCakeAuth?.logout();
-          window.location.href = "Entrar.html";
+        if (!confirm("Tem certeza que deseja sair?")) return;
+
+        // Sai apenas do perfil em uso; o outro (se houver) continua logado
+        if (activeSession().mode === "confeiteiro") {
+          const token = localStorage.getItem(BAKER_TOKEN_KEY);
+          fetch(U.apiBase + "/api/confeiteiros/logout", {
+            method: "POST",
+            headers: { Authorization: "Bearer " + token },
+            keepalive: true,
+          }).catch(() => {});
+          localStorage.removeItem(BAKER_TOKEN_KEY);
+          localStorage.removeItem(BAKER_PROFILE_KEY);
+          localStorage.removeItem(MODE_STORAGE_KEY);
+          window.location.href = "Confeiteiro.html";
+          return;
         }
+
+        localStorage.removeItem("unicake.auth");
+        localStorage.removeItem(MODE_STORAGE_KEY);
+        window.location.href = "Entrar.html";
       });
     }
+
+    // "Acessar como cliente / como confeiteiro": guarda o perfil escolhido antes de seguir o link
+    document.querySelectorAll("[data-switch-mode]").forEach((link) => {
+      link.addEventListener("click", () => {
+        localStorage.setItem(MODE_STORAGE_KEY, link.dataset.switchMode);
+      });
+    });
 
     // Adicionar event listener para restauração de sessão
     document.addEventListener("unicake:session-restored", (event) => {

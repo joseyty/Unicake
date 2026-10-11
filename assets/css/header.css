@@ -457,3 +457,33 @@
   display: none;
 }
 
+
+/* Troca de perfil no menu da conta (cliente / confeiteiro) */
+.user-dropdown .user-switch {
+  display: block;
+  margin-top: 0.35rem;
+  border: 1px solid rgba(92, 50, 32, 0.22);
+  border-radius: var(--radius-sm);
+  color: var(--brown);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.user-dropdown .user-switch:hover,
+.user-dropdown .user-switch:focus-visible {
+  background: var(--brown);
+  color: #fff;
+}
+
+.user-dropdown small {
+  white-space: normal;
+}
+
+.user-avatar-initials.is-baker {
+  background: var(--gold);
+  color: var(--brown-dark);
+}

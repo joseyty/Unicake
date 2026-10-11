@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniCake | Minha loja</title>
+    <link rel="icon" type="image/png" href="../assets/img/logo-bolo.png" />
+    <meta name="description" content="Painel do confeiteiro: cadastre os produtos da sua loja na UniCake." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;500;600;700&family=Rouge+Script&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/header.css" />
+    <link rel="stylesheet" href="../assets/css/home.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <link rel="stylesheet" href="../assets/css/cards.css" />
+    <link rel="stylesheet" href="../assets/css/cart.css" />
+    <link rel="stylesheet" href="../assets/css/widgets.css" />
+    <link rel="stylesheet" href="../assets/css/footer.css" />
+    <link rel="stylesheet" href="../assets/css/accessibility.css" />
+    <link rel="stylesheet" href="../assets/css/responsive.css" />
+    <script defer src="../assets/js/data.js"></script>
+    <script defer src="../assets/js/core.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/header-footer.js"></script>
+    <script defer src="../assets/js/cart.js"></script>
+    <script defer src="../assets/js/accessibility.js"></script>
+    <script defer src="../assets/js/pages.js"></script>
+    <script defer src="../assets/js/confeiteiro.js"></script>
+  </head>
+  <body data-page="minha-loja">
+    <div class="page-shell">
+      <div id="site-header"></div>
+
+      <main id="conteudo" class="auth-layout">
+        <p class="form-status" id="painelStatus" role="status">Carregando sua loja...</p>
+        <div class="confeiteiro-area" id="confeiteiroPainel" hidden>
+          <section class="login-card confeiteiro-conta" aria-labelledby="painel-title">
+            <span class="eyebrow">Área do confeiteiro</span>
+            <h1 id="painel-title">Olá!</h1>
+            <p id="painelIntro">Estes são os dados da sua conta de confeiteiro.</p>
+            <dl class="confeiteiro-dados">
+              <div><dt>Loja</dt><dd data-confeiteiro="nome_loja"></dd></div>
+              <div><dt>CNPJ</dt><dd data-confeiteiro="cnpj"></dd></div>
+              <div><dt>Responsável</dt><dd data-confeiteiro="nome"></dd></div>
+              <div><dt>E-mail</dt><dd data-confeiteiro="email"></dd></div>
+              <div><dt>Telefone</dt><dd data-confeiteiro="telefone"></dd></div>
+              <div><dt>Parceiro desde</dt><dd data-confeiteiro="data_cadastro"></dd></div>
+            </dl>
+            <div class="confeiteiro-acoes">
+              <a class="btn-secondary" id="confeiteiroComoCliente" href="Entrar.html">Acessar como cliente</a>
+              <button type="button" class="logout-button" id="confeiteiroSair">Sair</button>
+            </div>
+          </section>
+
+          <section class="login-card confeiteiro-produtos" aria-labelledby="produtos-title">
+            <span class="eyebrow">Catálogo da loja</span>
+            <h2 id="produtos-title">Adicionar produto</h2>
+            <p>Os produtos cadastrados aqui aparecem no site, na página "Para você" e na busca.</p>
+            <form id="produtoForm">
+              <div class="produto-foto">
+                <img id="produtoPreview" alt="Pré-visualização da foto do produto" hidden />
+                <label class="foto-campo">
+                  Foto do produto
+                  <input class="foto-input" type="file" name="foto" accept="image/jpeg,image/png,image/webp" required />
+                  <span class="foto-escolher">
+                    <span class="foto-botao">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+                      Escolher foto
+                    </span>
+                    <span class="foto-nome" id="produtoFotoNome">Nenhuma foto escolhida</span>
+                  </span>
+                  <small>JPG, PNG ou WEBP, com até 4 MB.</small>
+                </label>
+              </div>
+              <label>
+                Nome do produto
+                <input type="text" name="nome" maxlength="150" placeholder="Ex.: Bolo de cenoura com chocolate" required />
+              </label>
+              <div class="produto-linha">
+                <label>
+                  Valor (R$)
+                  <input type="number" name="preco" min="0.01" max="99999" step="0.01" inputmode="decimal" placeholder="0,00" required />
+                </label>
+                <label>
+                  Estoque
+                  <input type="number" name="estoque" min="1" max="9999" step="1" value="10" required />
+                </label>
+              </div>
+              <label>
+                Categoria
+                <select name="categoria_id" required></select>
+              </label>
+              <label>
+                Descrição
+                <textarea name="descricao" maxlength="500" rows="3" placeholder="Sabores, tamanho, quantas pessoas serve..." required></textarea>
+              </label>
+              <button type="submit">Adicionar produto</button>
+            </form>
+            <p class="form-status" id="produtoStatus" role="status"></p>
+
+            <h2 class="meus-produtos-title">Meus produtos</h2>
+            <p class="fidelidade-resumo">
+              <strong>★ Cartão fidelidade:</strong> marque até 10 produtos para participar.
+              <span id="fidelidadeContagem">0 de 10 produtos escolhidos</span>
+            </p>
+            <div class="meus-produtos" id="meusProdutos"></div>
+          </section>
+        </div>
+      </main>
+
+      <div id="site-footer"></div>
+    </div>
+    <div id="site-cart"></div>
+    <div id="site-accessibility"></div>
+  </body>
+</html>

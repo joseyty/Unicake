@@ -68,6 +68,8 @@
 
     setUser(user) {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+      // Quem acabou de entrar como cliente passa a navegar com o perfil de cliente
+      localStorage.setItem("unicake.modo", "cliente");
     },
 
     logout() {

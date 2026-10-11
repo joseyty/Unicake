@@ -93,16 +93,64 @@
     window.addEventListener("resize", updateScrollUI);
   }
 
+  const apiBase = (window.UniCakeConfig && window.UniCakeConfig.apiBase) || "http://127.0.0.1:5000";
+
+  // Para inserir com segurança, em innerHTML, textos digitados por usuários (ex.: produtos de confeiteiros)
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  }
+
+  // Soma ao catálogo fixo (data.js) os produtos cadastrados pelos confeiteiros na API do backend.
+  // Se a API estiver desligada ou demorar, o site segue apenas com o catálogo fixo.
+  function loadPartnerCatalog() {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 1500);
+    return fetch(apiBase + "/api/catalogo", { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : []))
+      .then((items) => {
+        const categories = data.categories || [];
+        data.products = data.products || [];
+        (Array.isArray(items) ? items : []).forEach((item) => {
+          if (!item.codigo || data.products.some((product) => product.id === item.codigo)) return;
+          const category = categories.find((entry) => entry.label.toLowerCase() === String(item.categoria || "").toLowerCase());
+          data.products.push({
+            id: item.codigo,
+            image: item.imagem_url || "",
+            name: String(item.nome || ""),
+            store: String(item.loja || "Confeiteiro parceiro"),
+            category: category ? category.id : "doces",
+            price: Number(item.preco) || 0,
+            rating: null,
+            badge: "Novo",
+            description: String(item.descricao || ""),
+            popular: false,
+            party: false,
+            promo: false,
+            partner: true,
+            loyalty: Boolean(item.fidelidade),
+          });
+        });
+      })
+      .catch(() => {})
+      .finally(() => {
+        window.clearTimeout(timer);
+        window.UniCakeCart?.sync();
+      });
+  }
+
   window.UniCake = {
     data,
     icons,
     money,
     storageKeys,
+    apiBase,
+    catalogReady: loadPartnerCatalog(),
     ready,
     pageName,
     productById,
     initials,
     stars,
+    escapeHtml,
     toast,
   };
 

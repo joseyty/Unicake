@@ -339,6 +339,80 @@ class TestBackendDoces(unittest.TestCase):
         self.assertEqual(PagamentoService.buscar_por_id(pagamento['id']).status, "ESTORNADO")
         self.assertEqual(ProdutoService.buscar_por_id(produto.id).estoque, 5)
 
+    def test_11_produtos_do_confeiteiro(self):
+        base = "".join(random.choice(string.digits) for _ in range(8))
+        dono = ConfeiteiroService.cadastrar("Bia Doceira", "Doces da Bia", base + "0003" + calcular_dv_cnpj(base + "0003"), self.prefixo + "bia@email.com", "SenhaForte123")
+        outro = ConfeiteiroService.cadastrar("Caio Doceiro", "Doces do Caio", base + "0004" + calcular_dv_cnpj(base + "0004"), self.prefixo + "caio@email.com", "SenhaForte123")
+
+        produto = ProdutoService.criar(
+            self.categoria_id,
+            self.prefixo + "pudim",
+            "Pudim de leite",
+            18.00,
+            4,
+            "ATIVO",
+            loja=dono.nome_loja,
+            confeiteiro_id=dono.id,
+            imagem="produtos/teste.jpg",
+        )
+        self.assertEqual(produto.codigo, f"p{produto.id}")
+        self.assertEqual(produto.confeiteiro_id, dono.id)
+        self.assertEqual(produto.imagem, "produtos/teste.jpg")
+
+        self.assertEqual([p.id for p in ProdutoService.listar_por_confeiteiro(dono.id)], [produto.id])
+        self.assertEqual(ProdutoService.listar_por_confeiteiro(outro.id), [])
+        catalogo = [item for item in ProdutoService.listar_catalogo_parceiros() if item['id'] == produto.id]
+        self.assertEqual(len(catalogo), 1)
+        self.assertEqual(catalogo[0]['loja'], "Doces da Bia")
+        self.assertEqual(catalogo[0]['categoria'], self.prefixo + "doces")
+
+        # Cartão fidelidade: só o dono escolhe, e no máximo 10 produtos
+        with self.assertRaises(ValueError):
+            ProdutoService.definir_fidelidade(produto.id, outro.id, True)
+        self.assertTrue(ProdutoService.definir_fidelidade(produto.id, dono.id, True).fidelidade)
+        self.assertTrue([i for i in ProdutoService.listar_catalogo_parceiros() if i['id'] == produto.id][0]['fidelidade'])
+        extras = [
+            ProdutoService.criar(self.categoria_id, f"{self.prefixo}fid{n}", "Doce", 5, 1, "ATIVO", loja=dono.nome_loja, confeiteiro_id=dono.id)
+            for n in range(ProdutoService.LIMITE_FIDELIDADE)
+        ]
+        for extra in extras[:-1]:
+            ProdutoService.definir_fidelidade(extra.id, dono.id, True)
+        with self.assertRaises(ValueError):
+            ProdutoService.definir_fidelidade(extras[-1].id, dono.id, True)
+        # Tirando um, abre vaga para outro
+        self.assertFalse(ProdutoService.definir_fidelidade(extras[0].id, dono.id, False).fidelidade)
+        self.assertTrue(ProdutoService.definir_fidelidade(extras[-1].id, dono.id, True).fidelidade)
+        for extra in extras:
+            ProdutoService.excluir_do_confeiteiro(extra.id, dono.id)
+
+        # Outro confeiteiro não pode remover o produto
+        with self.assertRaises(ValueError):
+            ProdutoService.excluir_do_confeiteiro(produto.id, outro.id)
+
+        # O produto do confeiteiro pode ser comprado pelo site usando o código
+        PedidoService.registrar_compra(
+            nome=self.prefixo + "Cliente Site",
+            email=self.prefixo + "site2@email.com",
+            itens=[{"codigo": produto.codigo, "quantidade": 1}],
+            metodo_pagamento="Pix",
+        )
+        # Com pedido registrado, remover apenas desativa (o histórico da compra é mantido)
+        resultado = ProdutoService.excluir_do_confeiteiro(produto.id, dono.id)
+        self.assertEqual(resultado['resultado'], "desativado")
+        self.assertEqual(ProdutoService.buscar_por_id(produto.id).status, "INATIVO")
+        # Produto desativado sai do cartão fidelidade e não ocupa vaga
+        self.assertFalse(ProdutoService.buscar_por_id(produto.id).fidelidade)
+        with self.assertRaises(ValueError):
+            ProdutoService.definir_fidelidade(produto.id, dono.id, True)
+        self.assertEqual([item for item in ProdutoService.listar_catalogo_parceiros() if item['id'] == produto.id], [])
+
+        # Sem pedidos, o produto é excluído de vez
+        avulso = ProdutoService.criar(self.categoria_id, self.prefixo + "quindim", "Quindim", 6.50, 2, "ATIVO", loja=dono.nome_loja, confeiteiro_id=dono.id, imagem="produtos/teste2.jpg")
+        resultado = ProdutoService.excluir_do_confeiteiro(avulso.id, dono.id)
+        self.assertEqual(resultado, {"resultado": "excluido", "imagem": "produtos/teste2.jpg"})
+        with self.assertRaises(ValueError):
+            ProdutoService.buscar_por_id(avulso.id)
+
     def test_10_validacao_de_cnpj(self):
         self.assertEqual(validar_cnpj("11.222.333/0001-81"), "11222333000181")
         self.assertEqual(validar_cnpj("11222333000181"), "11222333000181")

@@ -148,16 +148,16 @@
               return `
                 <article class="cart-item">
                   <div>
-                    <strong>${product.name}</strong>
-                    <span>${product.store}</span>
+                    <strong>${U.escapeHtml(product.name)}</strong>
+                    <span>${U.escapeHtml(product.store)}</span>
                     <small>${U.money.format(product.price)}</small>
                   </div>
                   <div class="qty-control">
-                    <button type="button" data-cart-dec="${item.id}" title="Diminuir">${U.icons.minus}</button>
+                    <button type="button" data-cart-dec="${U.escapeHtml(item.id)}" title="Diminuir">${U.icons.minus}</button>
                     <span>${item.qty}</span>
-                    <button type="button" data-cart-inc="${item.id}" title="Aumentar">${U.icons.plus}</button>
+                    <button type="button" data-cart-inc="${U.escapeHtml(item.id)}" title="Aumentar">${U.icons.plus}</button>
                   </div>
-                  <button class="remove-item" type="button" data-cart-remove="${item.id}">Remover</button>
+                  <button class="remove-item" type="button" data-cart-remove="${U.escapeHtml(item.id)}">Remover</button>
                 </article>
               `;
             })

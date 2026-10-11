@@ -6,9 +6,14 @@ from utils.validacoes import validar_nome, validar_preco, validar_estoque
 
 
 class ProdutoService:
+    # Quantos produtos de um mesmo confeiteiro podem participar do cartão fidelidade
+    LIMITE_FIDELIDADE = 10
+
     @staticmethod
-    def criar(categoria_id: int, nome: str, descricao: str = None, preco: float = 0, estoque: int = 0, status: str = 'ATIVO', codigo: str = None, loja: str = None) -> Produto:
+    def criar(categoria_id: int, nome: str, descricao: str = None, preco: float = 0, estoque: int = 0, status: str = 'ATIVO', codigo: str = None, loja: str = None, confeiteiro_id: int = None, imagem: str = None) -> Produto:
         nome = validar_nome(nome, "nome do produto")
+        if len(nome) > 150:
+            raise ValueError("O nome do produto deve ter no máximo 150 caracteres.")
         codigo = str(codigo or "").strip() or None
         preco = validar_preco(preco)
         estoque = validar_estoque(estoque)
@@ -27,10 +32,13 @@ class ProdutoService:
                     raise ValueError("Categoria não encontrada.")
 
                 cursor.execute(
-                    "INSERT INTO produto (categoria_id, codigo, loja, nome, descricao, preco, estoque, status) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (categoria_id, codigo, loja, nome, descricao, preco, estoque, status),
+                    "INSERT INTO produto (categoria_id, codigo, loja, nome, descricao, preco, estoque, status, confeiteiro_id, imagem) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (categoria_id, codigo, loja, nome, descricao, preco, estoque, status, confeiteiro_id, imagem),
                 )
                 produto_id = cursor.fetchone()['id']
+                if codigo is None and confeiteiro_id is not None:
+                    # O site identifica o produto pelo código; os de confeiteiros usam "p" + id
+                    cursor.execute("UPDATE produto SET codigo = ? WHERE id = ?", (f"p{produto_id}", produto_id))
                 conn.commit()
                 cursor.execute("SELECT * FROM produto WHERE id = ?", (produto_id,))
                 row = cursor.fetchone()
@@ -103,6 +111,101 @@ class ProdutoService:
             if row is None:
                 raise ValueError("Produto não encontrado após atualização.")
             return Produto(**row)
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+
+    @staticmethod
+    def listar_por_confeiteiro(confeiteiro_id: int) -> list[Produto]:
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute("SELECT * FROM produto WHERE confeiteiro_id = ? ORDER BY id DESC", (confeiteiro_id,))
+                rows = cursor.fetchall()
+            return [Produto(**row) for row in rows]
+        finally:
+            conn.close()
+
+    @staticmethod
+    def listar_catalogo_parceiros() -> list[dict]:
+        """Produtos ativos cadastrados por confeiteiros, com o nome da categoria, para o catálogo do site."""
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute(
+                    "SELECT p.id, p.codigo, p.loja, p.nome, p.descricao, p.preco, p.estoque, p.imagem, p.fidelidade, c.nome AS categoria "
+                    "FROM produto p "
+                    "INNER JOIN categoria c ON c.id = p.categoria_id "
+                    "INNER JOIN confeiteiro f ON f.id = p.confeiteiro_id "
+                    "WHERE p.status = 'ATIVO' AND p.estoque > 0 AND f.ativo = 1 "
+                    "ORDER BY p.id DESC"
+                )
+                return cursor.fetchall()
+        finally:
+            conn.close()
+
+    @staticmethod
+    def definir_fidelidade(produto_id: int, confeiteiro_id: int, ativo: bool) -> Produto:
+        """Coloca ou tira um produto do cartão fidelidade, respeitando o limite por confeiteiro."""
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                # Trava os produtos do confeiteiro para dois cliques simultâneos não passarem do limite
+                cursor.execute(
+                    "SELECT id, status, fidelidade FROM produto WITH (UPDLOCK, HOLDLOCK) WHERE confeiteiro_id = ?",
+                    (confeiteiro_id,),
+                )
+                produtos = cursor.fetchall()
+                produto = next((p for p in produtos if p['id'] == produto_id), None)
+                if produto is None:
+                    raise ValueError("Produto não encontrado.")
+                if ativo and not produto['fidelidade']:
+                    if produto['status'] != 'ATIVO':
+                        raise ValueError("Produto desativado não pode entrar no cartão fidelidade.")
+                    if sum(1 for p in produtos if p['fidelidade']) >= ProdutoService.LIMITE_FIDELIDADE:
+                        raise ValueError(
+                            f"O cartão fidelidade aceita até {ProdutoService.LIMITE_FIDELIDADE} produtos. "
+                            "Tire um produto para colocar outro."
+                        )
+                cursor.execute("UPDATE produto SET fidelidade = ? WHERE id = ?", (1 if ativo else 0, produto_id))
+                conn.commit()
+                cursor.execute("SELECT * FROM produto WHERE id = ?", (produto_id,))
+                return Produto(**cursor.fetchone())
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+
+    @staticmethod
+    def excluir_do_confeiteiro(produto_id: int, confeiteiro_id: int) -> dict:
+        """Remove um produto do confeiteiro. Se já houver pedidos com ele, apenas desativa.
+
+        Retorna {"resultado": "excluido" | "desativado", "imagem": caminho da foto ou None}.
+        """
+        conn = get_connection()
+        try:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute(
+                    "SELECT id, imagem FROM produto WITH (UPDLOCK, ROWLOCK) WHERE id = ? AND confeiteiro_id = ?",
+                    (produto_id, confeiteiro_id),
+                )
+                produto = cursor.fetchone()
+                if produto is None:
+                    raise ValueError("Produto não encontrado.")
+
+                cursor.execute("SELECT TOP 1 1 AS usado FROM item_pedido WHERE produto_id = ?", (produto_id,))
+                if cursor.fetchone() is not None:
+                    cursor.execute("UPDATE produto SET status = 'INATIVO', fidelidade = 0 WHERE id = ?", (produto_id,))
+                    conn.commit()
+                    return {"resultado": "desativado", "imagem": None}
+
+                cursor.execute("DELETE FROM item_carrinho WHERE produto_id = ?", (produto_id,))
+                cursor.execute("DELETE FROM produto WHERE id = ?", (produto_id,))
+                conn.commit()
+            return {"resultado": "excluido", "imagem": produto['imagem']}
         except Exception:
             conn.rollback()
             raise

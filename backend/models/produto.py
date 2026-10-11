@@ -1,5 +1,5 @@
 class Produto:
-    def __init__(self, id=None, categoria_id=None, codigo=None, loja=None, nome=None, descricao=None, preco=None, estoque=0, status='ATIVO', data_cadastro=None):
+    def __init__(self, id=None, categoria_id=None, codigo=None, loja=None, nome=None, descricao=None, preco=None, estoque=0, status='ATIVO', data_cadastro=None, confeiteiro_id=None, imagem=None, fidelidade=False):
         self.id = id
         self.categoria_id = categoria_id
         self.codigo = codigo
@@ -10,6 +10,9 @@ class Produto:
         self.estoque = estoque
         self.status = status
         self.data_cadastro = data_cadastro
+        self.confeiteiro_id = confeiteiro_id
+        self.imagem = imagem
+        self.fidelidade = bool(fidelidade)
 
     def to_dict(self):
         return {
@@ -23,4 +26,7 @@ class Produto:
             "estoque": self.estoque,
             "status": self.status,
             "data_cadastro": self.data_cadastro,
+            "confeiteiro_id": self.confeiteiro_id,
+            "imagem": self.imagem,
+            "fidelidade": self.fidelidade,
         }

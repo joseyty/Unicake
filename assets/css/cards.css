@@ -833,3 +833,315 @@ a.store-card {
   background: rgba(255, 250, 245, 0.78);
   box-shadow: var(--soft-shadow);
 }
+
+/* Área do confeiteiro: conta e produtos */
+.confeiteiro-area {
+  width: min(100%, 64rem);
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.confeiteiro-area[hidden] {
+  display: none;
+}
+
+.confeiteiro-area .login-card {
+  width: 100%;
+}
+
+.confeiteiro-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.confeiteiro-acoes .btn-secondary {
+  min-height: 2.65rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.confeiteiro-produtos h2 {
+  margin: 0 0 0.35rem;
+  color: var(--brown-dark);
+  font-family: var(--font-round);
+  font-size: 1.5rem;
+}
+
+.confeiteiro-produtos .meus-produtos-title {
+  margin-top: 1.6rem;
+}
+
+.confeiteiro-produtos select,
+.confeiteiro-produtos textarea,
+.confeiteiro-produtos input[type="number"],
+.confeiteiro-produtos input[type="file"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--cream-strong);
+  color: var(--ink);
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  font-weight: 500;
+}
+
+.confeiteiro-produtos textarea {
+  resize: vertical;
+}
+
+.confeiteiro-produtos label small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.produto-linha {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.produto-foto {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.produto-foto label {
+  flex: 1;
+  min-width: 0;
+}
+
+.produto-foto img {
+  width: 6rem;
+  height: 6rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.meus-produtos {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.meu-produto {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--cream-strong);
+  padding: 0.6rem;
+}
+
+.meu-produto img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.meu-produto-info {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.meu-produto-info strong {
+  color: var(--brown-dark);
+  overflow-wrap: anywhere;
+}
+
+.meu-produto-info .meu-produto-preco {
+  color: var(--rose-dark);
+  font-weight: 800;
+}
+
+.login-card .meu-produto-info p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.meu-produto-info small {
+  color: var(--brown-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.meu-produto-info small.is-inativo {
+  color: var(--rose-dark);
+}
+
+.login-card .meu-produto button {
+  min-height: 2.2rem;
+  border: 1px solid rgba(92, 50, 32, 0.22);
+  background: transparent;
+  color: var(--brown);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 860px) {
+  .confeiteiro-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .produto-foto {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .meu-produto {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .meu-produto-acoes {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Botão estilizado de escolher a foto (o campo de arquivo original fica invisível por cima do rótulo) */
+.confeiteiro-produtos .foto-campo {
+  position: relative;
+}
+
+.confeiteiro-produtos input.foto-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.foto-escolher {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1.5px dashed rgba(92, 50, 32, 0.35);
+  border-radius: var(--radius-sm);
+  background: var(--cream-strong);
+  padding: 0.55rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.foto-escolher:hover {
+  border-color: var(--rose-dark);
+  background: rgba(224, 123, 154, 0.08);
+}
+
+.foto-input:focus-visible + .foto-escolher {
+  outline: 2px solid var(--rose-dark);
+  outline-offset: 2px;
+}
+
+.foto-botao {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: var(--radius-sm);
+  background: var(--brown);
+  color: #fff;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(47, 27, 19, 0.18);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.foto-escolher:hover .foto-botao {
+  background: var(--brown-dark);
+  transform: translateY(-1px);
+}
+
+.foto-nome {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Cartão fidelidade: escolha na página do confeiteiro e selo no catálogo */
+.login-card .fidelidade-resumo {
+  margin: 0 0 0.9rem;
+  border: 1px solid rgba(212, 172, 0, 0.45);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 216, 75, 0.16);
+  color: var(--brown-dark);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.fidelidade-resumo span {
+  display: block;
+  font-weight: 800;
+}
+
+.meu-produto-acoes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.login-card .fidelidade-toggle {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--brown);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.login-card .fidelidade-toggle input {
+  width: 1.05rem;
+  height: 1.05rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.login-card .fidelidade-toggle input:disabled,
+.login-card .fidelidade-toggle input:disabled + span {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.product-loyalty {
+  align-self: flex-start;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffd84b, var(--gold));
+  color: var(--brown-dark);
+  padding: 0.18rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
